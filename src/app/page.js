@@ -25,12 +25,12 @@ export default function Home() {
         transition={{ type: "tween", ease: "backOut", duration:0.5}}
       >
           <p onMouseEnter={() => {setIsHovered(true)}} onMouseLeave={() => {setIsHovered(false)}}>
-          你好我是周嘉成
+          你好我是周嘉成.
           </p>
       </motion.div>
 
       <div className={styles.body}>
-        <p>I am <span>Anthony Zhou</span> .</p>
+        <p>Hello, I am <span>Anthony Zhou</span> .</p>
       </div>
 
     </main>
