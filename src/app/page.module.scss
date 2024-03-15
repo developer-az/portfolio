@@ -1,3 +1,9 @@
+.main-wrapper {
+  height: 100vh;
+  overflow-y: auto; /* Enable vertical scrolling */
+  position: relative; /* Keep relative position for the main content */
+}
+
 .introduction{
   height: 100vh;
   width: 100vw;
@@ -50,11 +56,12 @@
     cursor: default;
     
     p{
-      width: 1000px;
+      width: 500px;
       padding:40px;
     }
     span{
       color: #fa2104;
+      font-style: italic;
     }
   }
 
@@ -65,5 +72,6 @@
     background: #fa2104;
     position: absolute;
     color: black;
+    font-weight: 300;
   }
 }
