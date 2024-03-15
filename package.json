@@ -11,11 +11,15 @@
   "dependencies": {
     "eslint": "8.45.0",
     "eslint-config-next": "13.4.12",
-    "framer-motion": "^10.14.0",
+    "framer-motion": "^10.18.0",
+    "gsap": "^3.12.5",
+    "install": "^0.13.0",
     "lenis": "^0.0.2",
+    "locomotive-scroll": "^5.0.0-beta.11",
     "next": "^13.5.6",
+    "npm": "^10.5.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "sass": "^1.64.1"
+    "sass": "^1.72.0"
   }
 }
