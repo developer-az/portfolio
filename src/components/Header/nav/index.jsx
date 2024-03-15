@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styles from './style.module.scss';
 import { motion } from 'framer-motion';
-import { usePathname } from 'next/navigation';
+import { useEffect, useLayoutEffect, } from 'react';
 import { menuSlide } from '../animation';
 import Link from './Link';
 import Curve from './Curve';
@@ -28,8 +28,7 @@ const navItems = [
 
 export default function index() {
 
-  const pathname = usePathname();
-  const [selectedIndicator, setSelectedIndicator] = useState(pathname);
+ 
 
   return (
     <motion.div 
@@ -40,7 +39,7 @@ export default function index() {
       className={styles.menu}
       >
        <div className={styles.body}>
-            <div onMouseLeave={() => {setSelectedIndicator(pathname)}} className={styles.nav}>
+            <div onMouseLeave={() => {}} className={styles.nav}>
                     <div className={styles.header}>
                         <p>Navigation</p>
                     </div>

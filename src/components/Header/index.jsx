@@ -1,7 +1,6 @@
 'use client';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, } from 'react';
 import styles from './style.module.scss';
-import { usePathname } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import Nav from './nav';
 import gsap from 'gsap';
@@ -10,10 +9,10 @@ import Rounded from '../../common/RoundedButton';
 import Magnetic from '../../common/Magnetic';
 
 export default function index() {
-    const header = useRef(null);
+
     const [isActive, setIsActive] = useState(false);
     const pathname = usePathname();
-    const button = useRef(null);
+
 
     useEffect( () => {
       if(isActive) setIsActive(false)
