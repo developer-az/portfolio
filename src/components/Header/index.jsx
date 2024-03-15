@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useLayoutEffect, } from 'react';
+
 import styles from './style.module.scss';
 import { AnimatePresence } from 'framer-motion';
 import Nav from './nav';
@@ -10,26 +10,11 @@ import Magnetic from '../../common/Magnetic';
 
 export default function index() {
 
-    const [isActive, setIsActive] = useState(false);
-    const pathname = usePathname();
 
 
-    useEffect( () => {
-      if(isActive) setIsActive(false)
-    }, [pathname])
 
-    useLayoutEffect( () => {
-        gsap.registerPlugin(ScrollTrigger)
-        gsap.to(button.current, {
-            scrollTrigger: {
-                trigger: document.documentElement,
-                start: 0,
-                end: window.innerHeight,
-                onLeave: () => {gsap.to(button.current, {scale: 1, duration: 0.25, ease: "power1.out"})},
-                onEnterBack: () => {gsap.to(button.current, {scale: 0, duration: 0.25, ease: "power1.out"},setIsActive(false))}
-            }
-        })
-    }, [])
+
+ 
 
     return (
         <>
