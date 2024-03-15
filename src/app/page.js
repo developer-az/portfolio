@@ -45,6 +45,7 @@ export default function Home() {
   const size = isHovered ? 400 : 40;
 
   return (
+    
     <main className={styles.main}>
       
     <AnimatePresence mode='wait'>

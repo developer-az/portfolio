@@ -6,14 +6,14 @@
     justify-content: center;
     position: fixed;
     z-index: 99;
-    background-color: black;
+    background-color: rgb(6, 6, 6);
     svg{
         position: absolute;
         top: 0;
         width: 100%;
         height: calc(100% + 300px);
         path{
-            fill: black;
+            fill: rgb(6, 6, 6);
         }
     }
     p{
