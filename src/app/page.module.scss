@@ -41,8 +41,14 @@
   }
 }
 
-.main{
+.main {
   height: 100vh;
+  opacity: 1;
+  transition: opacity 1s ease; /* Increased from 0.5s to 1s for a smoother fade */
+  
+  &.fadeOut {
+    opacity: 0;
+  }
 
   .mask, .body{
     width: 100%;

@@ -14,6 +14,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [showPortfolio, setShowPortfolio] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
 
   // Refs for GSAP animations
   const header = useRef(null);
@@ -36,25 +37,32 @@ export default function Home() {
         document.body.style.cursor = "default";
         window.scrollTo(0, 0);
 
-        // After loading is complete, show the portfolio content after 3 more seconds
+        // After loading is complete, start fade-out first, then show portfolio
         setTimeout(() => {
-          setShowPortfolio(true);
+          // Start fade-out animation
+          setIsFadingOut(true);
+          
+          // After fade-out completes, show portfolio
+          setTimeout(() => {
+            setShowPortfolio(true);
+            setIsFadingOut(false);
 
-          // Make sure the body is scrollable when portfolio is shown
-          document.body.style.overflow = "auto";
-          document.body.style.height = "auto";
+            // Make sure the body is scrollable when portfolio is shown
+            document.body.style.overflow = "auto";
+            document.body.style.height = "auto";
 
-          // Re-initialize locomotive scroll for the portfolio content
-          if (mainWrapper.current) {
-            locomotiveScroll.destroy();
-            const newScroll = new LocomotiveScroll({
-              el: mainWrapper.current,
-              smooth: true,
-              smoothMobile: false,
-              resetNativeScroll: true,
-            });
-          }
-        }, 3000);
+            // Re-initialize locomotive scroll for the portfolio content
+            if (mainWrapper.current) {
+              locomotiveScroll.destroy();
+              const newScroll = new LocomotiveScroll({
+                el: mainWrapper.current,
+                smooth: true,
+                smoothMobile: false,
+                resetNativeScroll: true,
+              });
+            }
+          }, 1000); // Increased from 500ms to 1000ms to ensure fade completes
+        }, 2000); // Show intro for 2 seconds before starting fade
       }, 2000);
     })();
 
@@ -156,7 +164,7 @@ export default function Home() {
 
       {/* Initial Intro Effect */}
       {!showPortfolio && !isLoading && (
-        <main className={styles.main}>
+        <main className={`${styles.main} ${isFadingOut ? styles.fadeOut : ''}`}>
           <motion.div
             className={styles.mask}
             animate={{
