@@ -475,6 +475,304 @@
       }
     }
   }
+
+  /* Instagram Analyzer Styles */
+.instagramAnalyzer {
+  padding-top: 120px;
+  min-height: calc(100vh - 80px);
+  
+  h2 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    font-weight: 300;
+    color: #6c6c6c;
+    
+    @media (max-width: 768px) {
+      font-size: 2.2rem;
+    }
+  }
+  
+  > p {
+    font-size: 1.2rem;
+    color: #898989;
+    margin-bottom: 2rem;
+    max-width: 800px;
+  }
+  
+  .instructions {
+    background-color: #f8f8f8;
+    padding: 20px 25px;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    border-left: 4px solid #fa2104;
+    
+    h3 {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+    
+    ol {
+      margin-left: 20px;
+      margin-bottom: 15px;
+      
+      li {
+        margin-bottom: 10px;
+        color: #555;
+      }
+    }
+    
+    .privacyNote {
+      font-size: 0.9rem;
+      color: #777;
+      border-top: 1px solid #eee;
+      padding-top: 10px;
+      margin-top: 10px;
+      font-style: italic;
+    }
+  }
+  
+  .analyzerForm {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    margin-bottom: 40px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    
+    .fileInputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 25px;
+      
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
+      
+      .fileInput {
+        label {
+          display: block;
+          margin-bottom: 10px;
+          font-weight: 500;
+          color: #444;
+        }
+        
+        input[type="file"] {
+          width: 100%;
+          padding: 10px;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          background-color: #f9f9f9;
+          
+          &:focus {
+            outline: none;
+            border-color: #fa2104;
+          }
+        }
+        
+        .fileName {
+          font-size: 0.9rem;
+          color: #777;
+          margin-top: 5px;
+        }
+      }
+    }
+    
+    .buttonGroup {
+      display: flex;
+      gap: 15px;
+      
+      @media (max-width: 480px) {
+        flex-direction: column;
+      }
+      
+      .analyzeButton, .resetButton {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 30px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      
+      .analyzeButton {
+        background-color: #fa2104;
+        color: white;
+        flex-grow: 1;
+        
+        &:hover:not(:disabled) {
+          background-color: #e31e03;
+          transform: translateY(-3px);
+          box-shadow: 0 5px 15px rgba(250, 33, 4, 0.2);
+        }
+        
+        &:disabled {
+          background-color: #ccc;
+          cursor: not-allowed;
+        }
+      }
+      
+      .resetButton {
+        background-color: transparent;
+        color: #666;
+        border: 1px solid #ddd;
+        
+        &:hover:not(:disabled) {
+          background-color: #f2f2f2;
+          color: #333;
+        }
+        
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+  
+  .error {
+    background-color: #fff5f5;
+    color: #e53e3e;
+    padding: 15px 20px;
+    border-radius: 5px;
+    margin-bottom: 25px;
+    border-left: 4px solid #e53e3e;
+    
+    p {
+      margin: 0;
+    }
+  }
+  
+  .results {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 50px;
+    
+    h3 {
+      font-size: 1.8rem;
+      margin-bottom: 25px;
+      color: #333;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 15px;
+    }
+    
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      
+      @media (max-width: 600px) {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .stat {
+        text-align: center;
+        padding: 15px;
+        background-color: #f8f8f8;
+        border-radius: 8px;
+        flex: 1;
+        margin: 0 5px;
+        display: flex;
+        flex-direction: column;
+        
+        .statNumber {
+          font-size: 2rem;
+          font-weight: 600;
+          color: #333;
+          line-height: 1;
+          margin-bottom: 5px;
+        }
+        
+        .statLabel {
+          font-size: 0.9rem;
+          color: #777;
+        }
+        
+        &:nth-child(3) {
+          .statNumber {
+            color: #fa2104;
+          }
+        }
+      }
+    }
+    
+    h4 {
+      font-size: 1.3rem;
+      margin: 20px 0 15px;
+      color: #444;
+    }
+    
+    .noUnfollowers {
+      background-color: #f0fff4;
+      padding: 15px;
+      border-radius: 5px;
+      color: #38a169;
+      text-align: center;
+    }
+    
+    .unfollowersList {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #eee;
+      border-radius: 5px;
+      margin-top: 10px;
+      
+      .unfollower {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        border-bottom: 1px solid #eee;
+        
+        &:last-child {
+          border-bottom: none;
+        }
+        
+        &:hover {
+          background-color: #f9f9f9;
+        }
+        
+        .viewProfileButton {
+          color: #fa2104;
+          text-decoration: none;
+          font-size: 0.9rem;
+          padding: 5px 10px;
+          border-radius: 15px;
+          border: 1px solid #fa2104;
+          transition: all 0.2s ease;
+          
+          &:hover {
+            background-color: #fa2104;
+            color: white;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Project link style for the main page */
+.projectLink {
+  display: inline-block;
+  margin: 0 20px 20px;
+  padding: 10px 20px;
+  background-color: #fa2104;
+  color: white;
+  text-decoration: none;
+  border-radius: 20px;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  
+  &:hover {
+    background-color: #e31e03;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(250, 33, 4, 0.2);
+  }
+}
   
   /* Footer */
   footer {
