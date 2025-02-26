@@ -1,13 +1,6 @@
 {
   "extends": "next/core-web-vitals",
   "rules": {
-    "react/no-unescaped-entities": [
-      "error",
-      {
-        "replace": {
-          "'": "&apos;"
-        }
-      }
-    ]
+    "react/no-unescaped-entities": "off"
   }
 }

@@ -235,7 +235,7 @@ export default function Portfolio() {
             {/* Contact Section */}
             <section id="contact" className={styles.contact}>
               <h2>Get In Touch</h2>
-              <p>Interested in working together? Let's build something amazing.</p>
+              <p>Interested in working together? Let&apos;s build something amazing.</p>
               <a href="mailto:your-email@example.com" className={styles.contactButton}>
                 Say Hello
               </a>

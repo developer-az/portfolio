@@ -260,8 +260,8 @@ export default function Home() {
                   <Image 
                     src="/images/img.jpg" 
                     alt="Anthony Zhou" 
-                    width={400} 
-                    height={400} 
+                    width={450} 
+                    height={450} 
                     className={styles.profilePicture}
                   />
                 </div>
@@ -285,7 +285,7 @@ export default function Home() {
             {/* Contact Section */}
             <section id="contact" className={styles.contact}>
               <h2>Get In Touch</h2>
-              <p>Interested in working together? Let's build something amazing.</p>
+              <p>Interested in working together? Let&apos;s build something amazing.</p>
               <a href="mailto:88anthonyzhou@gmail.com" className={styles.contactButton}>
                 Say Hello
               </a>
