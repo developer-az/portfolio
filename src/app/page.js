@@ -260,13 +260,13 @@ export default function Home() {
                   <Image 
                     src="/images/img.jpg" 
                     alt="Anthony Zhou" 
-                    width={450} 
-                    height={450} 
+                    width={400} 
+                    height={400} 
                     className={styles.profilePicture}
                   />
                 </div>
                 <div className={styles.aboutText}>
-                  <p>Hi, I'm Anthony Zhou, a passionate software engineer and web designer dedicated to creating innovative digital experiences.</p>
+                  <p>Hi, I&apos;m Anthony Zhou, a passionate software engineer and web designer dedicated to creating innovative digital experiences.</p>
                   <p>With a strong background in full-stack development and UI/UX design, I bring technical expertise and creative problem-solving to every project.</p>
                   <div className={styles.skills}>
                     <span>Python</span>
