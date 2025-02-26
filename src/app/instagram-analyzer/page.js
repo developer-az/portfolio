@@ -1,5 +1,5 @@
-'use client'
-import { useState, useRef } from 'react';
+'use client';
+import { useState, useRef, useEffect } from 'react';
 import styles from '../page.module.scss';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -10,8 +10,28 @@ export default function InstagramAnalyzer() {
   const [results, setResults] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const followersInputRef = useRef(null);
   const followingInputRef = useRef(null);
+  const headerRef = useRef(null);
+
+  // Add scroll effect for header
+  useEffect(() => {
+    const handleScroll = () => {
+      if (headerRef.current) {
+        if (window.scrollY > 100) {
+          headerRef.current.style.backgroundColor = 'rgba(18, 18, 18, 0.95)';
+          headerRef.current.style.boxShadow = '0 3px 10px rgba(0, 0, 0, 0.3)';
+        } else {
+          headerRef.current.style.backgroundColor = 'rgba(18, 18, 18, 0.8)';
+          headerRef.current.style.boxShadow = 'none';
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleFollowersFileChange = (e) => {
     if (e.target.files.length > 0) {
@@ -91,10 +111,33 @@ export default function InstagramAnalyzer() {
     if (followingInputRef.current) followingInputRef.current.value = "";
   };
 
+  // Simple mobile menu
+  const SimpleMobileMenu = () => (
+    <div
+      className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ""}`}
+    >
+      <div className={styles.mobileMenuContent}>
+        <Link href="/" onClick={() => setMobileMenuOpen(false)}>
+          Home
+        </Link>
+        <Link href="/#about" onClick={() => setMobileMenuOpen(false)}>
+          About
+        </Link>
+        <Link href="/#work" onClick={() => setMobileMenuOpen(false)}>
+          Work
+        </Link>
+        <Link href="/#contact" onClick={() => setMobileMenuOpen(false)}>
+          Contact
+        </Link>
+      </div>
+    </div>
+  );
+
   return (
     <div className={styles.mainWrapper}>
       <div className={styles.portfolioWrapper}>
-        <header className={styles.header}>
+        {/* Header */}
+        <header ref={headerRef} className={styles.header}>
           <div className={styles.headerContent}>
             <Link href="/" className={styles.logo}>
               <p className={styles.copyright}>©</p>
@@ -107,21 +150,40 @@ export default function InstagramAnalyzer() {
               </div>
             </Link>
             
-            {/* Navigation */}
+            {/* Desktop Navigation */}
             <div className={styles.nav}>
+              <Link href="/" className={styles.navLink}>Home</Link>
               <Link href="/#work" className={styles.navLink}>Work</Link>
               <Link href="/#about" className={styles.navLink}>About</Link>
               <Link href="/#contact" className={styles.navLink}>Contact</Link>
-              <Link href="/instagram-analyzer" className={styles.navLink}>Instagram Analyzer</Link>
             </div>
             
-            {/* Mobile Menu Button - reusing from main page */}
-            <button className={styles.menuButton} aria-label="Toggle menu">
-              <div className={styles.menuButtonLine}></div>
-              <div className={styles.menuButtonLine}></div>
-              <div className={styles.menuButtonLine}></div>
+            {/* Mobile Menu Button */}
+            <button
+              className={styles.menuButton}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              <div
+                className={`${styles.menuButtonLine} ${
+                  mobileMenuOpen ? styles.active : ""
+                }`}
+              ></div>
+              <div
+                className={`${styles.menuButtonLine} ${
+                  mobileMenuOpen ? styles.active : ""
+                }`}
+              ></div>
+              <div
+                className={`${styles.menuButtonLine} ${
+                  mobileMenuOpen ? styles.active : ""
+                }`}
+              ></div>
             </button>
           </div>
+
+          {/* Mobile Menu */}
+          <SimpleMobileMenu />
         </header>
 
         <div className={styles.portfolioContent}>
@@ -216,7 +278,7 @@ export default function InstagramAnalyzer() {
                     </div>
                     <div className={styles.stat}>
                       <span className={styles.statNumber}>{results.unfollowersCount}</span>
-                      <span className={styles.statLabel}>Unfollowers</span>
+                      <span className={styles.statLabel}>Not Following Back</span>
                     </div>
                   </div>
 
@@ -245,7 +307,7 @@ export default function InstagramAnalyzer() {
             </motion.div>
           </section>
           
-          {/* Footer - reused from main page */}
+          {/* Footer */}
           <footer className={styles.footer}>
             <p>© 2025 Anthony Zhou - All Rights Reserved</p>
             <p>Built with Next.js, Framer Motion, and GSAP</p>

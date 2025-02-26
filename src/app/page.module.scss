@@ -5,7 +5,7 @@
   overflow-x: hidden;
 }
 
-.introduction{
+.introduction {
   height: 100vh;
   width: 100vw;
   display: flex;
@@ -14,30 +14,30 @@
   position: fixed;
   z-index: 99;
   background-color: black;
-  svg{
-      position: absolute;
-      top: 0;
-      width: 100%;
-      height: calc(100% + 300px);
-      path{
-          fill: black;
-      }
+  svg {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: calc(100% + 300px);
+    path {
+      fill: black;
+    }
   }
-  p{
-      display: flex;
-      color: white;
-      font-size: 42px;
-      align-items: center;
-      position: absolute;
-      z-index: 1;
-      span{
-          display: block;
-          width: 10px;
-          height: 10px;
-          background-color: white;
-          border-radius: 50%;
-          margin-right: 10px;
-      }
+  p {
+    display: flex;
+    color: white;
+    font-size: 42px;
+    align-items: center;
+    position: absolute;
+    z-index: 1;
+    span {
+      display: block;
+      width: 10px;
+      height: 10px;
+      background-color: white;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
   }
 }
 
@@ -50,7 +50,7 @@
     opacity: 0;
   }
 
-  .mask, .body{
+  .mask, .body {
     width: 100%;
     height: 100%;
     display: flex;
@@ -61,17 +61,22 @@
     line-height: 66px;
     cursor: default;
     
-    p{
+    p {
       width: 500px;
-      padding:40px;
+      padding: 40px;
+      @media (max-width: 768px) {
+        width: 90%;
+        font-size: 48px;
+        line-height: 52px;
+      }
     }
-    span{
+    span {
       color: #fa2104;
       font-style: italic;
     }
   }
 
-  .mask{
+  .mask {
     mask-image: url('../../public/mask.svg');
     mask-repeat: no-repeat;
     mask-size: 40px;
@@ -79,25 +84,24 @@
     position: absolute;
     color: black;
     font-weight: 500;
-    span{
+    span {
       color: black;
       font-size: 69px;
     }
   }
 }
 
-/* Portfolio styles - Added for new functionality */
+/* Portfolio styles */
 .portfolioWrapper {
   position: relative;
   width: 100%;
   min-height: 100vh;
   z-index: 10;
-  background-color: white;
-  color: #333;
-  overflow-y: auto;
+  background-color: #121212;
+  color: #e0e0e0;
 }
 
-/* Header Styles - updated to match screenshot */
+/* Header Styles */
 .header {
   position: fixed;
   top: 0;
@@ -106,6 +110,7 @@
   z-index: 100;
   padding: 20px 0;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  background-color: rgba(18, 18, 18, 0.8);
   
   .headerContent {
     display: flex;
@@ -124,6 +129,7 @@
     .copyright {
       font-size: 16px;
       font-weight: 300;
+      color: #e0e0e0;
     }
     
     .logoText {
@@ -134,6 +140,7 @@
         font-size: 12px;
         font-weight: 300;
         margin-bottom: 2px;
+        color: #cccccc;
       }
       
       .name {
@@ -146,10 +153,12 @@
         
         .firstName {
           font-weight: 500;
+          color: #f5f5f5;
         }
         
         .lastName {
           font-weight: 300;
+          color: #cccccc;
         }
       }
     }
@@ -165,7 +174,7 @@
     }
     
     .navLink {
-      color: #6c6c6c;
+      color: #b0b0b0;
       text-decoration: none;
       font-size: 16px;
       font-weight: 400;
@@ -173,7 +182,7 @@
       position: relative;
       
       &:hover {
-        color: #333;
+        color: #f5f5f5;
       }
       
       &:after {
@@ -183,7 +192,7 @@
         left: 0;
         width: 0%;
         height: 1px;
-        background-color: #333;
+        background-color: #fa2104;
         transition: width 0.3s ease;
       }
       
@@ -214,7 +223,7 @@
     left: 5px;
     width: 30px;
     height: 2px;
-    background-color: #333;
+    background-color: #e0e0e0;
     transition: all 0.3s ease;
     
     &:nth-child(1) {
@@ -223,6 +232,7 @@
       &.active {
         transform: rotate(45deg);
         top: 20px;
+        background-color: #f5f5f5;
       }
     }
     
@@ -240,6 +250,7 @@
       &.active {
         transform: rotate(-45deg);
         top: 20px;
+        background-color: #f5f5f5;
       }
     }
   }
@@ -252,7 +263,7 @@
   right: -100%;
   width: 100%;
   height: 100vh;
-  background-color: rgba(255, 255, 255, 0.98);
+  background-color: rgba(18, 18, 18, 0.98);
   z-index: 101;
   transition: right 0.3s ease;
   
@@ -270,7 +281,7 @@
     
     a {
       font-size: 32px;
-      color: #333;
+      color: #e0e0e0;
       text-decoration: none;
       margin-bottom: 30px;
       transition: color 0.3s ease;
@@ -287,7 +298,7 @@
   position: relative;
   z-index: 1;
   padding-top: 80px; /* Space for fixed header */
-  color: #333;
+  color: #e0e0e0;
   
   section {
     min-height: 100vh;
@@ -299,7 +310,7 @@
       font-size: 3rem;
       margin-bottom: 3rem;
       position: relative;
-      color: #333;
+      color: #f5f5f5;
       font-weight: 500;
       
       @media (max-width: 768px) {
@@ -308,7 +319,7 @@
     }
   }
   
-  /* Hero Section - matching the screenshot */
+  /* Hero Section */
   .hero {
     padding-top: 15vh;
     min-height: calc(100vh - 80px);
@@ -319,7 +330,7 @@
     h2 {
       font-size: 5rem;
       font-weight: 300;
-      color: #6c6c6c;
+      color: #f5f5f5;
       margin-bottom: 2rem;
       line-height: 1.1;
       
@@ -331,7 +342,7 @@
     p {
       font-size: 1.4rem;
       max-width: 700px;
-      color: #898989;
+      color: #b0b0b0;
       
       @media (max-width: 768px) {
         font-size: 1.2rem;
@@ -341,7 +352,7 @@
   
   /* Work Section */
   .work {
-    background-color: #f9f9f9;
+    background-color: #1a1a1a;
     
     .projectGrid {
       display: grid;
@@ -353,32 +364,116 @@
       }
       
       .project {
-        background-color: white;
+        background-color: #222222;
         border-radius: 10px;
         overflow: hidden;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        
+        &:after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 3px;
+          background: linear-gradient(90deg, #fa2104, rgba(250, 33, 4, 0.4));
+          transform: scaleX(0);
+          transform-origin: left;
+          transition: transform 0.3s ease;
+        }
         
         &:hover {
           transform: translateY(-10px);
-          box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+          
+          &:after {
+            transform: scaleX(1);
+          }
         }
         
         .projectImage {
           height: 240px;
-          background-color: #afa18f; /* Using your beige accent color */
+          background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+          position: relative;
+          overflow: hidden;
+          
+          &:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(250, 33, 4, 0.05) 0%, rgba(250, 33, 4, 0.2) 100%);
+            z-index: 1;
+          }
+          
+          .projectImageContent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            color: rgba(255, 255, 255, 0.8);
+            transition: transform 0.3s ease;
+            
+            svg {
+              margin-bottom: 15px;
+              opacity: 0.8;
+              stroke: rgba(255, 255, 255, 0.8);
+              filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+              transition: all 0.3s ease;
+            }
+            
+            .projectImageLabel {
+              font-size: 16px;
+              font-weight: 500;
+              letter-spacing: 0.5px;
+              background: rgba(0, 0, 0, 0.3);
+              padding: 8px 16px;
+              border-radius: 20px;
+              transform: translateY(5px);
+              transition: all 0.3s ease;
+            }
+          }
+        }
+        
+        &:hover {
+          .projectImage {
+            .projectImageContent {
+              transform: scale(1.05);
+              
+              svg {
+                stroke: #fa2104;
+                opacity: 1;
+                transform: scale(1.1);
+              }
+              
+              .projectImageLabel {
+                background: rgba(250, 33, 4, 0.2);
+                transform: translateY(0);
+              }
+            }
+          }
         }
         
         h3 {
           padding: 20px 20px 10px;
           font-size: 1.5rem;
-          color: #333;
+          color: #f5f5f5;
           font-weight: 500;
         }
         
         p {
           padding: 0 20px 20px;
-          color: #666;
+          color: #b0b0b0;
         }
       }
     }
@@ -397,8 +492,17 @@
       .aboutImage {
         flex: 1;
         min-height: 400px;
-        background-color: #afa18f; /* Using your beige accent color */
-        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        .profilePicture {
+          border-radius: 50%;
+          object-fit: cover;
+          max-width: 100%;
+          height: auto;
+          border: 3px solid #333;
+        }
       }
       
       .aboutText {
@@ -408,7 +512,7 @@
           margin-bottom: 20px;
           font-size: 1.1rem;
           line-height: 1.6;
-          color: #555;
+          color: #cccccc;
         }
         
         .skills {
@@ -431,14 +535,14 @@
   
   /* Contact Section */
   .contact {
-    background-color: #f9f9f9;
+    background-color: #1a1a1a;
     text-align: center;
     
     p {
       font-size: 1.5rem;
       max-width: 600px;
       margin: 0 auto 40px;
-      color: #555;
+      color: #cccccc;
     }
     
     .contactButton {
@@ -470,10 +574,16 @@
       }
       
       a {
-        color: #333;
+        display: flex;
+        align-items: center;
+        color: #e0e0e0;
         font-weight: 500;
         text-decoration: none;
         transition: color 0.3s ease;
+        
+        .socialIcon {
+          margin-right: 8px;
+        }
         
         &:hover {
           color: #fa2104; /* Using your red accent color */
@@ -481,8 +591,28 @@
       }
     }
   }
-
-  /* Instagram Analyzer Styles */
+  
+  /* Project link style for the main page */
+  .projectLink {
+    display: inline-block;
+    margin: 0 20px 20px;
+    padding: 10px 20px;
+    background-color: #fa2104;
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    
+    &:hover {
+      background-color: #e31e03;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(250, 33, 4, 0.2);
+    }
+  }
+}
+  
+/* Instagram Analyzer Styles */
 .instagramAnalyzer {
   padding-top: 120px;
   min-height: calc(100vh - 80px);
@@ -491,7 +621,7 @@
     font-size: 3rem;
     margin-bottom: 1.5rem;
     font-weight: 300;
-    color: #6c6c6c;
+    color: #f5f5f5;
     
     @media (max-width: 768px) {
       font-size: 2.2rem;
@@ -500,13 +630,13 @@
   
   > p {
     font-size: 1.2rem;
-    color: #898989;
+    color: #b0b0b0;
     margin-bottom: 2rem;
     max-width: 800px;
   }
   
   .instructions {
-    background-color: #f8f8f8;
+    background-color: #222222;
     padding: 20px 25px;
     border-radius: 10px;
     margin-bottom: 2rem;
@@ -515,7 +645,7 @@
     h3 {
       font-size: 1.3rem;
       margin-bottom: 1rem;
-      color: #333;
+      color: #f5f5f5;
     }
     
     ol {
@@ -524,14 +654,14 @@
       
       li {
         margin-bottom: 10px;
-        color: #555;
+        color: #cccccc;
       }
     }
     
     .privacyNote {
       font-size: 0.9rem;
-      color: #777;
-      border-top: 1px solid #eee;
+      color: #999999;
+      border-top: 1px solid #333;
       padding-top: 10px;
       margin-top: 10px;
       font-style: italic;
@@ -539,11 +669,11 @@
   }
   
   .analyzerForm {
-    background-color: white;
+    background-color: #1a1a1a;
     padding: 30px;
     border-radius: 10px;
     margin-bottom: 40px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     
     .fileInputs {
       display: grid;
@@ -560,15 +690,16 @@
           display: block;
           margin-bottom: 10px;
           font-weight: 500;
-          color: #444;
+          color: #e0e0e0;
         }
         
         input[type="file"] {
           width: 100%;
           padding: 10px;
-          border: 1px solid #ddd;
+          border: 1px solid #333;
           border-radius: 5px;
-          background-color: #f9f9f9;
+          background-color: #222222;
+          color: #e0e0e0;
           
           &:focus {
             outline: none;
@@ -578,7 +709,7 @@
         
         .fileName {
           font-size: 0.9rem;
-          color: #777;
+          color: #b0b0b0;
           margin-top: 5px;
         }
       }
@@ -614,19 +745,19 @@
         }
         
         &:disabled {
-          background-color: #ccc;
+          background-color: #444;
           cursor: not-allowed;
         }
       }
       
       .resetButton {
-        background-color: transparent;
-        color: #666;
-        border: 1px solid #ddd;
+        background-color: #2a2a2a;
+        color: #cccccc;
+        border: 1px solid #444;
         
         &:hover:not(:disabled) {
-          background-color: #f2f2f2;
-          color: #333;
+          background-color: #333;
+          color: #f5f5f5;
         }
         
         &:disabled {
@@ -638,8 +769,8 @@
   }
   
   .error {
-    background-color: #fff5f5;
-    color: #e53e3e;
+    background-color: rgba(229, 62, 62, 0.1);
+    color: #e76363;
     padding: 15px 20px;
     border-radius: 5px;
     margin-bottom: 25px;
@@ -651,17 +782,17 @@
   }
   
   .results {
-    background-color: white;
+    background-color: #1a1a1a;
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     margin-bottom: 50px;
     
     h3 {
       font-size: 1.8rem;
       margin-bottom: 25px;
-      color: #333;
-      border-bottom: 1px solid #eee;
+      color: #f5f5f5;
+      border-bottom: 1px solid #333;
       padding-bottom: 15px;
     }
     
@@ -678,7 +809,7 @@
       .stat {
         text-align: center;
         padding: 15px;
-        background-color: #f8f8f8;
+        background-color: #222222;
         border-radius: 8px;
         flex: 1;
         margin: 0 5px;
@@ -688,14 +819,14 @@
         .statNumber {
           font-size: 2rem;
           font-weight: 600;
-          color: #333;
+          color: #f5f5f5;
           line-height: 1;
           margin-bottom: 5px;
         }
         
         .statLabel {
           font-size: 0.9rem;
-          color: #777;
+          color: #b0b0b0;
         }
         
         &:nth-child(3) {
@@ -709,21 +840,21 @@
     h4 {
       font-size: 1.3rem;
       margin: 20px 0 15px;
-      color: #444;
+      color: #e0e0e0;
     }
     
     .noUnfollowers {
-      background-color: #f0fff4;
+      background-color: rgba(56, 161, 105, 0.1);
       padding: 15px;
       border-radius: 5px;
-      color: #38a169;
+      color: #4caf50;
       text-align: center;
     }
     
     .unfollowersList {
       max-height: 400px;
       overflow-y: auto;
-      border: 1px solid #eee;
+      border: 1px solid #333;
       border-radius: 5px;
       margin-top: 10px;
       
@@ -732,14 +863,15 @@
         justify-content: space-between;
         align-items: center;
         padding: 12px 15px;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid #333;
+        color: #e0e0e0;
         
         &:last-child {
           border-bottom: none;
         }
         
         &:hover {
-          background-color: #f9f9f9;
+          background-color: #2a2a2a;
         }
         
         .viewProfileButton {
@@ -780,17 +912,16 @@
   }
 }
   
-  /* Footer */
-  footer {
-    padding: 40px 10%;
-    text-align: center;
-    background-color: #333;
-    color: white;
-    
-    p {
-      margin: 10px 0;
-      font-size: 0.9rem;
-      opacity: 0.8;
-    }
+/* Footer */
+.footer {
+  padding: 40px 10%;
+  text-align: center;
+  background-color: #0a0a0a;
+  color: #cccccc;
+  
+  p {
+    margin: 10px 0;
+    font-size: 0.9rem;
+    opacity: 0.8;
   }
 }

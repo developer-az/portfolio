@@ -5,10 +5,66 @@
     src: url('../../public/fonts/AVGARDD_2.woff') format('woff');
 }
 
-body{
-    margin: 0px;
-    overflow:hidden;
-    background-color: rgb(3, 3, 6);
-    font-family: 'Avant Garde Book BT';
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Avant Garde Book BT', sans-serif;
+    background-color: #121212;
+    /* Remove overflow: hidden so content is scrollable */
+    overflow-x: hidden;
+    color: #e0e0e0;
+    line-height: 1.6;
+}
+
+/* Basic smooth scrolling for anchor links */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Locomotive Scroll v4+ compatibility */
+html.has-scroll-smooth {
+    overflow: hidden;
+}
+
+.has-scroll-smooth body {
+    overflow: hidden;
+}
+
+.has-scroll-smooth [data-scroll-container] {
+    min-height: 100vh;
+}
+
+[data-scroll-direction="horizontal"] [data-scroll-container] {
+    height: 100vh;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+[data-scroll-direction="horizontal"] [data-scroll-section] {
+    display: inline-block;
+    vertical-align: top;
+    white-space: nowrap;
+    height: 100%;
+}
+
+/* Fallback for when Locomotive Scroll fails */
+.mainWrapper {
+    position: relative;
+    z-index: 1;
+}

@@ -1,9 +1,8 @@
 "use client";
 import styles from "./page.module.scss";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import useMousePosition from "./utils/useMousePosition";
-import { useEffect, useRef } from "react";
 import Preloader from "../components/Preloader";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -20,6 +19,7 @@ export default function Home() {
   const header = useRef(null);
   const portfolioContent = useRef(null);
   const mainWrapper = useRef(null);
+  const locomotiveScrollRef = useRef(null);
 
   useEffect(() => {
     // Initialize GSAP plugins
@@ -27,49 +27,120 @@ export default function Home() {
       gsap.registerPlugin(ScrollTrigger);
     }
 
+    // Fix for initial scroll position
+    window.scrollTo(0, 0);
+    
+    // Before starting, make sure body is prepared for the intro animation
+    if (!showPortfolio) {
+      document.body.style.overflow = 'hidden';
+    }
+
     // Load locomotive scroll and run intro animations
     (async () => {
-      const LocomotiveScroll = (await import("locomotive-scroll")).default;
-      const locomotiveScroll = new LocomotiveScroll();
+      try {
+        const LocomotiveScroll = (await import("locomotive-scroll")).default;
+        locomotiveScrollRef.current = new LocomotiveScroll();
 
-      setTimeout(() => {
-        setIsLoading(false);
-        document.body.style.cursor = "default";
-        window.scrollTo(0, 0);
-
-        // After loading is complete, start fade-out first, then show portfolio
         setTimeout(() => {
-          // Start fade-out animation
-          setIsFadingOut(true);
+          setIsLoading(false);
+          document.body.style.cursor = "default";
           
-          // After fade-out completes, show portfolio
+          // After loading is complete, start fade-out first, then show portfolio
           setTimeout(() => {
-            setShowPortfolio(true);
-            setIsFadingOut(false);
+            // Start fade-out animation
+            setIsFadingOut(true);
+            
+            // After fade-out completes, show portfolio
+            setTimeout(() => {
+              setShowPortfolio(true);
+              setIsFadingOut(false);
 
-            // Make sure the body is scrollable when portfolio is shown
-            document.body.style.overflow = "auto";
-            document.body.style.height = "auto";
+              // Make sure the body is scrollable when portfolio is shown
+              document.body.style.overflow = "auto";
+              document.body.style.height = "auto";
 
-            // Re-initialize locomotive scroll for the portfolio content
-            if (mainWrapper.current) {
-              locomotiveScroll.destroy();
-              const newScroll = new LocomotiveScroll({
-                el: mainWrapper.current,
-                smooth: true,
-                smoothMobile: false,
-                resetNativeScroll: true,
-              });
-            }
-          }, 1000); // Increased from 500ms to 1000ms to ensure fade completes
-        }, 2000); // Show intro for 2 seconds before starting fade
-      }, 2000);
+                              // Re-initialize locomotive scroll for the portfolio content
+              if (mainWrapper.current) {
+                if (locomotiveScrollRef.current) {
+                  locomotiveScrollRef.current.destroy();
+                }
+                
+                try {
+                  // Initialize Locomotive Scroll
+                  locomotiveScrollRef.current = new LocomotiveScroll({
+                    el: mainWrapper.current,
+                    smooth: true,
+                    smoothMobile: false,
+                    resetNativeScroll: true,
+                  });
+                  
+                  // For newer versions of Locomotive Scroll (v4+)
+                  if (locomotiveScrollRef.current.scroll && typeof locomotiveScrollRef.current.scroll.on === 'function') {
+                    locomotiveScrollRef.current.scroll.on("scroll", ScrollTrigger.update);
+                  } 
+                  // For older versions
+                  else if (typeof locomotiveScrollRef.current.on === 'function') {
+                    locomotiveScrollRef.current.on("scroll", ScrollTrigger.update);
+                  }
+                  
+                  // Alternative ScrollTrigger integration without relying on Locomotive events
+                  window.addEventListener('scroll', () => {
+                    ScrollTrigger.update();
+                  });
+                  
+                  // Simplified ScrollTrigger proxy
+                  ScrollTrigger.scrollerProxy(mainWrapper.current, {
+                    scrollTop(value) {
+                      if (arguments.length) {
+                        return 0;
+                      }
+                      return window.scrollY;
+                    },
+                    getBoundingClientRect() {
+                      return {
+                        top: 0,
+                        left: 0,
+                        width: window.innerWidth,
+                        height: window.innerHeight,
+                      };
+                    },
+                  });
+                } catch (err) {
+                  console.error("Locomotive scroll init error:", err);
+                  // Fallback to native scrolling if Locomotive fails
+                }
+              }
+            }, 1000); // Increased from 500ms to 1000ms to ensure fade completes
+          }, 2000); // Show intro for 2 seconds before starting fade
+        }, 2000);
+      } catch (error) {
+        console.error("Failed to initialize locomotive scroll:", error);
+        // Fallback if locomotive scroll fails
+        setIsLoading(false);
+        setShowPortfolio(true);
+        document.body.style.overflow = "auto";
+      }
     })();
 
     // Cleanup
     return () => {
       if (typeof window !== "undefined") {
-        ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+        try {
+          if (locomotiveScrollRef.current) {
+            if (typeof locomotiveScrollRef.current.destroy === 'function') {
+              locomotiveScrollRef.current.destroy();
+            }
+            locomotiveScrollRef.current = null;
+          }
+          
+          // Remove scroll event listener
+          window.removeEventListener('scroll', ScrollTrigger.update);
+          
+          // Kill all ScrollTrigger instances
+          ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+        } catch (err) {
+          console.error("Cleanup error:", err);
+        }
       }
     };
   }, []);
@@ -89,8 +160,8 @@ export default function Home() {
 
       if (header.current) {
         headerAnimation.to(header.current, {
-          backgroundColor: "rgba(255, 255, 255, 0.8)", // Slightly more transparent
-          boxShadow: "0 3px 10px rgba(0, 0, 0, 0.08)", // Softer shadow
+          backgroundColor: "rgba(18, 18, 18, 0.95)", // Dark with high opacity
+          boxShadow: "0 3px 10px rgba(0, 0, 0, 0.3)", // Stronger shadow for dark theme
         });
       }
 
@@ -125,15 +196,18 @@ export default function Home() {
   // Simple navigation component with matching style from the screenshot
   const SimpleNav = () => (
     <div className={styles.nav}>
-      <a href="#work" className={styles.navLink}>
-        Work
-      </a>
       <a href="#about" className={styles.navLink}>
         About
+      </a>
+      <a href="#work" className={styles.navLink}>
+        Work
       </a>
       <a href="#contact" className={styles.navLink}>
         Contact
       </a>
+      <Link href="/instagram-analyzer" className={styles.navLink}>
+        Instagram Analyzer
+      </Link>
     </div>
   );
 
@@ -143,15 +217,18 @@ export default function Home() {
       className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ""}`}
     >
       <div className={styles.mobileMenuContent}>
-        <a href="#work" onClick={() => setMobileMenuOpen(false)}>
-          Work
-        </a>
         <a href="#about" onClick={() => setMobileMenuOpen(false)}>
           About
+        </a>
+        <a href="#work" onClick={() => setMobileMenuOpen(false)}>
+          Work
         </a>
         <a href="#contact" onClick={() => setMobileMenuOpen(false)}>
           Contact
         </a>
+        <Link href="/instagram-analyzer" onClick={() => setMobileMenuOpen(false)}>
+          Instagram Analyzer
+        </Link>
       </div>
     </div>
   );
@@ -243,92 +320,21 @@ export default function Home() {
 
           {/* Portfolio Content */}
           <div ref={portfolioContent} className={styles.portfolioContent}>
-            {/* Hero Section */}
-            <section className={styles.hero}>
-              <h2>Software Engineer & Web Designer</h2>
-              <p>
-                I build engaging digital experiences that merge innovation with
-                aesthetics.
-              </p>
-            </section>
-
-            {/* Work Section */}
-            <section id="work" className={styles.work}>
-              <h2>Selected Work</h2>
-              <div className={styles.projectGrid}>
-                {/* Project 1 - pyFollowerVsFollowing */}
-                <div className={styles.project}>
-                  <div className={styles.projectImage}></div>
-                  <h3>pyFollowerVsFollowing</h3>
-                  <p>
-                    Full Stack Python Data Visualization Project (February –
-                    April 2024)
-                    <br />• Created a data visualization tool for Instagram
-                    follower insights • 90%+ data accuracy through HTML file
-                    pattern recognition • Managed with GitHub, deployed on
-                    Vercel, hosted on Cloudflare • Created a User Guide video
-                    with 200+ views
-                  </p>
-                </div>
-
-                {/* Project 2 - OnlineTest */}
-                <div className={styles.project}>
-                  <div className={styles.projectImage}></div>
-                  <h3>OnlineTest</h3>
-                  <p>
-                    Object-Oriented Methodology Project (August 2024)
-                    <br />• Implemented MVC architecture in Java • Developed
-                    robust online test-tracking system • Applied advanced OOP
-                    concepts: inheritance, polymorphism • Rigorous unit testing
-                    and debugging
-                  </p>
-                </div>
-
-                {/* Project 3 - Social Media Z */}
-                <div className={styles.project}>
-                  <div className={styles.projectImage}></div>
-                  <h3>Social Media Z</h3>
-                  <p>
-                    Frontend Web Development Project (December 2023)
-                    <br />• Built social media simulation app • Used vanilla
-                    HTML, CSS, and JavaScript • Applied UX design principles •
-                    Conducted user experience surveys
-                  </p>
-                </div>
-
-                {/* Project 4 - Instagram Follower Analyzer */}
-                <div className={styles.project}>
-                  <div className={styles.projectImage}></div>
-                  <h3>Instagram Follower Analyzer</h3>
-                  <p>
-                    Web-based Instagram Analytics Tool (February 2024)
-                    <br />• Analyze who doesn't follow you back on Instagram •
-                    Convert of Python data analysis project to JavaScript •
-                    Process Instagram HTML files securely in the browser • Built
-                    with Next.js and React with responsive design
-                  </p>
-                  <Link
-                    href="/instagram-analyzer"
-                    className={styles.projectLink}
-                  >
-                    Try it Now
-                  </Link>
-                </div>
-              </div>
-            </section>
-
-            {/* About Section */}
+            {/* Hero Section with About Me First */}
             <section id="about" className={styles.about}>
               <h2>About Me</h2>
               <div className={styles.aboutContent}>
                 <div className={styles.aboutImage}>
-                  <Image
-                    src="/images/img.jpg"
-                    alt="Anthony Zhou"
-                    width={450}
-                    height={450}
-                    className={styles.profilePicture}
-                  />
+                  <div style={{ backgroundColor: 'white', borderRadius: '50%', display: 'inline-block' }}>
+                    <Image
+                      src="/images/img.jpg"
+                      alt="Anthony Zhou"
+                      width={450}
+                      height={450}
+                      className={styles.profilePicture}
+                      style={{ borderRadius: '50%', display: 'block' }} /* Added rounded image style */
+                    />
+                  </div>
                 </div>
                 <div className={styles.aboutText}>
                   <p>
@@ -355,6 +361,119 @@ export default function Home() {
               </div>
             </section>
 
+            {/* Introduction Section - Reduced height */}
+            <section className={styles.hero} style={{ padding: '1.5rem 0' }}>
+              <h2>Software Engineer & Web Designer</h2>
+              <p>
+                I build engaging digital experiences that merge innovation with
+                aesthetics.
+              </p>
+            </section>
+
+            {/* Work Section */}
+            <section id="work" className={styles.work}>
+              <h2>Selected Work</h2>
+              <div className={styles.projectGrid}>
+                {/* Project 1 - pyFollowerVsFollowing */}
+                <div className={styles.project}>
+                  <div className={styles.projectImage}>
+                    <div className={styles.projectImageContent}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 19c-2.3 0-6.4-.2-8.1-.6-.7-.2-1.2-.7-1.4-1.4-.3-1.1-.5-3.4-.5-5s.2-3.9.5-5c.2-.7.7-1.2 1.4-1.4C5.6 5.2 9.7 5 12 5s6.4.2 8.1.6c.7.2 1.2.7 1.4 1.4.3 1.1.5 3.4.5 5s-.2 3.9-.5 5c-.2.7-.7 1.2-1.4 1.4-1.7.4-5.8.6-8.1.6 0 0 0 0 0 0z"></path>
+                        <polygon points="10 15 15 12 10 9"></polygon>
+                      </svg>
+                      <span className={styles.projectImageLabel}>Python Data Visualization</span>
+                    </div>
+                  </div>
+                  <h3>pyFollowerVsFollowing</h3>
+                  <p>
+                    Full Stack Python Data Visualization Project (February –
+                    April 2024)
+                    <br />• Created a data visualization tool for Instagram
+                    follower insights • 90%+ data accuracy through HTML file
+                    pattern recognition • Managed with GitHub, deployed on
+                    Vercel, hosted on Cloudflare • Created a User Guide video
+                    with 200+ views
+                  </p>
+                </div>
+
+                {/* Project 2 - OnlineTest */}
+                <div className={styles.project}>
+                  <div className={styles.projectImage}>
+                    <div className={styles.projectImageContent}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 7h-3a2 2 0 0 0-2 2v.5"></path>
+                        <path d="M14 10.5V14a2 2 0 0 0 2 2h3"></path>
+                        <path d="M14 14h3"></path>
+                        <path d="M3 7.5h8"></path>
+                        <path d="M3 10.5h3"></path>
+                        <path d="M3 13.5h3"></path>
+                        <path d="M16 3.5A2.5 2.5 0 0 0 13.5 1h-3A2.5 2.5 0 0 0 8 3.5"></path>
+                        <path d="M16 20.5a2.5 2.5 0 0 1-2.5 2.5h-3a2.5 2.5 0 0 1-2.5-2.5"></path>
+                      </svg>
+                      <span className={styles.projectImageLabel}>Java Application</span>
+                    </div>
+                  </div>
+                  <h3>OnlineTest</h3>
+                  <p>
+                    Object-Oriented Methodology Project (August 2024)
+                    <br />• Implemented MVC architecture in Java • Developed
+                    robust online test-tracking system • Applied advanced OOP
+                    concepts: inheritance, polymorphism • Rigorous unit testing
+                    and debugging
+                  </p>
+                </div>
+
+                {/* Project 3 - Social Media Z */}
+                <div className={styles.project}>
+                  <div className={styles.projectImage}>
+                    <div className={styles.projectImageContent}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.7 21a2 2 0 0 1-3.4 0"></path>
+                      </svg>
+                      <span className={styles.projectImageLabel}>Social Media Platform</span>
+                    </div>
+                  </div>
+                  <h3>Social Media Z</h3>
+                  <p>
+                    Frontend Web Development Project (December 2023)
+                    <br />• Built social media simulation app • Used vanilla
+                    HTML, CSS, and JavaScript • Applied UX design principles •
+                    Conducted user experience surveys
+                  </p>
+                </div>
+
+                {/* Project 4 - Instagram Follower Analyzer */}
+                <div className={styles.project}>
+                  <div className={styles.projectImage}>
+                    <div className={styles.projectImageContent}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                      </svg>
+                      <span className={styles.projectImageLabel}>Instagram Analytics</span>
+                    </div>
+                  </div>
+                  <h3>Instagram Follower Analyzer</h3>
+                  <p>
+                    Web-based Instagram Analytics Tool (February 2024)
+                    <br />• Analyze who doesn't follow you back on Instagram •
+                    Convert of Python data analysis project to JavaScript •
+                    Process Instagram HTML files securely in the browser • Built
+                    with Next.js and React with responsive design
+                  </p>
+                  <Link
+                    href="/instagram-analyzer"
+                    className={styles.projectLink}
+                  >
+                    Try it Now
+                  </Link>
+                </div>
+              </div>
+            </section>
+
             {/* Contact Section */}
             <section id="contact" className={styles.contact}>
               <h2>Get In Touch</h2>
@@ -374,6 +493,11 @@ export default function Home() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
+                  <svg className={styles.socialIcon} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                    <rect x="2" y="9" width="4" height="12"></rect>
+                    <circle cx="4" cy="4" r="2"></circle>
+                  </svg>
                   LinkedIn
                 </a>
                 <a
@@ -381,6 +505,9 @@ export default function Home() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
+                  <svg className={styles.socialIcon} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                  </svg>
                   GitHub
                 </a>
                 <a
@@ -388,6 +515,11 @@ export default function Home() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
+                  <svg className={styles.socialIcon} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                  </svg>
                   Instagram
                 </a>
               </div>
