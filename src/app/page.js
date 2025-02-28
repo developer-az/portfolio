@@ -145,50 +145,208 @@ export default function Home() {
     };
   }, []);
 
-  // Setup animations for portfolio sections
   useEffect(() => {
     if (showPortfolio && portfolioContent.current) {
-      // Modify header animation to be less invasive
+      // Modify header animation to be more elegant
       const headerAnimation = gsap.timeline({
         scrollTrigger: {
           trigger: portfolioContent.current,
           start: "top top",
           end: "100 top",
-          scrub: 1, // Slower, smoother transition
+          scrub: 1,
         },
       });
-
+  
       if (header.current) {
         headerAnimation.to(header.current, {
-          backgroundColor: "rgba(18, 18, 18, 0.95)", // Dark with high opacity
-          boxShadow: "0 3px 10px rgba(0, 0, 0, 0.3)", // Stronger shadow for dark theme
+          backgroundColor: "rgba(18, 18, 18, 0.95)",
+          boxShadow: "0 3px 10px rgba(0, 0, 0, 0.3)",
+          backdropFilter: "blur(5px)",
         });
       }
-
-      // Modify section animations for better visibility
+  
+      // Get all sections for animations
       const sections = portfolioContent.current.querySelectorAll("section");
-      sections.forEach((section) => {
+      
+      // Enhanced animations for each section
+      sections.forEach((section, index) => {
+        // Fade in animation - with added refinement
         gsap.fromTo(
           section,
           {
-            y: 30, // Reduced vertical movement
-            opacity: 0.8, // Start with more visibility
+            y: 50, 
+            opacity: 0, 
+            scale: 0.98, 
           },
           {
             y: 0,
             opacity: 1,
+            scale: 1,
+            duration: 1.2,
             scrollTrigger: {
               trigger: section,
-              start: "top 85%", // Trigger slightly later
-              end: "bottom 15%", // End slightly earlier
-              scrub: 0.3, // Smoother scrubbing
+              start: "top 90%", 
+              end: "center 70%",
+              scrub: 0.5,
             },
           }
         );
+        
+        // Fade out animation when scrolling past
+        gsap.fromTo(
+          section,
+          {
+            opacity: 1,
+            y: 0,
+          },
+          {
+            opacity: 0.2, 
+            y: -30, 
+            scrollTrigger: {
+              trigger: section,
+              start: "top 10%", 
+              end: "top -50%", 
+              scrub: true,
+            },
+          }
+        );
+        
+        // Add different animations based on section type
+        if (section.id === "about") {
+          // Profile image with subtle parallax
+          const profileImage = section.querySelector(`.${styles.circleContainer}`);
+          if (profileImage) {
+            gsap.to(profileImage, {
+              y: -30, 
+              scrollTrigger: {
+                trigger: section,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1.5,
+              },
+            });
+          }
+          
+          // Skills with staggered animations
+          const skillsContainer = section.querySelector(`.${styles.skillsContainer}`);
+          if (skillsContainer) {
+            gsap.from(skillsContainer, {
+              y: 80,
+              opacity: 0,
+              scrollTrigger: {
+                trigger: skillsContainer,
+                start: "top 85%",
+                end: "top 60%",
+                scrub: 0.5,
+              },
+            });
+          }
+          
+          // Staggered animation for skill categories
+          const categories = section.querySelectorAll(`.${styles.skillsCategory}`);
+          categories.forEach((category, i) => {
+            gsap.from(category, {
+              x: i % 2 === 0 ? -20 : 20, 
+              opacity: 0,
+              delay: 0.1 * i,
+              scrollTrigger: {
+                trigger: category,
+                start: "top 85%",
+                end: "top 70%",
+                scrub: 0.3,
+              },
+            });
+          });
+        }
+        
+        // Project cards with staggered animations
+        if (section.id === "work") {
+          const projects = section.querySelectorAll(`.${styles.project}`);
+          projects.forEach((project, i) => {
+            gsap.from(project, {
+              y: 50,
+              opacity: 0,
+              delay: 0.1 * i,
+              scrollTrigger: {
+                trigger: project,
+                start: "top 85%",
+                end: "top 65%",
+                scrub: 0.5,
+              },
+            });
+            
+            // Add enhanced hover animation
+            project.addEventListener("mouseenter", () => {
+              gsap.to(project, {
+                y: -10,
+                scale: 1.02,
+                boxShadow: "0 20px 30px rgba(0, 0, 0, 0.2)",
+                duration: 0.3,
+              });
+            });
+            
+            project.addEventListener("mouseleave", () => {
+              gsap.to(project, {
+                y: 0,
+                scale: 1,
+                boxShadow: "0 5px 15px rgba(0, 0, 0, 0.2)",
+                duration: 0.3,
+              });
+            });
+          });
+        }
+        
+        // Contact section with slight parallax effect
+        if (section.id === "contact") {
+          const contactButton = section.querySelector(`.${styles.contactButton}`);
+          const socialLinks = section.querySelector(`.${styles.socialLinks}`);
+          
+          if (contactButton) {
+            gsap.from(contactButton, {
+              scale: 0.8,
+              opacity: 0,
+              scrollTrigger: {
+                trigger: contactButton,
+                start: "top 85%",
+                end: "top 70%",
+                scrub: 0.5,
+              },
+            });
+          }
+          
+          if (socialLinks) {
+            const links = socialLinks.querySelectorAll("a");
+            links.forEach((link, i) => {
+              gsap.from(link, {
+                x: (i - links.length / 2) * 20,
+                opacity: 0,
+                delay: 0.1 * i,
+                scrollTrigger: {
+                  trigger: socialLinks,
+                  start: "top 85%",
+                  end: "top 70%",
+                  scrub: 0.5,
+                },
+              });
+            });
+          }
+        }
+      });
+      
+      // Add a subtle background color shift as user scrolls
+      gsap.to(portfolioContent.current, {
+        backgroundColor: "rgba(15, 15, 15, 1)", 
+        scrollTrigger: {
+          trigger: portfolioContent.current,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: true,
+        },
       });
     }
   }, [showPortfolio]);
 
+  
   const [isHovered, setIsHovered] = useState(false);
   const { x, y } = useMousePosition();
   const size = isHovered ? 400 : 40;
@@ -324,40 +482,191 @@ export default function Home() {
             <section id="about" className={styles.about}>
               <h2>About Me</h2>
               <div className={styles.aboutContent}>
-                <div className={styles.aboutImage}>
-                  <div style={{ backgroundColor: 'white', borderRadius: '50%', display: 'inline-block' }}>
-                    <Image
-                      src="/images/img.jpg"
-                      alt="Anthony Zhou"
-                      width={450}
-                      height={450}
-                      className={styles.profilePicture}
-                      style={{ borderRadius: '50%', display: 'block' }} /* Added rounded image style */
-                    />
-                  </div>
-                </div>
-                <div className={styles.aboutText}>
-                  <p>
-                    Hi, I&apos;m Anthony Zhou, a passionate software engineer
-                    and web designer dedicated to creating innovative digital
-                    experiences.
-                  </p>
-                  <p>
-                    With a strong background in full-stack development and UI/UX
-                    design, I bring technical expertise and creative
-                    problem-solving to every project.
-                  </p>
-                  <div className={styles.skills}>
-                    <span>Python</span>
-                    <span>Java</span>
-                    <span>React</span>
-                    <span>Next.js</span>
-                    <span>UI/UX Design</span>
-                    <span>Javascript</span>
-                    <span>HTML</span>
-                    <span>CSS</span>
-                  </div>
-                </div>
+              <div className={styles.aboutImage}>
+  <div className={styles.circleContainer}>
+    <Image
+      src="/images/new-profile.png"
+      alt="Anthony Zhou"
+      width={300}
+      height={300}
+      className={styles.profilePicture}
+      style={{ 
+        objectFit: 'cover',
+        width: '100%',
+        height: '100%'
+      }}
+      priority
+    />
+  </div>
+</div>
+
+<div className={styles.aboutText}>
+  <p>
+    Hi, I&apos;m Anthony Zhou, a passionate software engineer
+    and web designer dedicated to creating innovative digital
+    experiences.
+  </p>
+  <p>
+    With a strong background in full-stack development and UI/UX
+    design, I bring technical expertise and creative
+    problem-solving to every project.
+  </p>
+  
+  {/* Updated Skills Container with Categories */}
+  <div className={styles.skillsContainer}>
+    <h3 className={styles.skillsTitle}>Technical Skills</h3>
+    
+    {/* Languages Category */}
+    <div className={styles.skillsCategory}>
+      <h4 className={styles.categoryTitle}>Programming Languages</h4>
+      <div className={styles.skills}>
+        {/* Python */}
+        <div className={styles.skillItem}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 9H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h3"></path>
+            <path d="M12 15h7a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3"></path>
+            <path d="M8 9V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2Z"></path>
+          </svg>
+          <span>Python</span>
+        </div>
+        
+        {/* Java */}
+        <div className={styles.skillItem}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 12a5 5 0 0 0 5 5 8 8 0 0 1 5 2 8 8 0 0 1 5-2 5 5 0 0 0 5-5V7.5a2.5 2.5 0 0 0-5 0V12a5 5 0 0 1-10 0Z"></path>
+          </svg>
+          <span>Java</span>
+        </div>
+        
+        {/* JavaScript */}
+        <div className={styles.skillItem}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M17.8 20A9 9 0 1 0 6.2 20"></path>
+            <path d="M12 13V2"></path>
+          </svg>
+          <span>JavaScript</span>
+        </div>
+
+        {/* C */}
+        <div className={styles.skillItem}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 8c0-2.2 1.8-4 4-4h12c2.2 0 4 1.8 4 4v8c0 2.2-1.8 4-4 4H6c-2.2 0-4-1.8-4-4Z"></path>
+            <path d="M9 11h.01"></path>
+            <path d="M14 11h.01"></path>
+          </svg>
+          <span>C</span>
+        </div>
+        
+        {/* HTML */}
+        <div className={styles.skillItem}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m13 4 1.5 9h-4L12 4"></path>
+            <path d="M8 15h8"></path>
+            <path d="M14 19v-3"></path>
+            <path d="M10 19v-3"></path>
+            <path d="M4 7V4h16v3"></path>
+            <path d="M4 7v13h16V7"></path>
+          </svg>
+          <span>HTML</span>
+        </div>
+        
+        {/* CSS */}
+        <div className={styles.skillItem}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 2l2 19 6 2 6-2 2-19Z"></path>
+            <path d="M7 8h10l-1 8-4 2-4-2-.5-4"></path>
+          </svg>
+          <span>CSS</span>
+        </div>
+      </div>
+    </div>
+    
+    {/* Frameworks Category */}
+    <div className={styles.skillsCategory}>
+      <h4 className={styles.categoryTitle}>Frameworks & Libraries</h4>
+      <div className={styles.skills}>
+        {/* React */}
+        <div className={styles.skillItem}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="2"></circle>
+            <path d="M12 6a9.77 9.77 0 0 1 8.82 5.5A9.77 9.77 0 0 1 12 17a9.77 9.77 0 0 1-8.82-5.5A9.77 9.77 0 0 1 12 6z"></path>
+          </svg>
+          <span>React</span>
+        </div>
+        
+        {/* Next.js */}
+        <div className={styles.skillItem}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 12h5"></path>
+            <path d="M2 12a10 10 0 1 0 20 0 10 10 0 0 0-20 0Z"></path>
+            <path d="M17 12h4"></path>
+          </svg>
+          <span>Next.js</span>
+        </div>
+        
+        {/* Data Science */}
+        <div className={styles.skillItem}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 3v18h18"></path>
+            <path d="m19 9-5 5-4-4-3 3"></path>
+          </svg>
+          <span>Data Science</span>
+        </div>
+      </div>
+    </div>
+    
+    {/* Methodologies Category */}
+    <div className={styles.skillsCategory}>
+      <h4 className={styles.categoryTitle}>Methodologies & Tools</h4>
+      <div className={styles.skills}>
+        {/* OOP */}
+        <div className={styles.skillItem}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 3h6v4l-2 2H3V3Z"></path>
+            <path d="M14 3h7v6h-7V3Z"></path>
+            <path d="M10 21V8L8 6"></path>
+            <path d="M17.5 15.5 19 19h-6l1.5-3.5"></path>
+            <path d="M14 3v4"></path>
+            <path d="M14 21h7v-6h-7v6Z"></path>
+          </svg>
+          <span>OOP</span>
+        </div>
+        
+        {/* Agile */}
+        <div className={styles.skillItem}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M17 6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
+            <path d="M10 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
+            <path d="M17 24a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
+            <path d="M10 18a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
+            <path d="M3 6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
+            <path d="M3 24a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
+          </svg>
+          <span>Agile/Scrum</span>
+        </div>
+        
+        {/* GitHub */}
+        <div className={styles.skillItem}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+          </svg>
+          <span>GitHub</span>
+        </div>
+        
+        {/* UI/UX */}
+        <div className={styles.skillItem}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+            <line x1="9" y1="9" x2="9.01" y2="9"></line>
+            <line x1="15" y1="9" x2="15.01" y2="9"></line>
+          </svg>
+          <span>UI/UX Design</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
               </div>
             </section>
 
