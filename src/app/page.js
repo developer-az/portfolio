@@ -55,7 +55,7 @@ export default function Home() {
         ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
       }
     };
-  }, []);
+  }, [showPortfolio]); // Added showPortfolio to dependencies
 
   // Add animations after portfolio is visible
   useEffect(() => {
