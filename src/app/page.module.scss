@@ -342,9 +342,13 @@
         
         @media (max-width: 992px) {
           width: 100%;
-          max-width: 300px;
+          max-width: 250px; // Reduced from 300px to 250px
         }
         
+        @media (max-width: 480px) {
+          max-width: 200px; // Even smaller on very small mobile devices
+        }
+      
         .profileImage {
           display: block;
           width: 100% !important;
