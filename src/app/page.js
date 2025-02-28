@@ -18,8 +18,6 @@ export default function Home() {
   // Refs for GSAP animations
   const header = useRef(null);
   const portfolioContent = useRef(null);
-  const mainWrapper = useRef(null);
-  const locomotiveScrollRef = useRef(null);
 
   useEffect(() => {
     // Initialize GSAP plugins
@@ -30,360 +28,96 @@ export default function Home() {
     // Fix for initial scroll position
     window.scrollTo(0, 0);
     
-    // Before starting, make sure body is prepared for the intro animation
+    // Hide overflow during intro
     if (!showPortfolio) {
       document.body.style.overflow = 'hidden';
     }
 
-    // Load locomotive scroll and run intro animations
-    (async () => {
-      try {
-        const LocomotiveScroll = (await import("locomotive-scroll")).default;
-        locomotiveScrollRef.current = new LocomotiveScroll();
-
+    // Simpler loading sequence
+    setTimeout(() => {
+      setIsLoading(false);
+      document.body.style.cursor = "default";
+      
+      setTimeout(() => {
+        setIsFadingOut(true);
+        
         setTimeout(() => {
-          setIsLoading(false);
-          document.body.style.cursor = "default";
-          
-          // After loading is complete, start fade-out first, then show portfolio
-          setTimeout(() => {
-            // Start fade-out animation
-            setIsFadingOut(true);
-            
-            // After fade-out completes, show portfolio
-            setTimeout(() => {
-              setShowPortfolio(true);
-              setIsFadingOut(false);
-
-              // Make sure the body is scrollable when portfolio is shown
-              document.body.style.overflow = "auto";
-              document.body.style.height = "auto";
-
-                              // Re-initialize locomotive scroll for the portfolio content
-              if (mainWrapper.current) {
-                if (locomotiveScrollRef.current) {
-                  locomotiveScrollRef.current.destroy();
-                }
-                
-                try {
-                  // Initialize Locomotive Scroll
-                  locomotiveScrollRef.current = new LocomotiveScroll({
-                    el: mainWrapper.current,
-                    smooth: true,
-                    smoothMobile: false,
-                    resetNativeScroll: true,
-                  });
-                  
-                  // For newer versions of Locomotive Scroll (v4+)
-                  if (locomotiveScrollRef.current.scroll && typeof locomotiveScrollRef.current.scroll.on === 'function') {
-                    locomotiveScrollRef.current.scroll.on("scroll", ScrollTrigger.update);
-                  } 
-                  // For older versions
-                  else if (typeof locomotiveScrollRef.current.on === 'function') {
-                    locomotiveScrollRef.current.on("scroll", ScrollTrigger.update);
-                  }
-                  
-                  // Alternative ScrollTrigger integration without relying on Locomotive events
-                  window.addEventListener('scroll', () => {
-                    ScrollTrigger.update();
-                  });
-                  
-                  // Simplified ScrollTrigger proxy
-                  ScrollTrigger.scrollerProxy(mainWrapper.current, {
-                    scrollTop(value) {
-                      if (arguments.length) {
-                        return 0;
-                      }
-                      return window.scrollY;
-                    },
-                    getBoundingClientRect() {
-                      return {
-                        top: 0,
-                        left: 0,
-                        width: window.innerWidth,
-                        height: window.innerHeight,
-                      };
-                    },
-                  });
-                } catch (err) {
-                  console.error("Locomotive scroll init error:", err);
-                  // Fallback to native scrolling if Locomotive fails
-                }
-              }
-            }, 1000); // Increased from 500ms to 1000ms to ensure fade completes
-          }, 2000); // Show intro for 2 seconds before starting fade
-        }, 2000);
-      } catch (error) {
-        console.error("Failed to initialize locomotive scroll:", error);
-        // Fallback if locomotive scroll fails
-        setIsLoading(false);
-        setShowPortfolio(true);
-        document.body.style.overflow = "auto";
-      }
-    })();
+          setShowPortfolio(true);
+          setIsFadingOut(false);
+          document.body.style.overflow = "auto";
+        }, 1000);
+      }, 2000);
+    }, 2000);
 
     // Cleanup
     return () => {
       if (typeof window !== "undefined") {
-        try {
-          if (locomotiveScrollRef.current) {
-            if (typeof locomotiveScrollRef.current.destroy === 'function') {
-              locomotiveScrollRef.current.destroy();
-            }
-            locomotiveScrollRef.current = null;
-          }
-          
-          // Remove scroll event listener
-          window.removeEventListener('scroll', ScrollTrigger.update);
-          
-          // Kill all ScrollTrigger instances
-          ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-        } catch (err) {
-          console.error("Cleanup error:", err);
-        }
+        ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
       }
     };
   }, []);
 
+  // Add animations after portfolio is visible
   useEffect(() => {
     if (showPortfolio && portfolioContent.current) {
-      // Modify header animation to be more elegant
-      const headerAnimation = gsap.timeline({
-        scrollTrigger: {
-          trigger: portfolioContent.current,
-          start: "top top",
-          end: "100 top",
-          scrub: 1,
-        },
-      });
-  
+      // Header animation
       if (header.current) {
-        headerAnimation.to(header.current, {
+        gsap.to(header.current, {
+          scrollTrigger: {
+            trigger: portfolioContent.current,
+            start: "top top",
+            end: "100 top",
+            scrub: 1,
+          },
           backgroundColor: "rgba(18, 18, 18, 0.95)",
           boxShadow: "0 3px 10px rgba(0, 0, 0, 0.3)",
-          backdropFilter: "blur(5px)",
         });
       }
-  
-      // Get all sections for animations
+
+      // Simple fade-in animations for sections
       const sections = portfolioContent.current.querySelectorAll("section");
-      
-      // Enhanced animations for each section
-      sections.forEach((section, index) => {
-        // Fade in animation - with added refinement
+      sections.forEach((section) => {
         gsap.fromTo(
           section,
-          {
-            y: 50, 
-            opacity: 0, 
-            scale: 0.98, 
-          },
+          { y: 30, opacity: 0 },
           {
             y: 0,
             opacity: 1,
-            scale: 1,
-            duration: 1.2,
+            duration: 0.8,
             scrollTrigger: {
               trigger: section,
-              start: "top 90%", 
-              end: "center 70%",
+              start: "top 80%",
+              end: "top 50%",
               scrub: 0.5,
             },
           }
         );
-        
-        // Fade out animation when scrolling past
-        gsap.fromTo(
-          section,
-          {
-            opacity: 1,
-            y: 0,
-          },
-          {
-            opacity: 0.2, 
-            y: -30, 
-            scrollTrigger: {
-              trigger: section,
-              start: "top 10%", 
-              end: "top -50%", 
-              scrub: true,
-            },
-          }
-        );
-        
-        // Add different animations based on section type
-        if (section.id === "about") {
-          // Profile image with subtle parallax
-          const profileImage = section.querySelector(`.${styles.circleContainer}`);
-          if (profileImage) {
-            gsap.to(profileImage, {
-              y: -30, 
-              scrollTrigger: {
-                trigger: section,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: 1.5,
-              },
-            });
-          }
-          
-          // Skills with staggered animations
-          const skillsContainer = section.querySelector(`.${styles.skillsContainer}`);
-          if (skillsContainer) {
-            gsap.from(skillsContainer, {
-              y: 80,
-              opacity: 0,
-              scrollTrigger: {
-                trigger: skillsContainer,
-                start: "top 85%",
-                end: "top 60%",
-                scrub: 0.5,
-              },
-            });
-          }
-          
-          // Staggered animation for skill categories
-          const categories = section.querySelectorAll(`.${styles.skillsCategory}`);
-          categories.forEach((category, i) => {
-            gsap.from(category, {
-              x: i % 2 === 0 ? -20 : 20, 
-              opacity: 0,
-              delay: 0.1 * i,
-              scrollTrigger: {
-                trigger: category,
-                start: "top 85%",
-                end: "top 70%",
-                scrub: 0.3,
-              },
-            });
-          });
-        }
-        
-        // Project cards with staggered animations
-        if (section.id === "work") {
-          const projects = section.querySelectorAll(`.${styles.project}`);
-          projects.forEach((project, i) => {
-            gsap.from(project, {
-              y: 50,
-              opacity: 0,
-              delay: 0.1 * i,
-              scrollTrigger: {
-                trigger: project,
-                start: "top 85%",
-                end: "top 65%",
-                scrub: 0.5,
-              },
-            });
-            
-            // Add enhanced hover animation
-            project.addEventListener("mouseenter", () => {
-              gsap.to(project, {
-                y: -10,
-                scale: 1.02,
-                boxShadow: "0 20px 30px rgba(0, 0, 0, 0.2)",
-                duration: 0.3,
-              });
-            });
-            
-            project.addEventListener("mouseleave", () => {
-              gsap.to(project, {
-                y: 0,
-                scale: 1,
-                boxShadow: "0 5px 15px rgba(0, 0, 0, 0.2)",
-                duration: 0.3,
-              });
-            });
-          });
-        }
-        
-        // Contact section with slight parallax effect
-        if (section.id === "contact") {
-          const contactButton = section.querySelector(`.${styles.contactButton}`);
-          const socialLinks = section.querySelector(`.${styles.socialLinks}`);
-          
-          if (contactButton) {
-            gsap.from(contactButton, {
-              scale: 0.8,
-              opacity: 0,
-              scrollTrigger: {
-                trigger: contactButton,
-                start: "top 85%",
-                end: "top 70%",
-                scrub: 0.5,
-              },
-            });
-          }
-          
-          if (socialLinks) {
-            const links = socialLinks.querySelectorAll("a");
-            links.forEach((link, i) => {
-              gsap.from(link, {
-                x: (i - links.length / 2) * 20,
-                opacity: 0,
-                delay: 0.1 * i,
-                scrollTrigger: {
-                  trigger: socialLinks,
-                  start: "top 85%",
-                  end: "top 70%",
-                  scrub: 0.5,
-                },
-              });
-            });
-          }
-        }
-      });
-      
-      // Add a subtle background color shift as user scrolls
-      gsap.to(portfolioContent.current, {
-        backgroundColor: "rgba(15, 15, 15, 1)", 
-        scrollTrigger: {
-          trigger: portfolioContent.current,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: true,
-        },
       });
     }
   }, [showPortfolio]);
 
-  
+  // Mouse tracking for intro effect
   const [isHovered, setIsHovered] = useState(false);
   const { x, y } = useMousePosition();
   const size = isHovered ? 400 : 40;
 
-  // Simple navigation component with matching style from the screenshot
+  // Simple navigation component
   const SimpleNav = () => (
     <div className={styles.nav}>
-      <a href="#about" className={styles.navLink}>
-        About
-      </a>
-      <a href="#work" className={styles.navLink}>
-        Work
-      </a>
-      <a href="#contact" className={styles.navLink}>
-        Contact
-      </a>
-      <Link href="/instagram-analyzer" className={styles.navLink}>
-        Instagram Analyzer
-      </Link>
+      <a href="#about" className={styles.navLink}>About</a>
+      <a href="#work" className={styles.navLink}>Work</a>
+      <a href="#contact" className={styles.navLink}>Contact</a>
+      <Link href="/instagram-analyzer" className={styles.navLink}>Instagram Analyzer</Link>
     </div>
   );
 
-  // Simple mobile menu
+  // Mobile menu
   const SimpleMobileMenu = () => (
-    <div
-      className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ""}`}
-    >
+    <div className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ""}`}>
       <div className={styles.mobileMenuContent}>
-        <a href="#about" onClick={() => setMobileMenuOpen(false)}>
-          About
-        </a>
-        <a href="#work" onClick={() => setMobileMenuOpen(false)}>
-          Work
-        </a>
-        <a href="#contact" onClick={() => setMobileMenuOpen(false)}>
-          Contact
-        </a>
+        <a href="#about" onClick={() => setMobileMenuOpen(false)}>About</a>
+        <a href="#work" onClick={() => setMobileMenuOpen(false)}>Work</a>
+        <a href="#contact" onClick={() => setMobileMenuOpen(false)}>Contact</a>
         <Link href="/instagram-analyzer" onClick={() => setMobileMenuOpen(false)}>
           Instagram Analyzer
         </Link>
@@ -392,7 +126,8 @@ export default function Home() {
   );
 
   return (
-    <div className={styles.mainWrapper} ref={mainWrapper}>
+    <div className={styles.mainWrapper}>
+      {/* Preloader Animation */}
       <AnimatePresence mode="wait">
         {isLoading && <Preloader />}
       </AnimatePresence>
@@ -478,205 +213,206 @@ export default function Home() {
 
           {/* Portfolio Content */}
           <div ref={portfolioContent} className={styles.portfolioContent}>
-            {/* Hero Section with About Me First */}
+            {/* About Me Section */}
             <section id="about" className={styles.about}>
               <h2>About Me</h2>
               <div className={styles.aboutContent}>
-              <div className={styles.aboutImage}>
-  <div className={styles.circleContainer}>
-    <Image
-      src="/images/new-profile.png"
-      alt="Anthony Zhou"
-      width={300}
-      height={300}
-      className={styles.profilePicture}
-      style={{ 
-        objectFit: 'cover',
-        width: '100%',
-        height: '100%'
-      }}
-      priority
-    />
-  </div>
-</div>
+                {/* Profile Photo in Oval Container */}
+                <div className={styles.profileContainer}>
+                  <Image
+                    src="/images/new-profile.png"
+                    alt="Anthony Zhou"
+                    width={400} 
+                    height={400}
+                    className={styles.profileImage}
+                    priority
+                  />
+                </div>
 
-<div className={styles.aboutText}>
-  <p>
-    Hi, I&apos;m Anthony Zhou, a passionate software engineer
-    and web designer dedicated to creating innovative digital
-    experiences.
-  </p>
-  <p>
-    With a strong background in full-stack development and UI/UX
-    design, I bring technical expertise and creative
-    problem-solving to every project.
-  </p>
-  
-  {/* Updated Skills Container with Categories */}
-  <div className={styles.skillsContainer}>
-    <h3 className={styles.skillsTitle}>Technical Skills</h3>
-    
-    {/* Languages Category */}
-    <div className={styles.skillsCategory}>
-      <h4 className={styles.categoryTitle}>Programming Languages</h4>
-      <div className={styles.skills}>
-        {/* Python */}
-        <div className={styles.skillItem}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 9H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h3"></path>
-            <path d="M12 15h7a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3"></path>
-            <path d="M8 9V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2Z"></path>
-          </svg>
-          <span>Python</span>
-        </div>
-        
-        {/* Java */}
-        <div className={styles.skillItem}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M2 12a5 5 0 0 0 5 5 8 8 0 0 1 5 2 8 8 0 0 1 5-2 5 5 0 0 0 5-5V7.5a2.5 2.5 0 0 0-5 0V12a5 5 0 0 1-10 0Z"></path>
-          </svg>
-          <span>Java</span>
-        </div>
-        
-        {/* JavaScript */}
-        <div className={styles.skillItem}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M17.8 20A9 9 0 1 0 6.2 20"></path>
-            <path d="M12 13V2"></path>
-          </svg>
-          <span>JavaScript</span>
-        </div>
+                {/* About Text and Resume Info */}
+                <div className={styles.aboutInfo}>
+                  <p>
+                    Hi, I&apos;m Anthony Zhou, a passionate software engineer and web designer dedicated to 
+                    creating innovative digital experiences.
+                  </p>
+                  <p>
+                    With a strong background in full-stack development and UI/UX design, I bring technical 
+                    expertise and creative problem-solving to every project.
+                  </p>
+                  
+                  {/* Education Section */}
+                  <div className={styles.resumeSection}>
+                    <h3><span className={styles.icon}>🎓</span> Education</h3>
+                    <div className={styles.educationInfo}>
+                      <div className={styles.schoolInfo}>
+                        <h4>University of Maryland</h4>
+                        <p className={styles.degree}>Bachelor of Science - Computer Science, Data Science Track</p>
+                        <p className={styles.minor}>Minor: Information Risk Management, Ethics, and Privacy</p>
+                        <p className={styles.location}>College Park, MD • Graduation: May 2027</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Technical Skills Section with Icons */}
+                  <div className={styles.resumeSection}>
+                    <h3><span className={styles.icon}>💻</span> Technical Skills</h3>
+                    <div className={styles.skillsContainer}>
+                      {/* Programming Languages */}
+                      <div className={styles.skillsCategory}>
+                        <h4 className={styles.categoryTitle}>Programming Languages</h4>
+                        <div className={styles.skills}>
+                          <div className={styles.skillItem}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M12 9H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h3"></path>
+                              <path d="M12 15h7a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3"></path>
+                              <path d="M8 9V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2Z"></path>
+                            </svg>
+                            <span>Python</span>
+                          </div>
+                          
+                          <div className={styles.skillItem}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M2 12a5 5 0 0 0 5 5 8 8 0 0 1 5 2 8 8 0 0 1 5-2 5 5 0 0 0 5-5V7.5a2.5 2.5 0 0 0-5 0V12a5 5 0 0 1-10 0Z"></path>
+                            </svg>
+                            <span>Java</span>
+                          </div>
+                          
+                          <div className={styles.skillItem}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M17.8 20A9 9 0 1 0 6.2 20"></path>
+                              <path d="M12 13V2"></path>
+                            </svg>
+                            <span>JavaScript</span>
+                          </div>
 
-        {/* C */}
-        <div className={styles.skillItem}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M2 8c0-2.2 1.8-4 4-4h12c2.2 0 4 1.8 4 4v8c0 2.2-1.8 4-4 4H6c-2.2 0-4-1.8-4-4Z"></path>
-            <path d="M9 11h.01"></path>
-            <path d="M14 11h.01"></path>
-          </svg>
-          <span>C</span>
-        </div>
-        
-        {/* HTML */}
-        <div className={styles.skillItem}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m13 4 1.5 9h-4L12 4"></path>
-            <path d="M8 15h8"></path>
-            <path d="M14 19v-3"></path>
-            <path d="M10 19v-3"></path>
-            <path d="M4 7V4h16v3"></path>
-            <path d="M4 7v13h16V7"></path>
-          </svg>
-          <span>HTML</span>
-        </div>
-        
-        {/* CSS */}
-        <div className={styles.skillItem}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 2l2 19 6 2 6-2 2-19Z"></path>
-            <path d="M7 8h10l-1 8-4 2-4-2-.5-4"></path>
-          </svg>
-          <span>CSS</span>
-        </div>
-      </div>
-    </div>
-    
-    {/* Frameworks Category */}
-    <div className={styles.skillsCategory}>
-      <h4 className={styles.categoryTitle}>Frameworks & Libraries</h4>
-      <div className={styles.skills}>
-        {/* React */}
-        <div className={styles.skillItem}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="2"></circle>
-            <path d="M12 6a9.77 9.77 0 0 1 8.82 5.5A9.77 9.77 0 0 1 12 17a9.77 9.77 0 0 1-8.82-5.5A9.77 9.77 0 0 1 12 6z"></path>
-          </svg>
-          <span>React</span>
-        </div>
-        
-        {/* Next.js */}
-        <div className={styles.skillItem}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M2 12h5"></path>
-            <path d="M2 12a10 10 0 1 0 20 0 10 10 0 0 0-20 0Z"></path>
-            <path d="M17 12h4"></path>
-          </svg>
-          <span>Next.js</span>
-        </div>
-        
-        {/* Data Science */}
-        <div className={styles.skillItem}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 3v18h18"></path>
-            <path d="m19 9-5 5-4-4-3 3"></path>
-          </svg>
-          <span>Data Science</span>
-        </div>
-      </div>
-    </div>
-    
-    {/* Methodologies Category */}
-    <div className={styles.skillsCategory}>
-      <h4 className={styles.categoryTitle}>Methodologies & Tools</h4>
-      <div className={styles.skills}>
-        {/* OOP */}
-        <div className={styles.skillItem}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 3h6v4l-2 2H3V3Z"></path>
-            <path d="M14 3h7v6h-7V3Z"></path>
-            <path d="M10 21V8L8 6"></path>
-            <path d="M17.5 15.5 19 19h-6l1.5-3.5"></path>
-            <path d="M14 3v4"></path>
-            <path d="M14 21h7v-6h-7v6Z"></path>
-          </svg>
-          <span>OOP</span>
-        </div>
-        
-        {/* Agile */}
-        <div className={styles.skillItem}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M17 6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
-            <path d="M10 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
-            <path d="M17 24a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
-            <path d="M10 18a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
-            <path d="M3 6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
-            <path d="M3 24a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
-          </svg>
-          <span>Agile/Scrum</span>
-        </div>
-        
-        {/* GitHub */}
-        <div className={styles.skillItem}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-          </svg>
-          <span>GitHub</span>
-        </div>
-        
-        {/* UI/UX */}
-        <div className={styles.skillItem}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
-            <line x1="9" y1="9" x2="9.01" y2="9"></line>
-            <line x1="15" y1="9" x2="15.01" y2="9"></line>
-          </svg>
-          <span>UI/UX Design</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+                          <div className={styles.skillItem}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M2 8c0-2.2 1.8-4 4-4h12c2.2 0 4 1.8 4 4v8c0 2.2-1.8 4-4 4H6c-2.2 0-4-1.8-4-4Z"></path>
+                              <path d="M9 11h.01"></path>
+                              <path d="M14 11h.01"></path>
+                            </svg>
+                            <span>C</span>
+                          </div>
+                          
+                          <div className={styles.skillItem}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="m13 4 1.5 9h-4L12 4"></path>
+                              <path d="M8 15h8"></path>
+                              <path d="M14 19v-3"></path>
+                              <path d="M10 19v-3"></path>
+                              <path d="M4 7V4h16v3"></path>
+                              <path d="M4 7v13h16V7"></path>
+                            </svg>
+                            <span>HTML</span>
+                          </div>
+                          
+                          <div className={styles.skillItem}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M4 2l2 19 6 2 6-2 2-19Z"></path>
+                              <path d="M7 8h10l-1 8-4 2-4-2-.5-4"></path>
+                            </svg>
+                            <span>CSS</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Frameworks */}
+                      <div className={styles.skillsCategory}>
+                        <h4 className={styles.categoryTitle}>Frameworks & Libraries</h4>
+                        <div className={styles.skills}>
+                          <div className={styles.skillItem}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="12" cy="12" r="2"></circle>
+                              <path d="M12 6a9.77 9.77 0 0 1 8.82 5.5A9.77 9.77 0 0 1 12 17a9.77 9.77 0 0 1-8.82-5.5A9.77 9.77 0 0 1 12 6z"></path>
+                            </svg>
+                            <span>React</span>
+                          </div>
+                          
+                          <div className={styles.skillItem}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M2 12h5"></path>
+                              <path d="M2 12a10 10 0 1 0 20 0 10 10 0 0 0-20 0Z"></path>
+                              <path d="M17 12h4"></path>
+                            </svg>
+                            <span>Next.js</span>
+                          </div>
+                          
+                          <div className={styles.skillItem}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M3 3v18h18"></path>
+                              <path d="m19 9-5 5-4-4-3 3"></path>
+                            </svg>
+                            <span>Data Science</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Methodologies */}
+                      <div className={styles.skillsCategory}>
+                        <h4 className={styles.categoryTitle}>Methodologies & Tools</h4>
+                        <div className={styles.skills}>
+                          <div className={styles.skillItem}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M3 3h6v4l-2 2H3V3Z"></path>
+                              <path d="M14 3h7v6h-7V3Z"></path>
+                              <path d="M10 21V8L8 6"></path>
+                              <path d="M17.5 15.5 19 19h-6l1.5-3.5"></path>
+                              <path d="M14 3v4"></path>
+                              <path d="M14 21h7v-6h-7v6Z"></path>
+                            </svg>
+                            <span>OOP</span>
+                          </div>
+                          
+                          <div className={styles.skillItem}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M17 6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
+                              <path d="M10 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
+                              <path d="M17 24a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
+                              <path d="M10 18a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
+                              <path d="M3 6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
+                              <path d="M3 24a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
+                            </svg>
+                            <span>Agile/Scrum</span>
+                          </div>
+                          
+                          <div className={styles.skillItem}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                            </svg>
+                            <span>GitHub</span>
+                          </div>
+                          
+                          <div className={styles.skillItem}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="12" cy="12" r="10"></circle>
+                              <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                              <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                              <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                            </svg>
+                            <span>UI/UX Design</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Work Experience Section */}
+                  <div className={styles.resumeSection}>
+                    <h3><span className={styles.icon}>💼</span> Work Experience</h3>
+                    <div className={styles.workContainer}>
+                      <div className={styles.workItem}>
+                        <h4>Undergraduate Teaching Assistant</h4>
+                        <p className={styles.workDetails}>Financial Literacy and Stocks (BSOS201)</p>
+                        <p className={styles.workLocation}>College Park, MD • August 2024 - Present</p>
+                        <ul className={styles.workResponsibilities}>
+                          <li>Supported students in grasping stock market trends, Technical Analysis, & Portfolio Management as a Grading & Teaching Assistant utilizing Excel</li>
+                          <li>Engineered the integration of financial modeling software & data visualization tools (TC2000 & IBD) for fall 2024 students, resulting in a +15% surge in personal portfolio performance compared to the previous year</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </section>
-
-            {/* Introduction Section - Reduced height */}
-            <section className={styles.hero} style={{ padding: '1.5rem 0' }}>
-              <h2>Software Engineer & Web Designer</h2>
-              <p>
-                I build engaging digital experiences that merge innovation with
-                aesthetics.
-              </p>
             </section>
 
             {/* Work Section */}
@@ -783,6 +519,20 @@ export default function Home() {
               </div>
             </section>
 
+            {/* Leadership Section */}
+            <section id="leadership" className={styles.leadership}>
+              <h2>Leadership & Community</h2>
+              <div className={styles.leadershipItem}>
+                <h3>Orientation Advisor</h3>
+                <p className={styles.leadershipDetails}>College of Computer, Mathematical, and Natural Sciences</p>
+                <p className={styles.leadershipLocation}>College Park, MD • May 2024 - January 2025</p>
+                <ul className={styles.leadershipResponsibilities}>
+                  <li>Facilitated the initial steps for incoming students at the university, offering guidance to over 200 individuals per session using resource guides</li>
+                  <li>Cultivated an inclusive & inviting environment to ensure a seamless transition for new students</li>
+                </ul>
+              </div>
+            </section>
+
             {/* Contact Section */}
             <section id="contact" className={styles.contact}>
               <h2>Get In Touch</h2>
@@ -791,7 +541,7 @@ export default function Home() {
                 amazing.
               </p>
               <a
-                href="mailto:88anthonyzhou@gmail.com"
+                href="mailto:azhou112@umd.edu"
                 className={styles.contactButton}
               >
                 Say Hello
@@ -831,6 +581,9 @@ export default function Home() {
                   </svg>
                   Instagram
                 </a>
+              </div>
+              <div className={styles.contactInfo}>
+                <p>Columbia, MD | <a href="tel:2403905571">(240) 390-5571</a> | <a href="mailto:azhou112@umd.edu">azhou112@umd.edu</a></p>
               </div>
             </section>
 

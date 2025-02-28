@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import styles from '../page.module.scss';
+import styles from './instagram-analyzer.module.scss'; // Using dedicated styles
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 

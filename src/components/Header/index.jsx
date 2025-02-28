@@ -1,61 +1,73 @@
-'use client';
-
+import React, { useState } from 'react'
 import styles from './style.module.scss';
-import { AnimatePresence } from 'framer-motion';
-import Nav from './nav';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Rounded from '../../common/RoundedButton';
-import Magnetic from '../../common/Magnetic';
+import { motion } from 'framer-motion';
+import { useEffect } from 'react';
+import { menuSlide } from '../animation';
+import Link from './Link';
+import Curve from './Curve';
+import Footer from './Footer';
+
+const navItems = [
+  {
+    title: "Home",
+    href: "/",
+  },
+  {
+    title: "Work",
+    href: "/work",
+  },
+  {
+    title: "About",
+    href: "/about",
+  },
+  {
+    title: "Contact",
+    href: "/contact",
+  },
+]
 
 export default function index() {
+  // Add missing state variable
+  const [selectedIndicator, setSelectedIndicator] = useState("/");
 
+  // Initialize selectedIndicator based on current path
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path) {
+      setSelectedIndicator(path);
+    }
+  }, []);
 
-
-
-
- 
-
-    return (
-        <>
-        <div ref={header} className={styles.header}>
-            <div className={styles.logo}>
-                <p className={styles.copyright}>©</p>
-                <div className={styles.name}>
-                    <p className={styles.codeBy}>Code by</p>
-                    <p className={styles.dennis}>Dennis</p>
-                    <p className={styles.snellenberg}>Snellenberg</p>
-                </div>
+  return (
+    <motion.div 
+      variants={menuSlide} 
+      initial="initial" 
+      animate="enter" 
+      exit="exit" 
+      className={styles.menu}
+      >
+       <div className={styles.body}>
+            <div 
+              onMouseLeave={() => { /* Optional: reset to current path */ }} 
+              className={styles.nav}
+            >
+                    <div className={styles.header}>
+                        <p>Navigation</p>
+                    </div>
+                    {
+                      navItems.map((data, index) => {
+                        return <Link 
+                        key={index} 
+                        data={{...data, index}} 
+                        isActive={selectedIndicator === data.href} 
+                        setSelectedIndicator={setSelectedIndicator}>
+                        </Link>
+                      })
+                    }
             </div>
-            <div className={styles.nav}>
-                <Magnetic>
-                    <div className={styles.el}>
-                        <a>Work</a>
-                        <div className={styles.indicator}></div>
-                    </div>
-                </Magnetic>
-                <Magnetic>
-                    <div className={styles.el}>
-                        <a>About</a>
-                        <div className={styles.indicator}></div>
-                    </div>
-                </Magnetic>
-                <Magnetic>
-                    <div className={styles.el}>
-                        <a>Contact</a>
-                        <div className={styles.indicator}></div>
-                    </div>
-                </Magnetic>
-            </div>
+            <Footer />
         </div>
-        <div ref={button} className={styles.headerButtonContainer}>
-            <Rounded onClick={() => {setIsActive(!isActive)}} className={`${styles.button}`}>
-                <div className={`${styles.burger} ${isActive ? styles.burgerActive : ""}`}></div>
-            </Rounded>
-        </div>
-        <AnimatePresence mode="wait">
-            {isActive && <Nav />}
-        </AnimatePresence>
-        </>
-    )
+        <Curve />
+    </motion.div>
+  )
 }
