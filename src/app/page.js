@@ -8,6 +8,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import Link from "next/link";
+import AnimatedBackground from '../components/AnimatedBackground';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -166,6 +167,7 @@ export default function Home() {
       {/* Portfolio Content */}
       {showPortfolio && (
         <div className={styles.portfolioWrapper}>
+          <AnimatedBackground /> 
           {/* Header */}
           <header ref={header} className={styles.header}>
             <div className={styles.headerContent}>
