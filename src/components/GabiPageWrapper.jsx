@@ -14,6 +14,10 @@ const GabiPageWrapper = () => {
   const [activeMemory, setActiveMemory] = useState(null);
   const canvasRef = useRef(null);
   
+  // Loading state
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
   // Timer state
   const [timeSince, setTimeSince] = useState({
     days: 0,
@@ -21,6 +25,15 @@ const GabiPageWrapper = () => {
     minutes: 0,
     seconds: 0
   });
+  
+  // Memory photos for loading screen
+  const memoryPhotos = [
+    "/memories/first-date.jpg",
+    "/memories/hike.jpg",
+    "/memories/rainy-day.jpg",
+    "/memories/beach.jpg",
+    "/memories/birthday.jpg"
+  ];
   
   // Memory data
   const memoryBoxes = [
@@ -63,7 +76,7 @@ const GabiPageWrapper = () => {
     {
       id: 5,
       x: 50,
-      y: 20,
+      y: 50,
       title: "Birthday Surprise",
       date: "October 30, 2023",
       image: "/memories/birthday.jpg",
@@ -71,7 +84,7 @@ const GabiPageWrapper = () => {
     }
   ];
 
-  // Check for previous authentication
+  // Authentication check
   useEffect(() => {
     // Skip password for development
     if (process.env.NODE_ENV === 'development') {
@@ -89,22 +102,18 @@ const GabiPageWrapper = () => {
     }
   }, []);
   
-  // State for loading screen
-  const [isLoading, setIsLoading] = useState(true);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  
-  // Memory photos for loading screen
-  const memoryPhotos = [
-    "/memories/first-date.jpg",
-    "/memories/hike.jpg",
-    "/memories/rainy-day.jpg",
-    "/memories/beach.jpg",
-    "/memories/birthday.jpg"
-  ];
+  // Preload images for loading screen
+  useEffect(() => {
+    // Preload all memory images to prevent display issues
+    memoryPhotos.forEach((photoUrl) => {
+      const img = new Image();
+      img.src = photoUrl;
+    });
+  }, []);
   
   // Handle loading screen and image shuffling
   useEffect(() => {
-    if (isLoading) {
+    if (isLoading && isAuthorized) {
       // Shuffle through images during loading
       const imageInterval = setInterval(() => {
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % memoryPhotos.length);
@@ -120,7 +129,7 @@ const GabiPageWrapper = () => {
         clearTimeout(loadingTimer);
       };
     }
-  }, [isLoading]);
+  }, [isLoading, isAuthorized, memoryPhotos.length]);
   
   // Calculate time since first meeting
   useEffect(() => {
@@ -148,7 +157,7 @@ const GabiPageWrapper = () => {
     // Clean up interval on unmount
     return () => clearInterval(interval);
   }, []);
-  
+
   // Handle login form submission
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -276,7 +285,7 @@ const GabiPageWrapper = () => {
   }
   
   // Show loading screen if still loading
-  if (isLoading && isAuthorized) {
+  if (isLoading) {
     return (
       <div style={{
         position: 'fixed',
@@ -284,7 +293,7 @@ const GabiPageWrapper = () => {
         left: 0,
         width: '100%',
         height: '100vh',
-        backgroundColor: '#fff',
+        backgroundColor: '#0f0f0f', // Dark background
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -297,35 +306,39 @@ const GabiPageWrapper = () => {
           height: '280px',
           borderRadius: '8px',
           overflow: 'hidden',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
           marginBottom: '20px'
         }}>
           {memoryPhotos.map((photo, index) => (
-            <div
+            <img
               key={index}
+              src={photo}
+              alt={`Memory ${index + 1}`}
               style={{
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 width: '100%',
                 height: '100%',
+                objectFit: 'cover',
                 opacity: index === currentImageIndex ? 1 : 0,
-                transition: 'opacity 0.8s ease-in-out',
-                backgroundImage: `url(${photo})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
+                transition: 'opacity 0.8s ease-in-out'
+              }}
+              onError={(e) => {
+                // Fallback if image doesn't load
+                e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280'%3E%3Crect width='280' height='280' fill='%23333'/%3E%3Ctext x='140' y='140' font-family='Arial' font-size='20' fill='white' text-anchor='middle' dominant-baseline='middle'%3ELoading...%3C/text%3E%3C/svg%3E";
               }}
             />
           ))}
         </div>
         <div style={{
           padding: '10px 20px',
-          backgroundColor: 'rgba(0, 0, 0, 0.05)',
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
           borderRadius: '20px'
         }}>
           <p style={{
             fontSize: '16px',
-            color: '#000',
+            color: '#fff',
             margin: 0,
             fontWeight: 'normal'
           }}>
@@ -336,14 +349,14 @@ const GabiPageWrapper = () => {
     );
   }
   
-  // Otherwise, show the memory island with white background
+  // Otherwise, show the memory island with black background
   return (
     <div style={{
       position: 'relative',
       width: '100%',
       height: '100vh',
       overflow: 'hidden',
-      backgroundColor: '#fff', // Changed to white
+      backgroundColor: '#0f0f0f', // Dark background
       fontFamily: 'Avant Garde Book BT, sans-serif'
     }}>
       {/* "Time Since We First Met" Timer */}
@@ -353,16 +366,16 @@ const GabiPageWrapper = () => {
         left: 0,
         width: '100%',
         textAlign: 'center',
-        color: '#000', // Black text
-        zIndex: 10,
+        color: '#fff', // White text
+        zIndex: 20, // Increased z-index to ensure it stays on top
         pointerEvents: 'none'
       }}>
         <div style={{
           display: 'inline-block',
           padding: '15px 20px',
-          backgroundColor: 'rgba(0, 0, 0, 0.05)',
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
           borderRadius: '10px',
-          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
+          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)'
         }}>
           <h3 style={{ 
             margin: '0 0 10px 0', 
@@ -413,12 +426,12 @@ const GabiPageWrapper = () => {
         }}
         onClick={handleCanvasClick}
       >
-        {/* White minimal background */}
+        {/* Dark background */}
         <div style={{
           position: 'relative',
           width: '100%',
           height: '100%',
-          background: '#fff', // White background
+          backgroundColor: '#0f0f0f',
           overflow: 'hidden'
         }}>
           {/* Create subtle grid lines for the empty world */}
@@ -442,7 +455,7 @@ const GabiPageWrapper = () => {
                 y1={`${(i+1) * 10}%`} 
                 x2="100%" 
                 y2={`${(i+1) * 10}%`} 
-                stroke="rgba(0, 0, 0, 0.03)" 
+                stroke="rgba(255, 255, 255, 0.03)" 
                 strokeWidth="1"
               />
             ))}
@@ -455,13 +468,13 @@ const GabiPageWrapper = () => {
                 y1="0" 
                 x2={`${(i+1) * 10}%`} 
                 y2="100%" 
-                stroke="rgba(0, 0, 0, 0.03)" 
+                stroke="rgba(255, 255, 255, 0.03)" 
                 strokeWidth="1"
               />
             ))}
           </svg>
           
-          {/* Memory boxes (roses) */}
+          {/* Memory boxes (roses) - positioned to avoid timer conflict */}
           {memoryBoxes.map((box) => (
             <div 
               key={box.id}
@@ -482,12 +495,12 @@ const GabiPageWrapper = () => {
             >
               {/* "Tap Here" text */}
               <div style={{
-                color: 'rgba(0, 0, 0, 0.7)', // Changed to black
+                color: 'rgba(255, 255, 255, 0.7)', // White text
                 fontSize: '12px',
                 marginBottom: '8px',
                 fontWeight: 'bold',
                 letterSpacing: '0.5px',
-                background: 'rgba(0, 0, 0, 0.05)', // Light gray background
+                background: 'rgba(255, 255, 255, 0.1)', // Dark background
                 padding: '2px 6px',
                 borderRadius: '8px'
               }}>
@@ -499,14 +512,14 @@ const GabiPageWrapper = () => {
                 position: 'relative',
                 animation: 'float 3s ease-in-out infinite',
                 fontSize: '28px',
-                filter: 'drop-shadow(0 0 8px rgba(0, 0, 0, 0.1))' // Subtle shadow
+                filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.2))' // Enhanced glow
               }}>
                 🌹
               </div>
             </div>
           ))}
           
-          {/* Player dot with "Gabi" text above - now BLACK */}
+          {/* Player dot with "Gabi" text above - WHITE */}
           <motion.div 
             style={{
               position: 'absolute',
@@ -530,7 +543,7 @@ const GabiPageWrapper = () => {
           >
             {/* "Gabi" text */}
             <div style={{
-              color: 'black', // Changed to black
+              color: 'white', // White text
               fontSize: '14px',
               fontWeight: 'bold',
               marginBottom: '5px'
@@ -538,13 +551,13 @@ const GabiPageWrapper = () => {
               GABI
             </div>
             
-            {/* The dot - now BLACK */}
+            {/* The dot - WHITE */}
             <div style={{
               width: '16px',
               height: '16px',
-              backgroundColor: 'black', // Changed to black
+              backgroundColor: 'white', // White dot
               borderRadius: '50%',
-              boxShadow: '0 0 10px 2px rgba(0, 0, 0, 0.1)', // Subtle shadow
+              boxShadow: '0 0 10px 2px rgba(255, 255, 255, 0.3)', // Enhanced glow
               animation: 'pulse 2s infinite'
             }}></div>
           </motion.div>
@@ -556,7 +569,7 @@ const GabiPageWrapper = () => {
             left: 0,
             width: '100%',
             textAlign: 'center',
-            color: 'rgba(0, 0, 0, 0.7)', // Changed to black
+            color: 'rgba(255, 255, 255, 0.7)', // White text
             fontSize: '14px',
             zIndex: 2,
             pointerEvents: 'none'
@@ -564,7 +577,7 @@ const GabiPageWrapper = () => {
             <p style={{
               margin: 0,
               padding: '6px 12px',
-              background: 'rgba(0, 0, 0, 0.05)', // Light gray background
+              background: 'rgba(255, 255, 255, 0.1)', // Dark background
               borderRadius: '10px',
               display: 'inline-block'
             }}>
@@ -582,7 +595,7 @@ const GabiPageWrapper = () => {
           left: 0,
           width: '100%',
           height: '100%',
-          backgroundColor: 'rgba(255, 255, 255, 0.95)', // Changed to white
+          backgroundColor: 'rgba(0, 0, 0, 0.95)', // Dark overlay
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -593,11 +606,11 @@ const GabiPageWrapper = () => {
             width: '90%',
             maxWidth: '600px',
             padding: '30px',
-            backgroundColor: 'white', // Changed to white
-            border: '1px solid rgba(0, 0, 0, 0.1)', // Changed to black
+            backgroundColor: '#0f0f0f', // Dark background
+            border: '1px solid rgba(255, 255, 255, 0.1)', // White border
             borderRadius: '10px',
-            color: 'black', // Changed to black
-            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)', // Lighter shadow
+            color: 'white', // White text
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)', // Dark shadow
             overflow: 'hidden'
           }}>
             <button 
@@ -610,7 +623,7 @@ const GabiPageWrapper = () => {
                 height: '30px',
                 background: 'transparent',
                 border: 'none',
-                color: 'rgba(0, 0, 0, 0.6)', // Changed to black
+                color: 'rgba(255, 255, 255, 0.6)', // White text
                 fontSize: '20px',
                 cursor: 'pointer',
                 zIndex: 10
@@ -622,7 +635,7 @@ const GabiPageWrapper = () => {
             <h2 style={{
               margin: '0 0 5px 0',
               fontSize: '24px',
-              color: 'black', // Changed to black
+              color: 'white', // White text
               fontWeight: 'normal'
             }}>
               {activeMemory.title}
@@ -631,7 +644,7 @@ const GabiPageWrapper = () => {
             <p style={{
               margin: '0 0 20px 0',
               fontSize: '14px',
-              color: 'rgba(0, 0, 0, 0.6)' // Changed to black
+              color: 'rgba(255, 255, 255, 0.6)' // White text
             }}>
               {activeMemory.date}
             </p>
@@ -642,7 +655,7 @@ const GabiPageWrapper = () => {
               marginBottom: '20px',
               overflow: 'hidden',
               borderRadius: '5px',
-              backgroundColor: '#f5f5f5', // Changed to light gray
+              backgroundColor: '#1a1a1a', // Dark background
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center'
@@ -654,7 +667,7 @@ const GabiPageWrapper = () => {
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
-                  filter: 'none', // Removed grayscale filter
+                  filter: 'none',
                   transition: 'filter 0.5s ease'
                 }}
                 onError={(e) => {
@@ -668,7 +681,7 @@ const GabiPageWrapper = () => {
               margin: '0 0 25px 0',
               fontSize: '16px',
               lineHeight: 1.6,
-              color: 'rgba(0, 0, 0, 0.8)' // Changed to black
+              color: 'rgba(255, 255, 255, 0.8)' // White text
             }}>
               {activeMemory.description}
             </p>
@@ -678,10 +691,10 @@ const GabiPageWrapper = () => {
               style={{
                 display: 'inline-block',
                 padding: '10px 20px',
-                backgroundColor: 'black', // Changed to black
+                backgroundColor: 'white', // White background
                 border: 'none',
                 borderRadius: '5px',
-                color: 'white',
+                color: 'black', // Black text
                 fontSize: '16px',
                 cursor: 'pointer'
               }}
@@ -696,23 +709,23 @@ const GabiPageWrapper = () => {
         @keyframes glow {
           from {
             opacity: 0.5;
-            box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.1);
           }
           to {
             opacity: 1;
-            box-shadow: 0 0 20px 5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.2);
           }
         }
         
         @keyframes pulse {
           0% {
-            box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
           }
           70% {
-            box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+            box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
           }
           100% {
-            box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
           }
         }
         
