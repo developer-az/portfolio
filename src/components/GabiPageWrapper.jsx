@@ -42,7 +42,7 @@ const GabiPageWrapper = () => {
       x: 20,
       y: 30,
       title: "First Date",
-      date: "April 15, 2023",
+      date: "April 15, 2024",
       image: "/memories/first-date.jpg",
       description: "We met at the coffee shop downtown. I was nervous, you were beautiful. I knew something special was beginning when you laughed at my terrible joke about the barista's mustache."
     },
@@ -162,11 +162,11 @@ const GabiPageWrapper = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    if (password.toLowerCase() === 'iloveyougabi') {
+    if (password.toLowerCase() === 'tiktok') {
       setIsAuthorized(true);
       localStorage.setItem('gabiLastVisit', new Date().getTime().toString());
     } else {
-      setError('That\'s not quite right. Try again?');
+      setError('?');
     }
   };
   
