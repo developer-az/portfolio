@@ -1,0 +1,353 @@
+.profileSection {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 80px 0;
+  overflow: hidden;
+  
+  .container {
+    width: 90%;
+    max-width: 1400px;
+    margin: 0 auto;
+    z-index: 2;
+  }
+  
+  .cardWrapper {
+    position: relative;
+    perspective: 1000px;
+  }
+  
+  .card {
+    width: 100%;
+    background: rgba(26, 26, 26, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 
+      0 10px 30px rgba(0, 0, 0, 0.3),
+      0 1px 1px rgba(255, 255, 255, 0.05) inset;
+    position: relative;
+    transform-style: preserve-3d;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.05) 25%,
+        rgba(255, 255, 255, 0) 50%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+  }
+  
+  .cardContent {
+    display: flex;
+    padding: 60px;
+    position: relative;
+    z-index: 2;
+    
+    @media (max-width: 992px) {
+      flex-direction: column;
+      padding: 40px;
+    }
+    
+    @media (max-width: 576px) {
+      padding: 30px 20px;
+    }
+  }
+  
+  .imageCol {
+    flex: 0 0 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    perspective: 1000px;
+    
+    @media (max-width: 992px) {
+      margin-bottom: 40px;
+    }
+  }
+  
+ /* Add this to your ProfileSection.module.scss file */
+
+/* Find the .imageContainer class and modify it to have an oval shape */
+.imageContainer {
+  width: 320px;
+  height: 400px; /* Increased height to create oval shape */
+  border-radius: 50% / 40%; /* Creates oval shape - adjust the second percentage to change the "ovalness" */
+  overflow: hidden;
+  position: relative;
+  transform-style: preserve-3d;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    0 0 0 8px rgba(250, 33, 4, 0.1);
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50% / 40%; /* Match the container's border-radius */
+    background: linear-gradient(
+      135deg,
+      rgba(250, 33, 4, 0.2) 0%,
+      rgba(250, 33, 4, 0) 40%,
+      rgba(0, 0, 0, 0.1) 100%
+    );
+    z-index: 2;
+    pointer-events: none;
+  }
+  
+  @media (max-width: 576px) {
+    width: 260px;
+    height: 340px; /* Maintain oval proportion at smaller size */
+  }
+}
+
+/* You may also need to adjust the image within to ensure proper fit */
+.profileImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top; /* This helps focus on the face */
+  transform: scale(1.05);
+}
+  
+  // Floating elements for 3D effect
+  .floatingElement {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(250, 33, 4, 0.2);
+    filter: blur(10px);
+    z-index: -1;
+    animation: float 6s infinite ease-in-out;
+    
+    &.element1 {
+      width: 80px;
+      height: 80px;
+      top: 10%;
+      right: -20px;
+      animation-delay: 0s;
+    }
+    
+    &.element2 {
+      width: 60px;
+      height: 60px;
+      bottom: 10%;
+      left: -15px;
+      animation-delay: 1s;
+      background: rgba(68, 107, 255, 0.2);
+    }
+    
+    &.element3 {
+      width: 40px;
+      height: 40px;
+      bottom: -10px;
+      right: 30%;
+      animation-delay: 2s;
+      background: rgba(255, 204, 0, 0.2);
+    }
+  }
+  
+  .infoCol {
+    flex: 0 0 60%;
+    padding-left: 60px;
+    
+    @media (max-width: 992px) {
+      padding-left: 0;
+    }
+  }
+  
+  .name {
+    margin: 0 0 8px 0;
+    font-size: 48px;
+    font-weight: 700;
+    color: #f5f5f5;
+    line-height: 1.1;
+    
+    @media (max-width: 768px) {
+      font-size: 40px;
+    }
+    
+    @media (max-width: 576px) {
+      font-size: 32px;
+    }
+  }
+  
+  .title {
+    margin: 0 0 24px 0;
+    font-size: 24px;
+    font-weight: 400;
+    color: #b0b0b0;
+    display: flex;
+    align-items: center;
+    
+    &::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 2px;
+      background: #fa2104;
+      margin-left: 16px;
+    }
+    
+    @media (max-width: 576px) {
+      font-size: 20px;
+    }
+  }
+  
+  .tagline {
+    margin-bottom: 24px;
+    display: inline-block;
+    
+    .taglineText {
+      display: inline-block;
+      padding: 8px 16px;
+      background: rgba(250, 33, 4, 0.1);
+      border-left: 3px solid #fa2104;
+      font-weight: 500;
+      color: #fa2104;
+      font-size: 16px;
+    }
+  }
+  
+  .bio {
+    margin: 0 0 30px 0;
+    font-size: 16px;
+    line-height: 1.7;
+    color: #e0e0e0;
+    max-width: 600px;
+  }
+  
+  .statRow {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 40px;
+    
+    @media (max-width: 576px) {
+      gap: 20px;
+    }
+  }
+  
+  .stat {
+    display: flex;
+    flex-direction: column;
+    
+    .statNumber {
+      font-size: 36px;
+      font-weight: 700;
+      color: #fa2104;
+      margin-bottom: 4px;
+      
+      @media (max-width: 576px) {
+        font-size: 28px;
+      }
+    }
+    
+    .statLabel {
+      font-size: 14px;
+      color: #b0b0b0;
+      white-space: nowrap;
+    }
+  }
+  
+  .buttons {
+    display: flex;
+    gap: 16px;
+    
+    @media (max-width: 576px) {
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+  
+  .button {
+    display: inline-block;
+    padding: 12px 28px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    
+    &.primaryButton {
+      background: #fa2104;
+      color: white;
+      box-shadow: 0 4px 12px rgba(250, 33, 4, 0.3);
+      
+      &:hover {
+        background: lighten(#fa2104, 5%);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(250, 33, 4, 0.4);
+      }
+    }
+    
+    &.secondaryButton {
+      background: transparent;
+      color: #e0e0e0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-3px);
+      }
+    }
+  }
+  
+  // Decorative elements
+  .decorativeGrid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: 0;
+    pointer-events: none;
+  }
+  
+  .decorativeBlur {
+    position: absolute;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(
+      circle at center,
+      rgba(250, 33, 4, 0.1) 0%,
+      rgba(250, 33, 4, 0) 70%
+    );
+    filter: blur(60px);
+    z-index: 0;
+    pointer-events: none;
+  }
+}
+
+// Keyframes
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
