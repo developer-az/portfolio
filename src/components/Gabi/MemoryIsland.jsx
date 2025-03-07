@@ -39,6 +39,23 @@ const MemoryIsland = ({ memoryBoxes, timeSince }) => {
     }
   };
 
+  // Handle memory box click (for direct clicking on roses)
+  const handleMemoryBoxClick = (memory, e) => {
+    e.stopPropagation(); // Prevent triggering canvas click
+    setPosition({ x: memory.x, y: memory.y });
+    
+    // Open memory after a short delay
+    setTimeout(() => {
+      setActiveMemory(memory);
+    }, 500);
+  };
+
+  // Handle clicks on "TAP HERE" text too
+  const handleTapHereClick = (memory, e) => {
+    e.stopPropagation(); // Prevent triggering canvas click
+    handleMemoryBoxClick(memory, e);
+  };
+
   // Close memory view
   const closeMemory = () => {
     setActiveMemory(null);
@@ -61,6 +78,7 @@ const MemoryIsland = ({ memoryBoxes, timeSince }) => {
         ref={canvasRef}
         className={styles.canvas}
         onClick={handleCanvasClick}
+        style={{ height: '100vh', maxHeight: '100vh' }} // Ensure it fits in viewport
       >
         {/* Improved calm background */}
         <div className={styles.background}>
@@ -132,6 +150,7 @@ const MemoryIsland = ({ memoryBoxes, timeSince }) => {
               style={{
                 left: `${box.x}%`,
                 top: `${box.y}%`,
+                cursor: 'pointer' // Make cursor a pointer to indicate clickability
               }}
               initial={{ scale: 0, opacity: 0 }}
               animate={{ 
@@ -146,12 +165,14 @@ const MemoryIsland = ({ memoryBoxes, timeSince }) => {
                 y: { repeat: Infinity, duration: 3, ease: "easeInOut" },
                 rotateY: { repeat: Infinity, duration: 7, ease: "easeInOut" }
               }}
+              onClick={(e) => handleMemoryBoxClick(box, e)} // Handle click directly on the memory box
             >
               {/* "Tap Here" text */}
               <motion.div 
                 className={styles.tapHere}
                 whileHover={{ y: -3, scale: 1.1 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                onClick={(e) => handleTapHereClick(box, e)} // Also handle click on "Tap Here" text
               >
                 TAP HERE
               </motion.div>
@@ -213,16 +234,16 @@ const MemoryIsland = ({ memoryBoxes, timeSince }) => {
           {/* Instructions */}
           <motion.div 
             className={styles.instructionsContainer}
-            initial={{ y: 50, opacity: 0 }}
+            initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 1, duration: 0.8 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
           >
             <motion.p 
               className={styles.instructions}
               animate={{ y: [0, -5, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             >
-              Click anywhere to move Gabi. Find roses 🌹 to discover our memories.
+              Click anywhere to move Gabi. Click on roses 🌹 to discover our memories.
             </motion.p>
           </motion.div>
         </div>
