@@ -2,16 +2,12 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import MemoryViewer from './MemoryViewer';
 import styles from './MemoryIsland.module.scss';
+import FlipCardTimer from './FlipCardTimer';
 
 const MemoryIsland = ({ memoryBoxes, timeSince }) => {
   const [position, setPosition] = useState({ x: 50, y: 80 });
   const [activeMemory, setActiveMemory] = useState(null);
   const canvasRef = useRef(null);
-  
-  // Format time unit with leading zero if needed
-  const formatTimeUnit = (unit) => {
-    return unit.toString().padStart(2, '0');
-  };
   
   // Handle canvas click for movement
   const handleCanvasClick = (e) => {
@@ -58,43 +54,8 @@ const MemoryIsland = ({ memoryBoxes, timeSince }) => {
   
   return (
     <div className={styles.memoryIsland}>
-      {/* "Time Since We First Met" Timer */}
-      <motion.div 
-        className={styles.timerContainer}
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
-      >
-        <motion.div 
-          className={styles.timerCard}
-          whileHover={{ scale: 1.05, rotateX: 5 }}
-        >
-          <h3 className={styles.timerTitle}>
-            Time Since We First Met
-          </h3>
-          <div className={styles.timerDigits}>
-            <div className={styles.timeUnit}>
-              <span className={styles.digits}>{formatTimeUnit(timeSince.days)}</span>
-              <span className={styles.label}>Days</span>
-            </div>
-            <div className={styles.separator}>:</div>
-            <div className={styles.timeUnit}>
-              <span className={styles.digits}>{formatTimeUnit(timeSince.hours)}</span>
-              <span className={styles.label}>Hours</span>
-            </div>
-            <div className={styles.separator}>:</div>
-            <div className={styles.timeUnit}>
-              <span className={styles.digits}>{formatTimeUnit(timeSince.minutes)}</span>
-              <span className={styles.label}>Minutes</span>
-            </div>
-            <div className={styles.separator}>:</div>
-            <div className={styles.timeUnit}>
-              <span className={styles.digits}>{formatTimeUnit(timeSince.seconds)}</span>
-              <span className={styles.label}>Seconds</span>
-            </div>
-          </div>
-        </motion.div>
-      </motion.div>
+      {/* "Time Since We First Met" Flipcard Timer */}
+      <FlipCardTimer timeSince={timeSince} />
       
       <div 
         ref={canvasRef}
