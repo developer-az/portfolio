@@ -1,18 +1,20 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
-// Import split components - FIXED PATHS
+// Import split components
 import PolaroidLoadingScreen from './PolaroidLoadingScreen';
 import MemoryIsland from './MemoryIsland';
 import AuthScreen from './AuthScreen';
-import MemoryViewer from './MemoryViewer';
+import MissYouScreen from './MissYouScreen';
 
 const GabiPageWrapper = () => {
   // Authentication state
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  
+  // Phase state: "polaroid" -> "missyou" -> "memoryisland"
+  const [showPhase, setShowPhase] = useState("polaroid");
   
   // Timer state
   const [timeSince, setTimeSince] = useState({
@@ -22,52 +24,52 @@ const GabiPageWrapper = () => {
     seconds: 0
   });
   
-  // Memory data
-  const memoryBoxes = [
+  // Custom memory data with your specific images
+  const customMemories = [
     {
       id: 1,
       x: 20,
       y: 30,
-      title: "First Date",
-      date: "April 15, 2024",
-      image: "/memories/first-date.jpg",
-      description: "We met at the coffee shop downtown. I was nervous, you were beautiful. I knew something special was beginning when you laughed at my terrible joke about the barista's mustache."
+      title: "Mirror Selfie",
+      date: "January 4, 2025",
+      image: "/memories/image1.jpg", // First mirror selfie
+      description: "Taking mirror selfies together with the digital camera."
     },
     {
       id: 2,
       x: 70,
       y: 40,
-      title: "Sunset Hike",
-      date: "June 22, 2023",
-      image: "/memories/hike.jpg",
-      description: "We hiked up to Eagle Point just before sunset. The view was breathtaking, but not as breathtaking as watching the golden light illuminate your face. We talked about our dreams until the stars came out."
+      title: "Dorm Hallway",
+      date: "January 9, 2025",
+      image: "/memories/image2.jpg", // Second hallway selfie
+      description: "Taking photos together in the dorm hallway."
     },
     {
       id: 3,
       x: 30,
       y: 65,
-      title: "Rainy Day",
-      date: "September 5, 2023",
-      image: "/memories/rainy-day.jpg",
-      description: "It poured all day. We built a fort in the living room, made hot chocolate, and read to each other from our favorite books. I never knew staying in could feel like such an adventure."
+      title: "Shopping Together",
+      date: "January 9, 2025",
+      image: "/memories/image3.jpg", // Third shopping image
+      description: "Shopping for clothes and trying on new outfits together."
     },
     {
       id: 4,
       x: 65,
       y: 75,
-      title: "Beach Trip",
-      date: "August 12, 2023",
-      image: "/memories/beach.jpg",
-      description: "Our weekend getaway to the coast. You collected seashells while I tried (and failed) to surf. We stayed up all night talking by the bonfire, wrapped in blankets, planning our future adventures."
+      title: "First Date",
+      date: "January 7, 2025",
+      image: "/memories/image1.jpg", // Using first image again as placeholder
+      description: "Our first date when we went out for coffee and talked for hours."
     },
     {
       id: 5,
       x: 50,
       y: 50,
-      title: "Birthday Surprise",
-      date: "October 30, 2023",
-      image: "/memories/birthday.jpg",
-      description: "I spent weeks planning your surprise party. The look on your face when everyone jumped out was priceless. You told me later it was the most special birthday you'd ever had."
+      title: "Study Session",
+      date: "January 8, 2025",
+      image: "/memories/image2.jpg", // Using second image again as placeholder
+      description: "Studying together in the library until closing time."
     }
   ];
 
@@ -89,15 +91,24 @@ const GabiPageWrapper = () => {
     }
   }, []);
   
-  // Simulated loading for Polaroid effect
+  // Phase transitions - first show Polaroid, then "I miss you", then Memory Island
   useEffect(() => {
     if (isAuthorized) {
-      // Simulate loading time for Polaroid developing effect
-      const loadingTimer = setTimeout(() => {
-        setIsLoading(false);
-      }, 6000);
+      // First show the Polaroid slideshow for 10 seconds
+      const polaroidTimer = setTimeout(() => {
+        console.log("Switching to 'I miss you' phase");
+        setShowPhase("missyou");
+        
+        // Then show the "I miss you" screen for 3 seconds
+        const missYouTimer = setTimeout(() => {
+          console.log("Switching to Memory Island phase");
+          setShowPhase("memoryisland");
+        }, 2000);
+        
+        return () => clearTimeout(missYouTimer);
+      }, 10000);
       
-      return () => clearTimeout(loadingTimer);
+      return () => clearTimeout(polaroidTimer);
     }
   }, [isAuthorized]);
   
@@ -128,6 +139,18 @@ const GabiPageWrapper = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Debug logging to check image paths
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Custom memories being used:', customMemories);
+      console.log('Image paths:');
+      customMemories.forEach(memory => {
+        console.log(`- ${memory.title}: ${memory.image}`);
+      });
+      console.log('Current phase:', showPhase);
+    }
+  }, [showPhase]);
+
   return (
     <>
       {/* Authentication Screen */}
@@ -135,14 +158,19 @@ const GabiPageWrapper = () => {
         <AuthScreen setIsAuthorized={setIsAuthorized} />
       )}
       
-      {/* Polaroid Loading Screen */}
-      {isAuthorized && isLoading && (
-        <PolaroidLoadingScreen memories={memoryBoxes} />
+      {/* Polaroid Loading Screen - first phase after authorization */}
+      {isAuthorized && showPhase === "polaroid" && (
+        <PolaroidLoadingScreen memories={customMemories} />
       )}
       
-      {/* Main Memory Island */}
-      {isAuthorized && !isLoading && (
-        <MemoryIsland memoryBoxes={memoryBoxes} timeSince={timeSince} />
+      {/* "I miss you" Screen - second phase */}
+      {isAuthorized && showPhase === "missyou" && (
+        <MissYouScreen />
+      )}
+      
+      {/* Memory Island - final phase */}
+      {isAuthorized && showPhase === "memoryisland" && (
+        <MemoryIsland memoryBoxes={customMemories} timeSince={timeSince} />
       )}
     </>
   );

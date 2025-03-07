@@ -88,7 +88,7 @@ const FlipCardTimer = ({ timeSince }) => {
       className={styles.timerContainer}
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
+      transition={{ delay: 1, duration: 1, ease: "easeOut" }}
     >
       <motion.div 
         className={styles.timerCard}
