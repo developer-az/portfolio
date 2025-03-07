@@ -1,305 +1,241 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
 const AuthScreen = ({ setIsAuthorized }) => {
   const [password, setPassword] = useState('');
-  const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
-  const inputRef = useRef(null);
-  const correctPassword = 'tiktok';
+  const [error, setError] = useState('');
+  const [isHovered, setIsHovered] = useState(false);
   
-  // Check password on each character input
-  useEffect(() => {
-    // Auto-submit when password matches
-    if (password.toLowerCase() === correctPassword) {
-      // Short delay to show successful typing before transitioning
-      setTimeout(() => {
-        setIsAuthorized(true);
-        localStorage.setItem('gabiLastVisit', new Date().getTime().toString());
-      }, 300);
+  // Handle login form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    if (password.toLowerCase() === 'tiktok') {
+      setIsAuthorized(true);
+      localStorage.setItem('gabiLastVisit', new Date().getTime().toString());
+    } else {
+      setError('?');
     }
-  }, [password, setIsAuthorized]);
-  
-  // Open envelope on click/tap
-  const handleEnvelopeClick = () => {
-    if (!isEnvelopeOpen) {
-      setIsEnvelopeOpen(true);
-      // Focus on input after envelope opens with delay to ensure animation completes
-      setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
-      }, 800);
-    }
-  };
-
-  // Handle input change
-  const handleInputChange = (e) => {
-    setPassword(e.target.value);
   };
 
   return (
-    <div className="auth-screen">
-      <div className="stars">
-        {[...Array(30)].map((_, i) => (
-          <div 
-            key={i} 
-            className="star"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              width: `${Math.random() * 2 + 1}px`,
-              height: `${Math.random() * 2 + 1}px`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${Math.random() * 3 + 2}s`
-            }}
-          />
-        ))}
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: '100vh',
+      backgroundColor: '#0f0f0f',
+      color: 'white',
+      fontFamily: 'Avant Garde Book BT, sans-serif',
+      backgroundImage: 'radial-gradient(circle at 50% 50%, #1a1a24, #0f0f0f)',
+      overflow: 'hidden',
+      perspective: '1000px'
+    }}>
+      {/* Moving stars background */}
+      <div style={{
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+        pointerEvents: 'none'
+      }}>
+        {[...Array(50)].map((_, i) => {
+          const size = Math.random() * 2 + 1;
+          const opacity = Math.random() * 0.7 + 0.3;
+          return (
+            <div 
+              key={i} 
+              style={{
+                position: 'absolute',
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                width: `${size}px`,
+                height: `${size}px`,
+                borderRadius: '50%',
+                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                opacity: opacity,
+                boxShadow: `0 0 ${size * 2}px rgba(255, 255, 255, 0.8)`,
+                animation: `authTwinkle ${(Math.random() * 5) + 3}s infinite ease-in-out ${Math.random() * 5}s`
+              }}
+            />
+          );
+        })}
       </div>
       
-      <div className="content-container">
-        <motion.div 
-          className={`envelope ${isEnvelopeOpen ? 'open' : ''}`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          onClick={handleEnvelopeClick}
+      {/* 3D Login Card */}
+      <motion.div 
+        initial={{ opacity: 0, rotateX: -10, y: 20 }}
+        animate={{ opacity: 1, rotateX: 0, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        onHoverStart={() => setIsHovered(true)}
+        onHoverEnd={() => setIsHovered(false)}
+        style={{
+          backgroundColor: 'rgba(25, 25, 25, 0.8)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+          borderRadius: '16px',
+          padding: '40px',
+          width: '90%',
+          maxWidth: '400px',
+          textAlign: 'center',
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05) inset',
+          transformStyle: 'preserve-3d',
+          transform: isHovered ? 'rotateX(5deg) scale(1.02)' : 'rotateX(0) scale(1)',
+          transition: 'transform 0.3s ease'
+        }}
+      >
+        {/* Title with 3D effect */}
+        <motion.h2 
+          animate={{ 
+            y: [0, -5, 0],
+            textShadow: [
+              '0 0 8px rgba(255, 255, 255, 0)',
+              '0 0 12px rgba(255, 255, 255, 0.3)',
+              '0 0 8px rgba(255, 255, 255, 0)'
+            ]
+          }}
+          transition={{ 
+            duration: 5,
+            repeat: Infinity,
+            ease: "easeInOut" 
+          }}
+          style={{ 
+            margin: '0 0 10px 0', 
+            fontWeight: '300',
+            letterSpacing: '1px',
+            color: 'rgba(255, 255, 255, 0.9)',
+            transform: 'translateZ(30px)'
+          }}
         >
-          <div className="envelope-back"></div>
-          <div className="envelope-flap"></div>
-          <div className="envelope-front">
-            <div className="heart-seal">❤️</div>
-          </div>
-          
-          <motion.div 
-            className="letter"
-            animate={{ 
-              y: isEnvelopeOpen ? -70 : 0,
-            }}
-            transition={{ 
-              duration: 0.7, 
-              ease: "easeOut",
-              delay: isEnvelopeOpen ? 0.2 : 0
-            }}
+          Our Secret Place
+        </motion.h2>
+        
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+          style={{ 
+            marginBottom: '30px', 
+            color: 'rgba(255, 255, 255, 0.6)',
+            fontWeight: '300',
+            fontSize: '15px',
+            transform: 'translateZ(20px)'
+          }}
+        >
+          Enter the password to access our memories
+        </motion.p>
+        
+        <form onSubmit={handleSubmit} style={{ transformStyle: 'preserve-3d' }}>
+          {/* Password input with 3D effect */}
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+            style={{ transformStyle: 'preserve-3d' }}
           >
-            <div className="letter-content">
-              {isEnvelopeOpen && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.6, duration: 0.4 }}
-                  className="password-container"
-                >
-                  <input
-                    ref={inputRef}
-                    type="password"
-                    value={password}
-                    onChange={handleInputChange}
-                    placeholder="Enter password"
-                    className="password-input"
-                    autoComplete="off"
-                  />
-                </motion.div>
-              )}
-            </div>
+            <motion.input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              whileFocus={{ scale: 1.02 }}
+              style={{
+                width: '100%',
+                padding: '14px',
+                marginBottom: '15px',
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '8px',
+                color: 'white',
+                fontSize: '16px',
+                outline: 'none',
+                fontWeight: '300',
+                transform: 'translateZ(25px)',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+              }}
+            />
           </motion.div>
-        </motion.div>
-        
-        {!isEnvelopeOpen && (
-          <motion.p 
-            className="tap-instruction"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
+          
+          {error && (
+            <motion.p 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              style={{ 
+                color: '#ff6b6b', 
+                margin: '10px 0 20px 0', 
+                fontSize: '14px',
+                transform: 'translateZ(20px)'
+              }}
+            >
+              {error}
+            </motion.p>
+          )}
+          
+          {/* Submit button with 3D effect */}
+          <motion.button 
+            type="submit" 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.7, duration: 0.6 }}
+            whileHover={{ 
+              scale: 1.05,
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)'
+            }}
+            whileTap={{ scale: 0.95 }}
+            style={{
+              padding: '14px 30px',
+              backgroundColor: 'transparent',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '8px',
+              color: 'white',
+              fontSize: '16px',
+              cursor: 'pointer',
+              fontWeight: '300',
+              transform: 'translateZ(35px)',
+              boxShadow: '0 5px 15px rgba(0, 0, 0, 0.1)'
+            }}
           >
-            Tap to open
-          </motion.p>
-        )}
-      </div>
-
-      <style jsx>{`
-        .auth-screen {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          background: linear-gradient(to bottom, #121220, #1d1d30);
-          font-family: sans-serif;
-          color: #fff;
-          overflow: hidden;
-          -webkit-tap-highlight-color: transparent;
-        }
+            Enter
+          </motion.button>
+        </form>
         
-        .content-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          width: 100%;
-          padding: 20px;
-          z-index: 2;
-          touch-action: manipulation;
-        }
+        {/* Decorative elements to enhance 3D look */}
+        <div style={{
+          position: 'absolute',
+          top: '-15px',
+          left: '-15px',
+          width: '30px',
+          height: '30px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent)',
+          boxShadow: '0 0 20px rgba(255, 255, 255, 0.05)',
+          transform: 'translateZ(5px)'
+        }} />
         
-        .stars {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          z-index: 1;
-          pointer-events: none;
-        }
-        
-        .star {
-          position: absolute;
-          background-color: white;
-          border-radius: 50%;
-          opacity: 0.6;
-          animation: twinkle infinite ease-in-out;
-        }
-        
-        @keyframes twinkle {
-          0%, 100% { opacity: 0.2; transform: scale(1); }
-          50% { opacity: 0.7; transform: scale(1.3); }
-        }
-        
-        .envelope {
-          position: relative;
-          width: 280px;
-          max-width: 90vw;
-          height: 180px;
-          max-height: 30vh;
-          background-color: #f0f0f0;
-          border-radius: 4px;
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-          cursor: pointer;
-          margin-bottom: 20px;
-          touch-action: manipulation;
-          user-select: none;
-          -webkit-user-select: none;
-          -webkit-tap-highlight-color: transparent;
-        }
-        
-        .envelope-back {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-color: #e6e6e6;
-          border-radius: 4px;
-          z-index: 1;
-        }
-        
-        .envelope-flap {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 0;
-          height: 0;
-          border-left: calc(280px / 2) solid transparent;
-          border-right: calc(280px / 2) solid transparent;
-          border-top: 90px solid #e0e0e0;
-          border-radius: 4px;
-          transform-origin: top;
-          transition: transform 0.6s ease;
-          z-index: 3;
-        }
-        
-        @media (max-width: 300px) {
-          .envelope-flap {
-            border-left-width: 45vw;
-            border-right-width: 45vw;
-            border-top-width: 60px;
+        <div style={{
+          position: 'absolute',
+          bottom: '-10px',
+          right: '-10px',
+          width: '20px',
+          height: '20px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.05))',
+          boxShadow: '0 0 20px rgba(255, 255, 255, 0.03)',
+          transform: 'translateZ(5px)'
+        }} />
+      </motion.div>
+      
+      <style jsx global>{`
+        @keyframes authTwinkle {
+          0%, 100% {
+            opacity: 0.3;
+            transform: scale(1);
           }
-        }
-        
-        .envelope.open .envelope-flap {
-          transform: rotateX(180deg);
-          z-index: 1;
-        }
-        
-        .envelope-front {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-color: #f0f0f0;
-          border-radius: 4px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 2;
-        }
-        
-        .heart-seal {
-          font-size: 32px;
-          transition: opacity 0.3s ease;
-          user-select: none;
-          -webkit-user-select: none;
-        }
-        
-        .envelope.open .heart-seal {
-          opacity: 0;
-        }
-        
-        .letter {
-          position: absolute;
-          top: 10px;
-          left: 10px;
-          width: calc(100% - 20px);
-          height: calc(100% - 20px);
-          background: #fff;
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-          z-index: 4;
-          padding: 15px;
-          border-radius: 3px;
-        }
-        
-        .letter-content {
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-        }
-        
-        .password-container {
-          width: 100%;
-          text-align: center;
-        }
-        
-        .password-input {
-          width: 90%;
-          padding: 12px 15px;
-          border: 1px solid #ddd;
-          border-radius: 20px;
-          font-size: 16px;
-          text-align: center;
-          outline: none;
-          transition: border-color 0.3s;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-          -webkit-appearance: none;
-          appearance: none;
-        }
-        
-        .password-input:focus {
-          border-color: #ff4b75;
-          box-shadow: 0 0 0 2px rgba(255, 75, 117, 0.2);
-        }
-        
-        .tap-instruction {
-          margin-top: 15px;
-          font-size: 16px;
-          color: rgba(255, 255, 255, 0.7);
-          text-align: center;
-          user-select: none;
-          -webkit-user-select: none;
+          50% {
+            opacity: 0.8;
+            transform: scale(1.2);
+          }
         }
       `}</style>
     </div>
