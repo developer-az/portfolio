@@ -1,29 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 const AuthScreen = ({ setIsAuthorized }) => {
   const [password, setPassword] = useState('');
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
+  const inputRef = useRef(null);
   const correctPassword = 'tiktok';
   
   // Check password on each character input
   useEffect(() => {
     // Auto-submit when password matches
     if (password.toLowerCase() === correctPassword) {
-      setIsAuthorized(true);
-      localStorage.setItem('gabiLastVisit', new Date().getTime().toString());
+      // Short delay to show successful typing before transitioning
+      setTimeout(() => {
+        setIsAuthorized(true);
+        localStorage.setItem('gabiLastVisit', new Date().getTime().toString());
+      }, 300);
     }
   }, [password, setIsAuthorized]);
   
-  // Open envelope on click
+  // Open envelope on click/tap
   const handleEnvelopeClick = () => {
     if (!isEnvelopeOpen) {
       setIsEnvelopeOpen(true);
-      // Focus on input after envelope opens
+      // Focus on input after envelope opens with delay to ensure animation completes
       setTimeout(() => {
-        const input = document.querySelector('.password-input');
-        if (input) input.focus();
-      }, 600);
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 800);
     }
   };
 
@@ -33,8 +38,8 @@ const AuthScreen = ({ setIsAuthorized }) => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="stars-background">
+    <div className="auth-screen">
+      <div className="stars">
         {[...Array(30)].map((_, i) => (
           <div 
             key={i} 
@@ -42,118 +47,152 @@ const AuthScreen = ({ setIsAuthorized }) => {
             style={{
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`
+              width: `${Math.random() * 2 + 1}px`,
+              height: `${Math.random() * 2 + 1}px`,
+              animationDelay: `${Math.random() * 5}s`,
+              animationDuration: `${Math.random() * 3 + 2}s`
             }}
           />
         ))}
       </div>
       
-      <motion.div 
-        className={`envelope ${isEnvelopeOpen ? 'open' : ''}`}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        onClick={handleEnvelopeClick}
-      >
-        <div className="envelope-front">
-          <div className="heart-seal">❤️</div>
-        </div>
-        <div className="envelope-flap" />
-        <div className="envelope-back" />
-        
+      <div className="content-container">
         <motion.div 
-          className="letter"
-          initial={{ y: 0 }}
-          animate={{ 
-            y: isEnvelopeOpen ? -60 : 0,
-            transition: { duration: 0.5, ease: "easeOut" }
-          }}
+          className={`envelope ${isEnvelopeOpen ? 'open' : ''}`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          onClick={handleEnvelopeClick}
         >
-          <div className="letter-content">
-            {isEnvelopeOpen && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.4 }}
-                className="password-area"
-              >
-                <input
-                  type="password"
-                  value={password}
-                  onChange={handleInputChange}
-                  placeholder="Enter password"
-                  className="password-input"
-                  autoComplete="off"
-                />
-              </motion.div>
-            )}
+          <div className="envelope-back"></div>
+          <div className="envelope-flap"></div>
+          <div className="envelope-front">
+            <div className="heart-seal">❤️</div>
           </div>
+          
+          <motion.div 
+            className="letter"
+            animate={{ 
+              y: isEnvelopeOpen ? -70 : 0,
+            }}
+            transition={{ 
+              duration: 0.7, 
+              ease: "easeOut",
+              delay: isEnvelopeOpen ? 0.2 : 0
+            }}
+          >
+            <div className="letter-content">
+              {isEnvelopeOpen && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6, duration: 0.4 }}
+                  className="password-container"
+                >
+                  <input
+                    ref={inputRef}
+                    type="password"
+                    value={password}
+                    onChange={handleInputChange}
+                    placeholder="Enter password"
+                    className="password-input"
+                    autoComplete="off"
+                  />
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
         </motion.div>
-      </motion.div>
-      
-      {!isEnvelopeOpen && (
-        <motion.p 
-          className="tap-instruction"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
-        >
-          Tap to open
-        </motion.p>
-      )}
+        
+        {!isEnvelopeOpen && (
+          <motion.p 
+            className="tap-instruction"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+          >
+            Tap to open
+          </motion.p>
+        )}
+      </div>
 
       <style jsx>{`
-        .auth-container {
+        .auth-screen {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
           display: flex;
           justify-content: center;
           align-items: center;
-          flex-direction: column;
-          min-height: 100vh;
           background: linear-gradient(to bottom, #121220, #1d1d30);
-          font-family: 'Avant Garde Book BT', sans-serif;
+          font-family: sans-serif;
           color: #fff;
           overflow: hidden;
-          position: relative;
+          -webkit-tap-highlight-color: transparent;
         }
         
-        .stars-background {
+        .content-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          padding: 20px;
+          z-index: 2;
+          touch-action: manipulation;
+        }
+        
+        .stars {
           position: absolute;
           top: 0;
           left: 0;
           width: 100%;
           height: 100%;
-          z-index: 0;
+          z-index: 1;
+          pointer-events: none;
         }
         
         .star {
           position: absolute;
-          width: 2px;
-          height: 2px;
           background-color: white;
           border-radius: 50%;
-          opacity: 0.5;
-          animation: twinkle 5s infinite ease-in-out;
+          opacity: 0.6;
+          animation: twinkle infinite ease-in-out;
         }
         
         @keyframes twinkle {
           0%, 100% { opacity: 0.2; transform: scale(1); }
-          50% { opacity: 0.8; transform: scale(1.5); }
+          50% { opacity: 0.7; transform: scale(1.3); }
         }
         
         .envelope {
           position: relative;
           width: 280px;
+          max-width: 90vw;
           height: 180px;
+          max-height: 30vh;
           background-color: #f0f0f0;
           border-radius: 4px;
           box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
           cursor: pointer;
-          z-index: 1;
-          transition: transform 0.3s ease;
+          margin-bottom: 20px;
+          touch-action: manipulation;
+          user-select: none;
+          -webkit-user-select: none;
+          -webkit-tap-highlight-color: transparent;
         }
         
-        .envelope:hover {
-          transform: scale(1.02);
+        .envelope-back {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: #e6e6e6;
+          border-radius: 4px;
+          z-index: 1;
         }
         
         .envelope-flap {
@@ -162,18 +201,26 @@ const AuthScreen = ({ setIsAuthorized }) => {
           left: 0;
           width: 0;
           height: 0;
-          border-left: 140px solid transparent;
-          border-right: 140px solid transparent;
-          border-top: 90px solid #e6e6e6;
-          border-radius: 3px;
+          border-left: calc(280px / 2) solid transparent;
+          border-right: calc(280px / 2) solid transparent;
+          border-top: 90px solid #e0e0e0;
+          border-radius: 4px;
           transform-origin: top;
-          transition: transform 0.4s ease;
+          transition: transform 0.6s ease;
           z-index: 3;
+        }
+        
+        @media (max-width: 300px) {
+          .envelope-flap {
+            border-left-width: 45vw;
+            border-right-width: 45vw;
+            border-top-width: 60px;
+          }
         }
         
         .envelope.open .envelope-flap {
           transform: rotateX(180deg);
-          z-index: 0;
+          z-index: 1;
         }
         
         .envelope-front {
@@ -187,27 +234,18 @@ const AuthScreen = ({ setIsAuthorized }) => {
           display: flex;
           justify-content: center;
           align-items: center;
-          z-index: 1;
+          z-index: 2;
         }
         
         .heart-seal {
           font-size: 32px;
           transition: opacity 0.3s ease;
+          user-select: none;
+          -webkit-user-select: none;
         }
         
         .envelope.open .heart-seal {
           opacity: 0;
-        }
-        
-        .envelope-back {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-color: #e6e6e6;
-          border-radius: 4px;
-          z-index: 0;
         }
         
         .letter {
@@ -218,10 +256,9 @@ const AuthScreen = ({ setIsAuthorized }) => {
           height: calc(100% - 20px);
           background: #fff;
           box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-          z-index: 2;
+          z-index: 4;
           padding: 15px;
           border-radius: 3px;
-          transition: transform 0.5s ease;
         }
         
         .letter-content {
@@ -232,14 +269,14 @@ const AuthScreen = ({ setIsAuthorized }) => {
           justify-content: center;
         }
         
-        .password-area {
+        .password-container {
           width: 100%;
           text-align: center;
         }
         
         .password-input {
           width: 90%;
-          padding: 10px 15px;
+          padding: 12px 15px;
           border: 1px solid #ddd;
           border-radius: 20px;
           font-size: 16px;
@@ -247,6 +284,8 @@ const AuthScreen = ({ setIsAuthorized }) => {
           outline: none;
           transition: border-color 0.3s;
           box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+          -webkit-appearance: none;
+          appearance: none;
         }
         
         .password-input:focus {
@@ -255,10 +294,12 @@ const AuthScreen = ({ setIsAuthorized }) => {
         }
         
         .tap-instruction {
-          margin-top: 20px;
+          margin-top: 15px;
           font-size: 16px;
           color: rgba(255, 255, 255, 0.7);
           text-align: center;
+          user-select: none;
+          -webkit-user-select: none;
         }
       `}</style>
     </div>
