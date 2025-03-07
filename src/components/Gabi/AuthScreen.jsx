@@ -1,241 +1,264 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 const AuthScreen = ({ setIsAuthorized }) => {
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [isHovered, setIsHovered] = useState(false);
+  const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
+  const correctPassword = 'tiktok';
   
-  // Handle login form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (password.toLowerCase() === 'tiktok') {
+  // Check password on each character input
+  useEffect(() => {
+    // Auto-submit when password matches
+    if (password.toLowerCase() === correctPassword) {
       setIsAuthorized(true);
       localStorage.setItem('gabiLastVisit', new Date().getTime().toString());
-    } else {
-      setError('?');
+    }
+  }, [password, setIsAuthorized]);
+  
+  // Open envelope on click
+  const handleEnvelopeClick = () => {
+    if (!isEnvelopeOpen) {
+      setIsEnvelopeOpen(true);
+      // Focus on input after envelope opens
+      setTimeout(() => {
+        const input = document.querySelector('.password-input');
+        if (input) input.focus();
+      }, 600);
     }
   };
 
+  // Handle input change
+  const handleInputChange = (e) => {
+    setPassword(e.target.value);
+  };
+
   return (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: '100vh',
-      backgroundColor: '#0f0f0f',
-      color: 'white',
-      fontFamily: 'Avant Garde Book BT, sans-serif',
-      backgroundImage: 'radial-gradient(circle at 50% 50%, #1a1a24, #0f0f0f)',
-      overflow: 'hidden',
-      perspective: '1000px'
-    }}>
-      {/* Moving stars background */}
-      <div style={{
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden',
-        pointerEvents: 'none'
-      }}>
-        {[...Array(50)].map((_, i) => {
-          const size = Math.random() * 2 + 1;
-          const opacity = Math.random() * 0.7 + 0.3;
-          return (
-            <div 
-              key={i} 
-              style={{
-                position: 'absolute',
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                width: `${size}px`,
-                height: `${size}px`,
-                borderRadius: '50%',
-                backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                opacity: opacity,
-                boxShadow: `0 0 ${size * 2}px rgba(255, 255, 255, 0.8)`,
-                animation: `authTwinkle ${(Math.random() * 5) + 3}s infinite ease-in-out ${Math.random() * 5}s`
-              }}
-            />
-          );
-        })}
+    <div className="auth-container">
+      <div className="stars-background">
+        {[...Array(30)].map((_, i) => (
+          <div 
+            key={i} 
+            className="star"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 5}s`
+            }}
+          />
+        ))}
       </div>
       
-      {/* 3D Login Card */}
       <motion.div 
-        initial={{ opacity: 0, rotateX: -10, y: 20 }}
-        animate={{ opacity: 1, rotateX: 0, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
-        style={{
-          backgroundColor: 'rgba(25, 25, 25, 0.8)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.05)',
-          borderRadius: '16px',
-          padding: '40px',
-          width: '90%',
-          maxWidth: '400px',
-          textAlign: 'center',
-          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05) inset',
-          transformStyle: 'preserve-3d',
-          transform: isHovered ? 'rotateX(5deg) scale(1.02)' : 'rotateX(0) scale(1)',
-          transition: 'transform 0.3s ease'
-        }}
+        className={`envelope ${isEnvelopeOpen ? 'open' : ''}`}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        onClick={handleEnvelopeClick}
       >
-        {/* Title with 3D effect */}
-        <motion.h2 
+        <div className="envelope-front">
+          <div className="heart-seal">❤️</div>
+        </div>
+        <div className="envelope-flap" />
+        <div className="envelope-back" />
+        
+        <motion.div 
+          className="letter"
+          initial={{ y: 0 }}
           animate={{ 
-            y: [0, -5, 0],
-            textShadow: [
-              '0 0 8px rgba(255, 255, 255, 0)',
-              '0 0 12px rgba(255, 255, 255, 0.3)',
-              '0 0 8px rgba(255, 255, 255, 0)'
-            ]
-          }}
-          transition={{ 
-            duration: 5,
-            repeat: Infinity,
-            ease: "easeInOut" 
-          }}
-          style={{ 
-            margin: '0 0 10px 0', 
-            fontWeight: '300',
-            letterSpacing: '1px',
-            color: 'rgba(255, 255, 255, 0.9)',
-            transform: 'translateZ(30px)'
+            y: isEnvelopeOpen ? -60 : 0,
+            transition: { duration: 0.5, ease: "easeOut" }
           }}
         >
-          Our Secret Place
-        </motion.h2>
-        
-        <motion.p 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          style={{ 
-            marginBottom: '30px', 
-            color: 'rgba(255, 255, 255, 0.6)',
-            fontWeight: '300',
-            fontSize: '15px',
-            transform: 'translateZ(20px)'
-          }}
-        >
-          Enter the password to access our memories
-        </motion.p>
-        
-        <form onSubmit={handleSubmit} style={{ transformStyle: 'preserve-3d' }}>
-          {/* Password input with 3D effect */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-            style={{ transformStyle: 'preserve-3d' }}
-          >
-            <motion.input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              whileFocus={{ scale: 1.02 }}
-              style={{
-                width: '100%',
-                padding: '14px',
-                marginBottom: '15px',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '8px',
-                color: 'white',
-                fontSize: '16px',
-                outline: 'none',
-                fontWeight: '300',
-                transform: 'translateZ(25px)',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-              }}
-            />
-          </motion.div>
-          
-          {error && (
-            <motion.p 
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              style={{ 
-                color: '#ff6b6b', 
-                margin: '10px 0 20px 0', 
-                fontSize: '14px',
-                transform: 'translateZ(20px)'
-              }}
-            >
-              {error}
-            </motion.p>
-          )}
-          
-          {/* Submit button with 3D effect */}
-          <motion.button 
-            type="submit" 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.7, duration: 0.6 }}
-            whileHover={{ 
-              scale: 1.05,
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)'
-            }}
-            whileTap={{ scale: 0.95 }}
-            style={{
-              padding: '14px 30px',
-              backgroundColor: 'transparent',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: '8px',
-              color: 'white',
-              fontSize: '16px',
-              cursor: 'pointer',
-              fontWeight: '300',
-              transform: 'translateZ(35px)',
-              boxShadow: '0 5px 15px rgba(0, 0, 0, 0.1)'
-            }}
-          >
-            Enter
-          </motion.button>
-        </form>
-        
-        {/* Decorative elements to enhance 3D look */}
-        <div style={{
-          position: 'absolute',
-          top: '-15px',
-          left: '-15px',
-          width: '30px',
-          height: '30px',
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent)',
-          boxShadow: '0 0 20px rgba(255, 255, 255, 0.05)',
-          transform: 'translateZ(5px)'
-        }} />
-        
-        <div style={{
-          position: 'absolute',
-          bottom: '-10px',
-          right: '-10px',
-          width: '20px',
-          height: '20px',
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.05))',
-          boxShadow: '0 0 20px rgba(255, 255, 255, 0.03)',
-          transform: 'translateZ(5px)'
-        }} />
+          <div className="letter-content">
+            {isEnvelopeOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.4 }}
+                className="password-area"
+              >
+                <input
+                  type="password"
+                  value={password}
+                  onChange={handleInputChange}
+                  placeholder="Enter password"
+                  className="password-input"
+                  autoComplete="off"
+                />
+              </motion.div>
+            )}
+          </div>
+        </motion.div>
       </motion.div>
       
-      <style jsx global>{`
-        @keyframes authTwinkle {
-          0%, 100% {
-            opacity: 0.3;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 0.8;
-            transform: scale(1.2);
-          }
+      {!isEnvelopeOpen && (
+        <motion.p 
+          className="tap-instruction"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+        >
+          Tap to open
+        </motion.p>
+      )}
+
+      <style jsx>{`
+        .auth-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          min-height: 100vh;
+          background: linear-gradient(to bottom, #121220, #1d1d30);
+          font-family: 'Avant Garde Book BT', sans-serif;
+          color: #fff;
+          overflow: hidden;
+          position: relative;
+        }
+        
+        .stars-background {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 0;
+        }
+        
+        .star {
+          position: absolute;
+          width: 2px;
+          height: 2px;
+          background-color: white;
+          border-radius: 50%;
+          opacity: 0.5;
+          animation: twinkle 5s infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+          0%, 100% { opacity: 0.2; transform: scale(1); }
+          50% { opacity: 0.8; transform: scale(1.5); }
+        }
+        
+        .envelope {
+          position: relative;
+          width: 280px;
+          height: 180px;
+          background-color: #f0f0f0;
+          border-radius: 4px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+          cursor: pointer;
+          z-index: 1;
+          transition: transform 0.3s ease;
+        }
+        
+        .envelope:hover {
+          transform: scale(1.02);
+        }
+        
+        .envelope-flap {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 0;
+          height: 0;
+          border-left: 140px solid transparent;
+          border-right: 140px solid transparent;
+          border-top: 90px solid #e6e6e6;
+          border-radius: 3px;
+          transform-origin: top;
+          transition: transform 0.4s ease;
+          z-index: 3;
+        }
+        
+        .envelope.open .envelope-flap {
+          transform: rotateX(180deg);
+          z-index: 0;
+        }
+        
+        .envelope-front {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: #f0f0f0;
+          border-radius: 4px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 1;
+        }
+        
+        .heart-seal {
+          font-size: 32px;
+          transition: opacity 0.3s ease;
+        }
+        
+        .envelope.open .heart-seal {
+          opacity: 0;
+        }
+        
+        .envelope-back {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: #e6e6e6;
+          border-radius: 4px;
+          z-index: 0;
+        }
+        
+        .letter {
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          width: calc(100% - 20px);
+          height: calc(100% - 20px);
+          background: #fff;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+          z-index: 2;
+          padding: 15px;
+          border-radius: 3px;
+          transition: transform 0.5s ease;
+        }
+        
+        .letter-content {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .password-area {
+          width: 100%;
+          text-align: center;
+        }
+        
+        .password-input {
+          width: 90%;
+          padding: 10px 15px;
+          border: 1px solid #ddd;
+          border-radius: 20px;
+          font-size: 16px;
+          text-align: center;
+          outline: none;
+          transition: border-color 0.3s;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .password-input:focus {
+          border-color: #ff4b75;
+          box-shadow: 0 0 0 2px rgba(255, 75, 117, 0.2);
+        }
+        
+        .tap-instruction {
+          margin-top: 20px;
+          font-size: 16px;
+          color: rgba(255, 255, 255, 0.7);
+          text-align: center;
         }
       `}</style>
     </div>
