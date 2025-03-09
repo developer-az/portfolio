@@ -27,7 +27,7 @@ const ProfileSection = () => {
                   style={{ y: imageY }}
                 >
                   <Image
-                    src="/images/new-profile.png"
+                    src="/images/IMG.png"
                     alt="Anthony Zhou"
                     width={400}
                     height={400}
