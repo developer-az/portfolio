@@ -36,7 +36,7 @@ const GabiPageWrapper = () => {
       title: "conflict",
       date: "January 4, 2025",
       image: "/memories/image1.jpg", // First mirror selfie
-      description: "Sometimes i cant get out of bed, heart is aching every second of the day. I distract myself but I dont want to forget. I cant forget your smile, your presence, I dont want to."
+      description: "Sometimes i cant get out of bed, heart is aching every second of the day I can't even explain why. I distract myself but I dont want to forget. I cant forget your smile, your presence, I dont want to."
     },
     {
       id: 2,
@@ -54,13 +54,13 @@ const GabiPageWrapper = () => {
       title: "Pretty girl",
       date: "January 9, 2025",
       image: "/memories/image3.jpg", // Third shopping image
-      description: "It feels empty without you. You made life brighter for me. You don't understand the light that you provided"
+      description: "It feels empty without you for some reason. You made life brighter for me. You don't understand the light that you provided"
     },
     {
       id: 4,
       x: 65,
       y: 75,
-      title: "Poolesville",
+      title: "poolesville",
       date: "December 23, 2024",
       image: "/memories/image5.jpg", // Using first image again as placeholder
       description: "I'd be there no matter the distance, the time. You mean everything."
