@@ -42,7 +42,7 @@ const GabiPageWrapper = () => {
       title: "cold",
       date: "January 9, 2025",
       image: "/memories/image2.jpg", // Second hallway selfie
-      description: "you made me feel warm even when i was freezing, you gave heat to my dull heart. now even if its better outside i wish i could go back to winter to be with you again"
+      description: "you made me feel warm even when i was freezing, you gave heat to my heart. now even if its better outside i wish i could go back to winter to be with you again"
     },
     {
       id: 3,
@@ -91,26 +91,17 @@ const GabiPageWrapper = () => {
     }
   }, []);
   
-  // Phase transitions - first show Polaroid, then "I miss you", then Memory Island
-  useEffect(() => {
-    if (isAuthorized) {
-      // First show the Polaroid slideshow for 10 seconds
-      const polaroidTimer = setTimeout(() => {
-        console.log("Switching to 'I miss you' phase");
-        setShowPhase("missyou");
-        
-        // Then show the "I miss you" screen for
-        const missYouTimer = setTimeout(() => {
-          console.log("Switching to Memory Island phase");
-          setShowPhase("memoryisland");
-        }, 1500);
-        
-        return () => clearTimeout(missYouTimer);
-      }, 10000);
-      
-      return () => clearTimeout(polaroidTimer);
-    }
-  }, [isAuthorized]);
+  // Function to handle polaroid screen completion
+  const handlePolaroidComplete = () => {
+    console.log("Polaroid sequence complete with all captions shown");
+    setShowPhase("missyou");
+    
+    // Then show the "I miss you" screen for 1.5 seconds
+    setTimeout(() => {
+      console.log("Switching to Memory Island phase");
+      setShowPhase("memoryisland");
+    }, 1500);
+  };
   
   // Calculate time since first meeting
   useEffect(() => {
@@ -139,18 +130,6 @@ const GabiPageWrapper = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Debug logging to check image paths
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Custom memories being used:', customMemories);
-      console.log('Image paths:');
-      customMemories.forEach(memory => {
-        console.log(`- ${memory.title}: ${memory.image}`);
-      });
-      console.log('Current phase:', showPhase);
-    }
-  }, [showPhase]);
-
   return (
     <>
       {/* Authentication Screen */}
@@ -160,7 +139,10 @@ const GabiPageWrapper = () => {
       
       {/* Polaroid Loading Screen - first phase after authorization */}
       {isAuthorized && showPhase === "polaroid" && (
-        <PolaroidLoadingScreen memories={customMemories} />
+        <PolaroidLoadingScreen 
+          memories={customMemories}
+          onComplete={handlePolaroidComplete}
+        />
       )}
       
       {/* "I miss you" Screen - second phase */}

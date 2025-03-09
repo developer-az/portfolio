@@ -162,7 +162,7 @@ const MemoryViewer = ({ memory, onClose, onNext }) => {
             >
               <h2 style={{
                 margin: '0 0 5px 0',
-                fontSize: '22px',
+                fontSize: '18px',
                 fontWeight: '500',
                 color: '#333',
                 transform: 'translateZ(10px)'

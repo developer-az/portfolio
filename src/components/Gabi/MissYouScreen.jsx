@@ -41,7 +41,7 @@ const MissYouScreen = () => {
           fontFamily: 'Avant Garde Book BT, sans-serif',
         }}
       >
-        I miss you
+        I miss you. I want to see you again. I constantly worry about you. I miss you so much Gabi.
       </motion.p>
     </div>
   );

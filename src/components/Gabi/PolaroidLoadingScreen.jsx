@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Caption options
+// Caption options in order
 const memoryCaptions = [
   "Coming into your life..",
   "I hope we...",
@@ -9,21 +9,12 @@ const memoryCaptions = [
   "Happy memories."
 ];
 
-const PolaroidLoadingScreen = ({ memories }) => {
+const PolaroidLoadingScreen = ({ memories, onComplete }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [developmentStage, setDevelopmentStage] = useState(0); // 0-100% development
-  const [currentCaption, setCurrentCaption] = useState(memoryCaptions[0]);
+  const [developmentStage, setDevelopmentStage] = useState(0); 
+  const [currentCaptionIndex, setCurrentCaptionIndex] = useState(0);
+  const [captionCount, setCaptionCount] = useState(0);
   
-  // Debug logging to see what memories were received
-  useEffect(() => {
-    console.log("Memories received in PolaroidLoadingScreen:", memories);
-    if (memories && memories.length > 0) {
-      console.log("First memory image path:", memories[0].image);
-    } else {
-      console.warn("No memories received or empty array!");
-    }
-  }, [memories]);
-
   // Use default fallback memories if none provided
   const actualMemories = memories && memories.length > 0 ? memories : [
     {
@@ -35,37 +26,56 @@ const PolaroidLoadingScreen = ({ memories }) => {
     }
   ];
   
+  // Limit to first 3 images
+  const limitedMemories = actualMemories.slice(0, 3);
+  
   useEffect(() => {
-    // Simulate Polaroid development process (much faster for smoother transitions)
-    const developmentInterval = setInterval(() => {
+    let developmentInterval;
+    let transitionTimeout;
+    
+    // Simulate development process
+    developmentInterval = setInterval(() => {
       setDevelopmentStage(prev => {
         if (prev >= 100) {
           clearInterval(developmentInterval);
+          
+          // When development completes, schedule the transition
+          transitionTimeout = setTimeout(() => {
+            // Increment caption count
+            setCaptionCount(prev => {
+              const newCount = prev + 1;
+              
+              // Check if we've shown all 4 captions
+              if (newCount >= memoryCaptions.length) {
+                // We're done showing all captions, trigger completion
+                if (onComplete) {
+                  setTimeout(() => onComplete(), 1000);
+                }
+                return newCount;
+              }
+              
+              // Update caption index and image index
+              setCurrentCaptionIndex(newCount % memoryCaptions.length);
+              setCurrentImageIndex(newCount % limitedMemories.length);
+              
+              // Reset development stage for next image
+              setDevelopmentStage(0);
+              
+              return newCount;
+            });
+          }, 2000); // Wait 2 seconds after development completes
+          
           return 100;
         }
-        return prev + 20; // Super fast development (20% per 100ms = full development in 0.5 seconds)
+        return prev + 10; // Slower development for better visibility
       });
     }, 100);
     
-    // Switch images after development - faster transitions (3 seconds per image)
-    const imageInterval = setInterval(() => {
-      if (developmentStage >= 100) {
-        setCurrentImageIndex(prevIndex => {
-          const newIndex = (prevIndex + 1) % actualMemories.length;
-          // Update caption when image changes
-          setCurrentCaption(memoryCaptions[Math.floor(Math.random() * memoryCaptions.length)]);
-          console.log(`Showing image ${newIndex + 1} of ${actualMemories.length}`);
-          return newIndex;
-        });
-        setDevelopmentStage(0); // Reset development for next image
-      }
-    }, 3000); // Faster 3-second transitions for smoother slideshow
-    
     return () => {
       clearInterval(developmentInterval);
-      clearInterval(imageInterval);
+      if (transitionTimeout) clearTimeout(transitionTimeout);
     };
-  }, [developmentStage, actualMemories.length]);
+  }, [limitedMemories.length, onComplete]);
   
   return (
     <div style={{
@@ -133,7 +143,7 @@ const PolaroidLoadingScreen = ({ memories }) => {
             overflow: 'hidden',
             transformStyle: 'preserve-3d'
           }}>
-            {actualMemories.map((memory, index) => {
+            {limitedMemories.map((memory, index) => {
               return (
                 <div 
                   key={index}
@@ -144,7 +154,7 @@ const PolaroidLoadingScreen = ({ memories }) => {
                     width: '100%',
                     height: '100%',
                     opacity: index === currentImageIndex ? 1 : 0,
-                    transition: 'opacity 0.5s ease-in-out', // Faster transition
+                    transition: 'opacity 0.5s ease-in-out',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
@@ -157,7 +167,6 @@ const PolaroidLoadingScreen = ({ memories }) => {
                     height: '100%',
                     overflow: 'hidden'
                   }}>
-                    {/* Add error handling and debug info for image loading issues */}
                     <img
                       src={memory.image}
                       alt={memory.title || `Memory ${index + 1}`}
@@ -165,10 +174,9 @@ const PolaroidLoadingScreen = ({ memories }) => {
                         width: '100%',
                         height: '100%',
                         objectFit: 'cover',
-                        filter: `brightness(${0.7 + (developmentStage / 333)})`, // Less contrast variation for smoother appearance
-                        transition: 'filter 0.3s ease' // Faster filter transition
+                        filter: `brightness(${0.7 + (developmentStage / 333)})`,
+                        transition: 'filter 0.3s ease'
                       }}
-                      onLoad={() => console.log(`Image loaded successfully: ${memory.image}`)}
                       onError={(e) => {
                         console.error(`Error loading image: ${memory.image}`);
                         e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280'%3E%3Crect width='280' height='280' fill='%23333'/%3E%3Ctext x='140' y='140' font-family='Arial' font-size='20' fill='white' text-anchor='middle' dominant-baseline='middle'%3EImage not found%3C/text%3E%3C/svg%3E";
@@ -186,7 +194,7 @@ const PolaroidLoadingScreen = ({ memories }) => {
                         rgba(30, 30, 30, ${1 - developmentStage/100}) 0%, 
                         rgba(20, 20, 20, ${1 - developmentStage/100}) 50%, 
                         rgba(10, 10, 10, ${1 - developmentStage/100}) 100%)`,
-                      transition: 'background 0.2s ease' // Faster transition
+                      transition: 'background 0.2s ease'
                     }} />
                   </div>
                 </div>
@@ -207,7 +215,7 @@ const PolaroidLoadingScreen = ({ memories }) => {
             letterSpacing: '1px',
             transform: 'translateZ(5px)'
           }}>
-            {actualMemories[currentImageIndex]?.date || "January 2025"}
+            {limitedMemories[currentImageIndex]?.date || "January 2025"}
           </div>
         </motion.div>
         
@@ -228,7 +236,7 @@ const PolaroidLoadingScreen = ({ memories }) => {
         >
           <AnimatePresence mode="wait">
             <motion.p
-              key={currentCaption}
+              key={currentCaptionIndex}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
@@ -241,7 +249,7 @@ const PolaroidLoadingScreen = ({ memories }) => {
                 textAlign: 'center'
               }}
             >
-              {currentCaption}
+              {memoryCaptions[currentCaptionIndex]}
             </motion.p>
           </AnimatePresence>
         </motion.div>

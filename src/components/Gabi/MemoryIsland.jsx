@@ -189,7 +189,7 @@ const MemoryIsland = ({ memoryBoxes, timeSince }) => {
             </motion.div>
           ))}
           
-          {/* Player dot with "Gabi" text */}
+          {/* Player with "Gabi" text and white heart */}
           <motion.div 
             className={styles.player}
             style={{
@@ -215,9 +215,9 @@ const MemoryIsland = ({ memoryBoxes, timeSince }) => {
               GABI
             </motion.div>
             
-            {/* The dot */}
+            {/* White Heart (instead of dot) */}
             <motion.div 
-              className={styles.playerDot}
+              className={styles.playerHeart}
               animate={{ 
                 boxShadow: [
                   '0 0 10px 2px rgba(255, 255, 255, 0.3)',
@@ -227,7 +227,8 @@ const MemoryIsland = ({ memoryBoxes, timeSince }) => {
               }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             >
-              <div className={styles.playerGlow}></div>
+              ❤️
+              <div className={styles.heartGlow}></div>
             </motion.div>
           </motion.div>
           
@@ -243,7 +244,7 @@ const MemoryIsland = ({ memoryBoxes, timeSince }) => {
               animate={{ y: [0, -5, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             >
-              Click anywhere to move Gabi. Click on roses 🌹 to discover our memories.
+              Click anywhere to move Gabi. Click on roses 🌹
             </motion.p>
           </motion.div>
         </div>
