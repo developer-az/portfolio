@@ -30,46 +30,46 @@ const GabiPageWrapper = () => {
       id: 1,
       x: 20,
       y: 30,
-      title: "Mirror Selfie",
+      title: "conflict",
       date: "January 4, 2025",
       image: "/memories/image1.jpg", // First mirror selfie
-      description: "Taking mirror selfies together with the digital camera."
+      description: "Sometimes i cant get out of bed, heart is aching every second of the day. I distract myself but I dont want to forget. I cant forget your smile, your presence, I dont want to."
     },
     {
       id: 2,
       x: 70,
       y: 40,
-      title: "Dorm Hallway",
+      title: "cold",
       date: "January 9, 2025",
       image: "/memories/image2.jpg", // Second hallway selfie
-      description: "Taking photos together in the dorm hallway."
+      description: "you made me feel warm even when i was freezing, you gave heat to my dull heart. now even if its better outside i wish i could go back to winter to be with you again"
     },
     {
       id: 3,
       x: 30,
       y: 65,
-      title: "Shopping Together",
+      title: "Pretty girl",
       date: "January 9, 2025",
       image: "/memories/image3.jpg", // Third shopping image
-      description: "Shopping for clothes and trying on new outfits together."
+      description: "It feels empty without you. You made life brighter for me. You don't understand the light that you provided"
     },
     {
       id: 4,
       x: 65,
       y: 75,
-      title: "First Date",
-      date: "January 7, 2025",
-      image: "/memories/image1.jpg", // Using first image again as placeholder
-      description: "Our first date when we went out for coffee and talked for hours."
+      title: "Poolesville",
+      date: "December 23, 2024",
+      image: "/memories/image5.jpg", // Using first image again as placeholder
+      description: "I'd be there no matter the distance, the time. You mean everything."
     },
     {
       id: 5,
       x: 50,
       y: 50,
-      title: "Study Session",
-      date: "January 8, 2025",
-      image: "/memories/image2.jpg", // Using second image again as placeholder
-      description: "Studying together in the library until closing time."
+      title: "Christmas",
+      date: "December 27, 2024",
+      image: "/memories/image4.jpg", // Using second image again as placeholder
+      description: "You were a gift to me. Being able to receive gifts from you made my heart happy."
     }
   ];
 
@@ -99,11 +99,11 @@ const GabiPageWrapper = () => {
         console.log("Switching to 'I miss you' phase");
         setShowPhase("missyou");
         
-        // Then show the "I miss you" screen for 3 seconds
+        // Then show the "I miss you" screen for
         const missYouTimer = setTimeout(() => {
           console.log("Switching to Memory Island phase");
           setShowPhase("memoryisland");
-        }, 2000);
+        }, 1500);
         
         return () => clearTimeout(missYouTimer);
       }, 10000);

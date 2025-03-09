@@ -3,10 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 // Caption options
 const memoryCaptions = [
-  "Our memories together...",
-  "Taking photos together...",
-  "Shopping together...",
-  "Mirror selfies..."
+  "Coming into your life..",
+  "I hope we...",
+  "Continue to make...",
+  "Happy memories."
 ];
 
 const PolaroidLoadingScreen = ({ memories }) => {
