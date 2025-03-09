@@ -63,7 +63,7 @@ const GabiPageWrapper = () => {
       title: "poolesville",
       date: "December 23, 2024",
       image: "/memories/image5.jpg", // Using first image again as placeholder
-      description: "I'd be there no matter the distance, the time. You mean everything."
+      description: "I'd be there no matter the distance, the time. You meant everything to me."
     },
     {
       id: 5,
