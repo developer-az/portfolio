@@ -43,7 +43,7 @@ const GabiPageWrapper = () => {
       x: 70,
       y: 40,
       title: "cold",
-      date: "January 9, 2025",
+      date: "January 4, 2025",
       image: "/memories/image2.jpg", // Second hallway selfie
       description: "you made me feel warm even when i was freezing, you gave heat to my heart. now even if its better outside i wish i could go back to winter to be with you again"
     },
