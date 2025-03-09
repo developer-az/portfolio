@@ -107,7 +107,6 @@ const AuthScreen = ({ setIsAuthorized }) => {
             transform: 'translateZ(30px)'
           }}
         >
-          Our Secret Place
         </motion.h2>
         
         <motion.p 
@@ -122,7 +121,6 @@ const AuthScreen = ({ setIsAuthorized }) => {
             transform: 'translateZ(20px)'
           }}
         >
-          Enter the password to access our memories
         </motion.p>
         
         <form onSubmit={handleSubmit} style={{ transformStyle: 'preserve-3d' }}>

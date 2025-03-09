@@ -16,6 +16,9 @@ const GabiPageWrapper = () => {
   // Phase state: "polaroid" -> "missyou" -> "memoryisland"
   const [showPhase, setShowPhase] = useState("polaroid");
   
+  // Track loading state to prevent multiple transitions
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  
   // Timer state
   const [timeSince, setTimeSince] = useState({
     days: 0,
@@ -93,13 +96,26 @@ const GabiPageWrapper = () => {
   
   // Function to handle polaroid screen completion
   const handlePolaroidComplete = () => {
+    // Prevent multiple transitions
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    
     console.log("Polaroid sequence complete with all captions shown");
+    
+    // Transition to "missyou" phase
     setShowPhase("missyou");
+    
+    // Log the phase change for debugging
+    console.log("Phase changed to: missyou");
     
     // Then show the "I miss you" screen for 1.5 seconds
     setTimeout(() => {
       console.log("Switching to Memory Island phase");
       setShowPhase("memoryisland");
+      setIsTransitioning(false);
+      
+      // Log the final phase change for debugging
+      console.log("Phase changed to: memoryisland");
     }, 1500);
   };
   
@@ -130,6 +146,11 @@ const GabiPageWrapper = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Debug log for phase changes
+  useEffect(() => {
+    console.log(`Current phase: ${showPhase}`);
+  }, [showPhase]);
+
   return (
     <>
       {/* Authentication Screen */}
@@ -140,7 +161,7 @@ const GabiPageWrapper = () => {
       {/* Polaroid Loading Screen - first phase after authorization */}
       {isAuthorized && showPhase === "polaroid" && (
         <PolaroidLoadingScreen 
-          memories={customMemories}
+          memories={customMemories.slice(0, 3)} // Only send first 3 memories to avoid confusion
           onComplete={handlePolaroidComplete}
         />
       )}

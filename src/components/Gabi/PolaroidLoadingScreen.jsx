@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Caption options in order
@@ -9,11 +11,24 @@ const memoryCaptions = [
   "Happy memories."
 ];
 
+// Finite state machine states
+const STATES = {
+  DEVELOPING: "developing",
+  DISPLAY: "display",
+  TRANSITION: "transition"
+};
+
 const PolaroidLoadingScreen = ({ memories, onComplete }) => {
+  // Core state management
+  const [currentState, setCurrentState] = useState(STATES.DEVELOPING);
+  const [developmentStage, setDevelopmentStage] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [developmentStage, setDevelopmentStage] = useState(0); 
   const [currentCaptionIndex, setCurrentCaptionIndex] = useState(0);
-  const [captionCount, setCaptionCount] = useState(0);
+  const [totalCaptionsShown, setTotalCaptionsShown] = useState(0);
+  const [sequenceCompleted, setSequenceCompleted] = useState(false);
+  
+  // Refs for managing cleanup
+  const timeoutRef = useRef(null);
   
   // Use default fallback memories if none provided
   const actualMemories = memories && memories.length > 0 ? memories : [
@@ -28,54 +43,103 @@ const PolaroidLoadingScreen = ({ memories, onComplete }) => {
   
   // Limit to first 3 images
   const limitedMemories = actualMemories.slice(0, 3);
-  
+
+  // Clean up timeouts on unmount
   useEffect(() => {
-    let developmentInterval;
-    let transitionTimeout;
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Development phase handler
+  useEffect(() => {
+    if (currentState !== STATES.DEVELOPING || sequenceCompleted) return;
     
-    // Simulate development process
-    developmentInterval = setInterval(() => {
-      setDevelopmentStage(prev => {
-        if (prev >= 100) {
-          clearInterval(developmentInterval);
-          
-          // When development completes, schedule the transition
-          transitionTimeout = setTimeout(() => {
-            // Increment caption count
-            setCaptionCount(prev => {
-              const newCount = prev + 1;
-              
-              // Check if we've shown all 4 captions
-              if (newCount >= memoryCaptions.length) {
-                // We're done showing all captions, trigger completion
-                if (onComplete) {
-                  setTimeout(() => onComplete(), 1000);
-                }
-                return newCount;
-              }
-              
-              // Update caption index and image index
-              setCurrentCaptionIndex(newCount % memoryCaptions.length);
-              setCurrentImageIndex(newCount % limitedMemories.length);
-              
-              // Reset development stage for next image
-              setDevelopmentStage(0);
-              
-              return newCount;
-            });
-          }, 2000); // Wait 2 seconds after development completes
-          
-          return 100;
-        }
-        return prev + 10; // Slower development for better visibility
-      });
-    }, 100);
+    // Gradual development of the image
+    if (developmentStage < 100) {
+      timeoutRef.current = setTimeout(() => {
+        setDevelopmentStage(prev => Math.min(prev + 5, 100));
+      }, 80); // Slightly faster development for better user experience
+    } 
+    // Once development reaches 100%, move to display state
+    else {
+      setCurrentState(STATES.DISPLAY);
+    }
     
     return () => {
-      clearInterval(developmentInterval);
-      if (transitionTimeout) clearTimeout(transitionTimeout);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [limitedMemories.length, onComplete]);
+  }, [currentState, developmentStage, sequenceCompleted]);
+
+  // Display phase handler
+  useEffect(() => {
+    if (currentState !== STATES.DISPLAY || sequenceCompleted) return;
+    
+    // Show the fully developed image for 2 seconds
+    timeoutRef.current = setTimeout(() => {
+      setCurrentState(STATES.TRANSITION);
+    }, 2000);
+    
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [currentState, sequenceCompleted]);
+
+  // Transition phase handler
+  useEffect(() => {
+    if (currentState !== STATES.TRANSITION || sequenceCompleted) return;
+    
+    // First update total captions shown
+    const newTotalShown = totalCaptionsShown + 1;
+    setTotalCaptionsShown(newTotalShown);
+    
+    console.log(`Caption ${currentCaptionIndex + 1} shown, total captions shown: ${newTotalShown}`);
+    
+    // Check if we've shown all captions (memoryCaptions.length)
+    if (newTotalShown >= memoryCaptions.length) {
+      console.log("All captions have been shown, completing sequence");
+      setSequenceCompleted(true);
+      
+      // Call onComplete after a small delay
+      timeoutRef.current = setTimeout(() => {
+        if (onComplete) {
+          console.log("Calling onComplete to move to next phase");
+          onComplete();
+        }
+      }, 1000);
+      return;
+    }
+    
+    // Otherwise, prepare for the next caption/image
+    const nextCaptionIndex = (currentCaptionIndex + 1) % memoryCaptions.length;
+    const nextImageIndex = (currentImageIndex + 1) % limitedMemories.length;
+    
+    console.log(`Moving to next caption: ${nextCaptionIndex + 1} and image: ${nextImageIndex + 1}`);
+    
+    setCurrentCaptionIndex(nextCaptionIndex);
+    setCurrentImageIndex(nextImageIndex);
+    setDevelopmentStage(0);
+    setCurrentState(STATES.DEVELOPING);
+    
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [
+    currentState, 
+    currentCaptionIndex, 
+    currentImageIndex, 
+    totalCaptionsShown, 
+    limitedMemories.length, 
+    onComplete,
+    sequenceCompleted
+  ]);
+
+  // Debug output to console
+  useEffect(() => {
+    console.log(`Polaroid state: ${currentState}, Caption: ${currentCaptionIndex + 1}/${memoryCaptions.length}, Image: ${currentImageIndex + 1}/${limitedMemories.length}, Total shown: ${totalCaptionsShown}, Development: ${developmentStage}%, Completed: ${sequenceCompleted}`);
+  }, [currentState, currentCaptionIndex, currentImageIndex, totalCaptionsShown, developmentStage, limitedMemories.length, sequenceCompleted]);
   
   return (
     <div style={{
@@ -253,6 +317,51 @@ const PolaroidLoadingScreen = ({ memories, onComplete }) => {
             </motion.p>
           </AnimatePresence>
         </motion.div>
+        
+        {/* Development progress indicator */}
+        <motion.div 
+          style={{
+            marginTop: '20px',
+            width: '200px',
+            height: '4px',
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '2px',
+            overflow: 'hidden'
+          }}
+        >
+          <motion.div
+            style={{
+              height: '100%',
+              backgroundColor: 'rgba(255, 255, 255, 0.5)',
+              width: `${developmentStage}%`,
+              transition: 'width 0.1s linear'
+            }}
+          />
+        </motion.div>
+        
+        {/* Progress indicators */}
+        <div style={{ 
+          display: 'flex', 
+          marginTop: '15px', 
+          gap: '8px' 
+        }}>
+          {[...Array(memoryCaptions.length)].map((_, i) => (
+            <div
+              key={i}
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                backgroundColor: i < totalCaptionsShown ? 
+                  'rgba(255, 255, 255, 0.8)' : 
+                  i === currentCaptionIndex ? 
+                    'rgba(255, 255, 255, 0.5)' :
+                    'rgba(255, 255, 255, 0.2)',
+                transition: 'background-color 0.3s ease'
+              }}
+            />
+          ))}
+        </div>
       </motion.div>
     </div>
   );
