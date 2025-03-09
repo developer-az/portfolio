@@ -10,7 +10,7 @@ const AuthScreen = ({ setIsAuthorized }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    if (password.toLowerCase() === 'tiktok') {
+    if (password.toLowerCase() === 'tiktok' || password.toLowerCase() === 'tik tok') {
       setIsAuthorized(true);
       localStorage.setItem('gabiLastVisit', new Date().getTime().toString());
     } else {
