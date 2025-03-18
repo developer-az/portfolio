@@ -1,0 +1,103 @@
+/* src/app/theme-variables.scss */
+
+/* Base variables */
+:root {
+    /* Colors */
+    --primary-color: #fa2104;
+    --primary-light: rgba(250, 33, 4, 0.1);
+    --primary-medium: rgba(250, 33, 4, 0.3);
+    --primary-dark: rgba(250, 33, 4, 0.8);
+    
+    /* Font sizes */
+    --font-size-xs: 0.75rem;   /* 12px */
+    --font-size-sm: 0.875rem;  /* 14px */
+    --font-size-base: 1rem;    /* 16px */
+    --font-size-lg: 1.125rem;  /* 18px */
+    --font-size-xl: 1.25rem;   /* 20px */
+    --font-size-2xl: 1.5rem;   /* 24px */
+    --font-size-3xl: 1.875rem; /* 30px */
+    --font-size-4xl: 2.25rem;  /* 36px */
+    --font-size-5xl: 3rem;     /* 48px */
+    
+    /* Spacing */
+    --spacing-xs: 0.25rem;  /* 4px */
+    --spacing-sm: 0.5rem;   /* 8px */
+    --spacing-md: 1rem;     /* 16px */
+    --spacing-lg: 1.5rem;   /* 24px */
+    --spacing-xl: 2rem;     /* 32px */
+    --spacing-2xl: 3rem;    /* 48px */
+    --spacing-3xl: 4rem;    /* 64px */
+    --spacing-4xl: 6rem;    /* 96px */
+    
+    /* Border radius */
+    --radius-sm: 0.25rem;   /* 4px */
+    --radius-md: 0.5rem;    /* 8px */
+    --radius-lg: 0.75rem;   /* 12px */
+    --radius-xl: 1rem;      /* 16px */
+    --radius-full: 9999px;  /* Rounded full */
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-base: 0.3s ease;
+    --transition-slow: 0.5s ease;
+    
+    /* Box shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
+    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Dark theme variables (default) */
+  :root, .dark-theme {
+    /* Background colors */
+    --bg-primary: #121212;
+    --bg-secondary: #1a1a1a;
+    --bg-tertiary: #222222;
+    --bg-card: rgba(26, 26, 26, 0.7);
+    --bg-hover: rgba(255, 255, 255, 0.05);
+    
+    /* Text colors */
+    --text-primary: #f5f5f5;
+    --text-secondary: #cccccc;
+    --text-tertiary: #999999;
+    --text-muted: #777777;
+    
+    /* Border colors */
+    --border-light: rgba(255, 255, 255, 0.1);
+    --border-medium: rgba(255, 255, 255, 0.15);
+    
+    /* Component specific */
+    --header-bg: rgba(18, 18, 18, 0.8);
+    --card-bg: rgba(26, 26, 26, 0.7);
+    --input-bg: rgba(0, 0, 0, 0.2);
+    --button-secondary-bg: rgba(255, 255, 255, 0.05);
+    --button-secondary-hover: rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Light theme variables */
+  .light-theme {
+    /* Background colors */
+    --bg-primary: #f5f5f5;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f0f0f0;
+    --bg-card: rgba(255, 255, 255, 0.8);
+    --bg-hover: rgba(0, 0, 0, 0.03);
+    
+    /* Text colors */
+    --text-primary: #333333;
+    --text-secondary: #555555;
+    --text-tertiary: #777777;
+    --text-muted: #999999;
+    
+    /* Border colors */
+    --border-light: rgba(0, 0, 0, 0.1);
+    --border-medium: rgba(0, 0, 0, 0.15);
+    
+    /* Component specific */
+    --header-bg: rgba(245, 245, 245, 0.8);
+    --card-bg: rgba(255, 255, 255, 0.7);
+    --input-bg: rgba(0, 0, 0, 0.05);
+    --button-secondary-bg: rgba(0, 0, 0, 0.05);
+    --button-secondary-hover: rgba(0, 0, 0, 0.08);
+  }

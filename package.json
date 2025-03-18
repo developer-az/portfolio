@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "cursor-hover-mask": "file:",
     "eslint": "8.45.0",
     "eslint-config-next": "13.4.12",

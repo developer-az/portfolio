@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import styles from './ContactSection.module.scss';
+import emailjs from '@emailjs/browser';
 
 // Animation variants
 const containerVariants = {
@@ -36,10 +37,16 @@ const ContactSection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
   
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: false, amount: 0.3 });
   
+  // Initialize EmailJS with your public key
+  useEffect(() => {
+    emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY);
+  }, []);
+
   // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,29 +57,54 @@ const ContactSection = () => {
   };
   
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
     
-    // Simulate form submission
-    setTimeout(() => {
+    try {
+      // Prepare template parameters
+      const templateParams = {
+        from_name: formState.name,
+        from_email: formState.email,
+        subject: formState.subject,
+        message: formState.message,
+      };
+      
+      // Send email using EmailJS with environment variables
+      const response = await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+        templateParams,
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+      );
+      
+      if (response.status === 200) {
+        // Handle success
+        setSuccessMessage("Thank you for your message! I'll get back to you soon.");
+        setSubmitted(true);
+        
+        // Reset form
+        setFormState({
+          name: '',
+          email: '',
+          subject: '',
+          message: '',
+        });
+        
+        // Reset submitted state after 8 seconds
+        setTimeout(() => {
+          setSubmitted(false);
+        }, 8000);
+      } else {
+        throw new Error('Failed to send message. Please try again later.');
+      }
+    } catch (err) {
+      console.error('EmailJS error:', err);
+      setError(err.message || 'An error occurred while sending your message.');
+    } finally {
       setIsSubmitting(false);
-      setSubmitted(true);
-      
-      // Reset form after submission
-      setFormState({
-        name: '',
-        email: '',
-        subject: '',
-        message: '',
-      });
-      
-      // Reset submitted state after 5 seconds
-      setTimeout(() => {
-        setSubmitted(false);
-      }, 5000);
-    }, 1500);
+    }
   };
   
   return (
@@ -220,7 +252,7 @@ const ContactSection = () => {
                     </svg>
                   </div>
                   <h3>Message Sent!</h3>
-                  <p>Thank you for reaching out. I'll get back to you soon.</p>
+                  <p>{successMessage || "Thank you for reaching out. I'll get back to you soon."}</p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit}>
