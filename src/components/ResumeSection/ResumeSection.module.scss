@@ -1,13 +1,13 @@
-// src/components/ResumeSection/ResumeSection.module.scss
-
 .resumeSection {
-    padding: 120px 0;
+    padding: 80px 0;
     position: relative;
     overflow: hidden;
+    background: #121212;
+    color: #e0e0e0;
     
     .container {
       width: 90%;
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
       position: relative;
       z-index: 2;
@@ -15,15 +15,14 @@
     
     .sectionHeader {
       text-align: center;
-      margin-bottom: 60px;
+      margin-bottom: 40px;
       
       .sectionTitle {
         font-size: 36px;
         font-weight: 700;
-        color: var(--text-primary);
-        margin: 0 0 16px 0;
+        color: #f5f5f5;
+        margin-bottom: 10px;
         position: relative;
-        display: inline-block;
         
         &::after {
           content: '';
@@ -33,221 +32,131 @@
           transform: translateX(-50%);
           width: 60px;
           height: 3px;
-          background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
+          background: linear-gradient(to right, #fa2104, rgba(250, 33, 4, 0.5));
         }
       }
       
       .sectionDescription {
         font-size: 18px;
-        color: var(--text-secondary);
-        max-width: 700px;
-        margin: 0 auto 30px;
+        color: #b0b0b0;
+        max-width: 800px;
+        margin: 0 auto;
       }
       
       .downloadButton {
         display: inline-flex;
         align-items: center;
-        gap: 10px;
-        padding: 12px 24px;
-        background: var(--primary-color);
-        color: white;
-        border-radius: 30px;
-        font-size: 16px;
-        font-weight: 500;
+        gap: 8px;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background: #fa2104;
+        color: #fff;
+        border-radius: 6px;
         text-decoration: none;
-        transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(250, 33, 4, 0.3);
-        
-        &:hover {
-          background: darken(#fa2104, 5%);
-          transform: translateY(-3px);
-          box-shadow: 0 8px 20px rgba(250, 33, 4, 0.4);
-        }
+        font-weight: 600;
+        transition: background 0.3s ease;
         
         svg {
-          transition: transform 0.3s ease;
+          stroke: #fff;
         }
         
-        &:hover svg {
-          transform: translateY(2px);
+        &:hover {
+          background: #fcb045;
         }
       }
     }
     
     .resumeContent {
-      background: var(--bg-card);
-      backdrop-filter: blur(10px);
-      border-radius: 16px;
-      padding: 40px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-      border: 1px solid var(--border-light);
-      
-      @media (max-width: 768px) {
-        padding: 30px 20px;
-      }
-      
-      // Individual sections
       .resumeSection {
-        margin-bottom: 50px;
-        
-        &:last-child {
-          margin-bottom: 0;
-        }
+        margin-bottom: 60px;
         
         .resumeSectionTitle {
+          font-size: 28px;
+          font-weight: 600;
+          margin-bottom: 20px;
+          color: #f5f5f5;
           display: flex;
           align-items: center;
           gap: 10px;
-          font-size: 24px;
-          font-weight: 600;
-          color: var(--text-primary);
-          margin: 0 0 20px 0;
-          padding-bottom: 10px;
-          border-bottom: 1px solid var(--border-light);
           
           svg {
-            color: var(--primary-color);
+            stroke: #fa2104;
           }
         }
         
         .resumeItem {
           margin-bottom: 30px;
-          padding-left: 20px;
-          border-left: 2px solid var(--border-light);
-          
-          &:hover {
-            border-left-color: var(--primary-color);
-          }
-          
-          &:last-child {
-            margin-bottom: 0;
-          }
           
           .resumeItemHeader {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 5px;
-            
-            @media (max-width: 576px) {
-              flex-direction: column;
-              gap: 5px;
-            }
+            align-items: center;
+            margin-bottom: 8px;
             
             .resumeItemTitle {
               font-size: 20px;
               font-weight: 600;
-              color: var(--text-primary);
-              margin: 0;
+              color: #fff;
             }
             
             .resumeItemPeriod {
-              font-size: 14px;
-              color: var(--primary-color);
-              background: var(--primary-light);
-              padding: 4px 10px;
-              border-radius: 20px;
-              font-weight: 500;
-              
-              @media (max-width: 576px) {
-                align-self: flex-start;
-              }
+              font-size: 16px;
+              color: #b0b0b0;
             }
           }
           
           .resumeItemSubtitle {
             font-size: 16px;
-            color: var(--text-secondary);
-            margin: 0 0 10px 0;
+            color: #ccc;
+            margin-bottom: 6px;
           }
           
           .resumeItemDescription {
             font-size: 15px;
-            color: var(--text-tertiary);
-            line-height: 1.6;
-            margin: 0;
+            color: #b0b0b0;
+            line-height: 1.5;
           }
           
           .resumeItemResponsibilities {
-            padding-left: 20px;
-            margin: 10px 0 0 0;
+            list-style: disc;
+            margin-left: 20px;
+            color: #ccc;
+            font-size: 15px;
             
             li {
-              font-size: 15px;
-              color: var(--text-tertiary);
-              line-height: 1.6;
-              margin-bottom: 8px;
-              
-              &:last-child {
-                margin-bottom: 0;
-              }
+              margin-bottom: 6px;
             }
           }
         }
       }
       
-      // Skills section specific styles
       .skillsSection {
         .skillsContainer {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 30px;
+          display: flex;
+          gap: 40px;
+          flex-wrap: wrap;
           
-          @media (max-width: 768px) {
-            grid-template-columns: 1fr;
-          }
-        }
-        
-        .skillCategory {
-          padding: 20px;
-          background: var(--bg-hover);
-          border-radius: 12px;
-          
-          .skillCategoryTitle {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin: 0 0 15px 0;
-            display: flex;
-            align-items: center;
+          .skillCategory {
+            flex: 1;
             
-            &::before {
-              content: '';
-              display: inline-block;
-              width: 8px;
-              height: 8px;
-              background: var(--primary-color);
-              border-radius: 50%;
-              margin-right: 10px;
+            .skillCategoryTitle {
+              font-size: 20px;
+              font-weight: 600;
+              color: #fff;
+              margin-bottom: 10px;
             }
-          }
-          
-          .skillTags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
             
-            .skillTag {
-              background: var(--primary-light);
-              color: var(--primary-color);
-              padding: 6px 12px;
-              border-radius: 20px;
-              font-size: 14px;
-              font-weight: 500;
-              transition: all 0.3s ease;
+            .skillTags {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 10px;
               
-              &:hover {
-                background: var(--primary-medium);
-                transform: translateY(-2px);
-              }
-              
-              &.softSkill {
-                background: rgba(68, 107, 255, 0.1);
-                color: #446bff;
-                
-                &:hover {
-                  background: rgba(68, 107, 255, 0.2);
-                }
+              .skillTag {
+                background: rgba(250, 33, 4, 0.1);
+                color: #fa2104;
+                padding: 6px 12px;
+                border-radius: 4px;
+                font-size: 14px;
               }
             }
           }
@@ -255,7 +164,6 @@
       }
     }
     
-    // Decorative elements
     .decorativeGrid {
       position: absolute;
       top: 0;
@@ -263,11 +171,10 @@
       width: 100%;
       height: 100%;
       background-image: 
-        linear-gradient(to right, var(--border-light) 1px, transparent 1px),
-        linear-gradient(to bottom, var(--border-light) 1px, transparent 1px);
-      background-size: 50px 50px;
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
       z-index: 0;
-      opacity: 0.03;
       pointer-events: none;
     }
     
@@ -275,18 +182,17 @@
       position: absolute;
       bottom: -100px;
       left: 50%;
+      transform: translateX(-50%);
       width: 500px;
       height: 500px;
       background: radial-gradient(
         circle at center,
-        var(--primary-light) 0%,
+        rgba(250, 33, 4, 0.1) 0%,
         rgba(250, 33, 4, 0) 70%
       );
-      border-radius: 50%;
-      filter: blur(70px);
-      opacity: 0.1;
+      filter: blur(60px);
       z-index: 0;
-      transform: translateX(-50%);
       pointer-events: none;
     }
-  }    
+  }
+  

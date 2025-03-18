@@ -223,7 +223,7 @@ export default function Portfolio() {
     <div className={styles.aboutImage}>
   <div className={styles.circleContainer}>
     <Image
-      src="/images/new-profile.png"
+      src="/images/1.png"
       alt="Anthony Zhou"
       width={300}
       height={300}

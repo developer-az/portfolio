@@ -9,6 +9,8 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 html {
@@ -18,23 +20,97 @@ html {
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Avant Garde Book BT', sans-serif;
-    background-color: #121212;
-    /* Remove overflow: hidden so content is scrollable */
-    overflow-x: hidden;
-    color: #e0e0e0;
+    font-family: 'Avant Garde Book BT', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     line-height: 1.6;
+    overflow-x: hidden;
+    transition: 
+        background-color 0.5s ease-in-out,
+        color 0.5s ease-in-out;
+}
+
+/* Smoother theme transitions */
+header, 
+section, 
+button, 
+a, 
+p, 
+h1, h2, h3, h4, h5, h6,
+.card,
+.container,
+.projectCard,
+.profileSection,
+.header,
+.footer,
+.nav,
+.button,
+.themeSwitcher {
+    transition: 
+        background-color 0.5s ease-in-out,
+        color 0.5s ease-in-out,
+        border-color 0.5s ease-in-out,
+        box-shadow 0.5s ease-in-out;
+}
+
+/* Transitions override for interactive elements */
+button:hover,
+a:hover,
+.projectCard:hover,
+.stat:hover,
+.button:hover {
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
 }
 
 /* Basic smooth scrolling for anchor links */
 a {
     text-decoration: none;
     color: inherit;
+    outline: none;
 }
 
 img {
     max-width: 100%;
     height: auto;
+}
+
+/* Selection styling */
+::selection {
+    background: var(--primary-light);
+    color: var(--primary-color);
+}
+
+/* Focus state styling */
+:focus {
+    outline: 2px solid var(--border-focused);
+    outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+:focus-visible {
+    outline: 2px solid var(--border-focused);
+    outline-offset: 2px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-light);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--border-medium);
 }
 
 /* Locomotive Scroll v4+ compatibility */

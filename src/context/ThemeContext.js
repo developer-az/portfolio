@@ -1,4 +1,3 @@
-// src/context/ThemeContext.js
 'use client';
 
 import React, { createContext, useState, useEffect, useContext } from 'react';
@@ -6,46 +5,51 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  // Check for saved theme preference or use system preference
-  const [theme, setTheme] = useState('dark');
+  // Ensure stable initial state before hydration
+  const [theme, setTheme] = useState('dark'); // Default to dark theme
+  const [mounted, setMounted] = useState(false);
   
+  // After component mounts, check for saved preference and apply it
   useEffect(() => {
-    // Load theme from localStorage on initial render
+    setMounted(true);
+    
+    // First try to get from localStorage
     const savedTheme = localStorage.getItem('theme');
     
     if (savedTheme) {
       setTheme(savedTheme);
-      document.documentElement.classList.remove('light-theme', 'dark-theme');
-      document.documentElement.classList.add(`${savedTheme}-theme`);
     } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
       setTheme('light');
-      document.documentElement.classList.add('light-theme');
-    } else {
-      document.documentElement.classList.add('dark-theme');
     }
   }, []);
   
-  // Update document attributes when theme changes
+  // Apply theme class to document element when theme changes
   useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark-theme');
-      document.documentElement.classList.remove('light-theme');
-    } else {
-      document.documentElement.classList.add('light-theme');
-      document.documentElement.classList.remove('dark-theme');
-    }
+    if (!mounted) return;
     
-    // Save theme preference
+    // Remove all theme classes
+    document.documentElement.classList.remove('light-theme', 'dark-theme');
+    
+    // Add current theme class
+    document.documentElement.classList.add(`${theme}-theme`);
+    
+    // Save preference
     localStorage.setItem('theme', theme);
-  }, [theme]);
+  }, [theme, mounted]);
   
   // Toggle theme function
   const toggleTheme = () => {
     setTheme(prevTheme => (prevTheme === 'dark' ? 'light' : 'dark'));
   };
   
+  // Only provide theme context after component has mounted
+  // to avoid hydration mismatch
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ 
+      theme, 
+      toggleTheme,
+      mounted  // Include mounted state so consumers can check
+    }}>
       {children}
     </ThemeContext.Provider>
   );

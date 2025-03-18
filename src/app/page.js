@@ -8,16 +8,12 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 
-// Import all components including ResumeSection
+// Import components
 import EnhancedBackground from '../components/EnhancedBackground';
 import ProfileSection from '../components/ProfileSection';
-import ProjectCard from '../components/ProjectCard';
-import SkillsSection from '../components/SkillsSection';
-import ContactSection from '../components/ContactSection';
 import ResumeSection from '../components/ResumeSection';
-
-// Remove the direct import of useTheme for now
-// import { useTheme } from '@/context/ThemeContext';
+import WorkSection from '../components/WorkSection'; // Add this import
+import ContactSection from '../components/ContactSection';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -28,7 +24,7 @@ export default function Home() {
   
   // Set a default theme instead of trying to use the context
   const [currentTheme, setCurrentTheme] = useState('dark');
-  
+
   // Detect theme from HTML class on initial load
   useEffect(() => {
     const isDarkTheme = document.documentElement.classList.contains('dark-theme');
@@ -64,11 +60,6 @@ export default function Home() {
   // Refs for GSAP animations
   const header = useRef(null);
   const portfolioContent = useRef(null);
-
-  // Project data remains the same as before
-  const projects = [
-    // ... your existing projects array
-  ];
 
   useEffect(() => {
     // Initialize GSAP plugins
@@ -108,7 +99,7 @@ export default function Home() {
     };
   }, [showPortfolio]);
 
-  // Handle scroll to update active section (same as before)
+  // Handle scroll to update active section
   useEffect(() => {
     if (showPortfolio) {
       const handleScroll = () => {
@@ -150,12 +141,12 @@ export default function Home() {
     }
   }, [showPortfolio, currentTheme]);
 
-  // Mouse tracking for intro effect (same as before)
+  // Mouse tracking for intro effect
   const [isHovered, setIsHovered] = useState(false);
   const { x, y } = useMousePosition();
   const size = isHovered ? 400 : 40;
 
-  // Navigation components (add resume links as in the previous solution)
+  // Navigation components
   const Navigation = ({ currentPath }) => {
     // Only show the Home link when not on the main page
     const isMainPage = currentPath === '/' || !currentPath;
@@ -167,11 +158,10 @@ export default function Home() {
             Home
           </Link>
         )}
-        <a href="#about" className={styles.navLink}>About</a>
-        <a href="#skills" className={styles.navLink}>Skills</a>
-        <a href="#resume" className={styles.navLink}>Resume</a>
-        <a href="#work" className={styles.navLink}>Work</a>
-        <a href="#contact" className={styles.navLink}>Contact</a>
+        <a href="#about" className={`${styles.navLink} ${activeSection === 'about' ? styles.active : ''}`}>About</a>
+        <a href="#resume" className={`${styles.navLink} ${activeSection === 'resume' ? styles.active : ''}`}>Resume</a>
+        <a href="#work" className={`${styles.navLink} ${activeSection === 'work' ? styles.active : ''}`}>Work</a>
+        <a href="#contact" className={`${styles.navLink} ${activeSection === 'contact' ? styles.active : ''}`}>Contact</a>
         <Link href="/instagram-analyzer" className={styles.navLink}>
           Instagram Analyzer
         </Link>
@@ -200,13 +190,6 @@ export default function Home() {
             className={styles.navLink}
           >
             About
-          </a>
-          <a 
-            href="#skills" 
-            onClick={() => setMobileMenuOpen(false)}
-            className={styles.navLink}
-          >
-            Skills
           </a>
           <a 
             href="#resume" 
@@ -332,109 +315,16 @@ export default function Home() {
 
           {/* Portfolio Content */}
           <div ref={portfolioContent} className={styles.portfolioContent}>
-            {/* Hero Section with Profile */}
+            {/* About Section with Profile */}
             <section id="about" className={styles.about}>
               <ProfileSection />
             </section>
             
-            {/* Skills Section */}
-            <SkillsSection />
-            
-            {/* Resume Section - Added here */}
+            {/* Resume Section */}
             <ResumeSection />
             
-            {/* Work Section */}
-            <section id="work" className={styles.work}>
-              <div className={styles.container}>
-                <div className={styles.sectionHeader}>
-                  <h2 className={styles.sectionTitle}>Selected Work</h2>
-                  <p className={styles.sectionDescription}>
-                    Explore my latest projects showcasing my skills and expertise in web development and software engineering.
-                  </p>
-                </div>
-                
-                <div className={styles.projectGrid}>
-                  {projects.map((project, index) => (
-                    <ProjectCard
-                      key={index}
-                      title={project.title}
-                      description={project.description}
-                      technologies={project.technologies}
-                      demoLink={project.demoLink}
-                      repoLink={project.repoLink}
-                      icon={project.icon}
-                      iconLabel={project.iconLabel}
-                    />
-                  ))}
-                </div>
-              </div>
-              
-              {/* Decorative elements */}
-              <div className={styles.decorativeElement1}></div>
-              <div className={styles.decorativeElement2}></div>
-            </section>
-            
-            {/* Leadership Section */}
-            <section id="leadership" className={styles.leadership}>
-              <div className={styles.container}>
-                <div className={styles.sectionHeader}>
-                  <h2 className={styles.sectionTitle}>Leadership & Community</h2>
-                  <p className={styles.sectionDescription}>
-                    Beyond technical skills, I'm committed to leadership and community engagement.
-                  </p>
-                </div>
-                
-                {/* Teaching Assistant Position */}
-                <div className={styles.leadershipCard}>
-                  <div className={styles.cardHeader}>
-                    <div className={styles.roleIcon}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 20h9"></path>
-                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                      </svg>
-                    </div>
-                    <div className={styles.roleInfo}>
-                      <h3>Undergraduate Teaching Assistant</h3>
-                      <p className={styles.organization}>Financial Literacy and Stocks (BSOS201)</p>
-                      <p className={styles.duration}>College Park, MD • August 2024 - Present</p>
-                    </div>
-                  </div>
-                  
-                  <div className={styles.cardBody}>
-                    <ul className={styles.responsibilities}>
-                      <li>Supported students in grasping stock market trends, Technical Analysis, & Portfolio Management as a Grading & Teaching Assistant utilizing Excel</li>
-                      <li>Engineered the integration of financial modeling software & data visualization tools (TC2000 & IBD) for fall 2024 students, resulting in a +15% surge in personal portfolio performance compared to the previous year</li>
-                    </ul>
-                  </div>
-                </div>
-                
-                {/* Orientation Advisor Position */}
-                <div className={styles.leadershipCard}>
-                  <div className={styles.cardHeader}>
-                    <div className={styles.roleIcon}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                      </svg>
-                    </div>
-                    <div className={styles.roleInfo}>
-                      <h3>Orientation Advisor</h3>
-                      <p className={styles.organization}>College of Computer, Mathematical, and Natural Sciences</p>
-                      <p className={styles.duration}>College Park, MD • May 2024 - January 2025</p>
-                    </div>
-                  </div>
-                  
-                  <div className={styles.cardBody}>
-                    <ul className={styles.responsibilities}>
-                      <li>Facilitated the initial steps for incoming students at the university, offering guidance to over 200 individuals per session using resource guides</li>
-                      <li>Cultivated an inclusive & inviting environment to ensure a seamless transition for new students</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </section>
+            {/* Work Section - Now using the dedicated component */}
+            <WorkSection />
             
             {/* Contact Section */}
             <ContactSection />
@@ -451,9 +341,8 @@ export default function Home() {
                 </div>
                 
                 <div className={styles.scrollToTop}>
-                  <button 
-                    onClick={(e) => {
-                      e.preventDefault();
+                  <motion.button 
+                    onClick={() => {
                       window.scrollTo({
                         top: 0,
                         behavior: 'smooth'
@@ -461,12 +350,14 @@ export default function Home() {
                     }}
                     aria-label="Scroll to top"
                     className={styles.scrollTopButton}
+                    whileHover={{ y: -5 }}
+                    whileTap={{ scale: 0.9 }}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="12" y1="19" x2="12" y2="5"></line>
                       <polyline points="5 12 12 5 19 12"></polyline>
                     </svg>
-                  </button>
+                  </motion.button>
                 </div>
               </div>
             </footer>

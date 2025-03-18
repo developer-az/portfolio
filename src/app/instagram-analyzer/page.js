@@ -5,10 +5,6 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 
-// Import enhanced components
-// Assumes EnhancedBackground is available - otherwise, you can remove this import
-// import { EnhancedBackground } from '../../components';
-
 export default function InstagramAnalyzer() {
   const [followersFile, setFollowersFile] = useState(null);
   const [followingFile, setFollowingFile] = useState(null);
@@ -21,7 +17,7 @@ export default function InstagramAnalyzer() {
   const followingInputRef = useRef(null);
   const headerRef = useRef(null);
 
-  // Add scroll effect for header
+  // Header scroll effect for slight background/light shadow changes
   useEffect(() => {
     const handleScroll = () => {
       if (headerRef.current) {
@@ -34,7 +30,6 @@ export default function InstagramAnalyzer() {
         }
       }
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -73,24 +68,18 @@ export default function InstagramAnalyzer() {
     }
 
     try {
-      // Read the files
       const followersText = await followersFile.text();
       const followingText = await followingFile.text();
-
-      // Extract usernames
       const followers = extractUsernamesFromHtml(followersText);
       const following = extractUsernamesFromHtml(followingText);
 
       if (followers.length === 0 || following.length === 0) {
-        setError('Could not extract Instagram usernames from the uploaded files. Please ensure you\'re uploading the correct HTML files from Instagram.');
+        setError('Could not extract Instagram usernames from the files. Ensure you are uploading the correct HTML files.');
         setIsLoading(false);
         return;
       }
 
-      // Find unfollowers
       const unfollowers = findUnfollowers(followers, following);
-
-      // Remove duplicates
       const uniqueUnfollowers = [...new Set(unfollowers)];
 
       setResults({
@@ -111,13 +100,11 @@ export default function InstagramAnalyzer() {
     setFollowingFile(null);
     setResults(null);
     setError(null);
-    
-    // Reset file inputs
     if (followersInputRef.current) followersInputRef.current.value = "";
     if (followingInputRef.current) followingInputRef.current.value = "";
   };
 
-  // Tutorial component
+  // Tutorial component – text has been lightly adjusted for clarity
   const InstagramDataTutorial = () => (
     <motion.div 
       className={styles.tutorialOverlay}
@@ -139,22 +126,22 @@ export default function InstagramAnalyzer() {
           <div className={styles.stepNumber}>1</div>
           <div className={styles.stepContent}>
             <h3>Log in to Instagram</h3>
-            <p>Open Instagram in a web browser and log in to your account.</p>
+            <p>Open Instagram in your browser and sign in.</p>
           </div>
         </div>
         
         <div className={styles.tutorialStep}>
           <div className={styles.stepNumber}>2</div>
           <div className={styles.stepContent}>
-            <h3>Access Your Account Settings</h3>
-            <p>Click on your profile picture in the top right, then select <strong>Settings and privacy</strong>.</p>
+            <h3>Access Settings</h3>
+            <p>Click your profile picture and select <strong>Settings and privacy</strong>.</p>
           </div>
         </div>
         
         <div className={styles.tutorialStep}>
           <div className={styles.stepNumber}>3</div>
           <div className={styles.stepContent}>
-            <h3>Request Download</h3>
+            <h3>Request Data</h3>
             <p>Scroll to <strong>Data download</strong> and click <strong>Request download</strong>.</p>
           </div>
         </div>
@@ -162,32 +149,24 @@ export default function InstagramAnalyzer() {
         <div className={styles.tutorialStep}>
           <div className={styles.stepNumber}>4</div>
           <div className={styles.stepContent}>
-            <h3>Choose Format</h3>
-            <p>Select <strong>HTML</strong> as the format and choose <strong>Information about you</strong>.</p>
+            <h3>Select HTML</h3>
+            <p>Choose <strong>HTML</strong> format and select <strong>Information about you</strong>.</p>
           </div>
         </div>
         
         <div className={styles.tutorialStep}>
           <div className={styles.stepNumber}>5</div>
           <div className={styles.stepContent}>
-            <h3>Provide Your Email & Password</h3>
-            <p>Enter your email and password, then submit your request.</p>
+            <h3>Confirm & Download</h3>
+            <p>Enter your email and password, then submit. Instagram will email you the download link (usually within 48 hours).</p>
           </div>
         </div>
         
         <div className={styles.tutorialStep}>
           <div className={styles.stepNumber}>6</div>
           <div className={styles.stepContent}>
-            <h3>Download Your Data</h3>
-            <p>Instagram will email you a link to download your data when it's ready (usually within 48 hours).</p>
-          </div>
-        </div>
-        
-        <div className={styles.tutorialStep}>
-          <div className={styles.stepNumber}>7</div>
-          <div className={styles.stepContent}>
-            <h3>Extract & Locate Files</h3>
-            <p>Download and extract the ZIP file. Look for <strong>followers.html</strong> and <strong>following.html</strong> files in the extracted folder.</p>
+            <h3>Extract Files</h3>
+            <p>Extract the ZIP file and locate <strong>followers.html</strong> and <strong>following.html</strong>.</p>
           </div>
         </div>
         
@@ -197,7 +176,7 @@ export default function InstagramAnalyzer() {
             <line x1="12" y1="8" x2="12" y2="12"></line>
             <line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>
-          <p>Your data is processed entirely in your browser. No information is sent to any server, making this tool completely private and secure.</p>
+          <p>Your data is processed entirely in your browser – ensuring complete privacy.</p>
         </div>
         
         <button 
@@ -212,9 +191,6 @@ export default function InstagramAnalyzer() {
 
   return (
     <div className={styles.mainWrapper}>
-      {/* Optional: Add the enhanced background */}
-      {/*<EnhancedBackground color="#121212" />*/}
-      
       <div className={styles.portfolioWrapper}>
         {/* Header */}
         <header ref={headerRef} className={styles.header}>
@@ -244,169 +220,153 @@ export default function InstagramAnalyzer() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
-              <div
-                className={`${styles.menuButtonLine} ${
-                  mobileMenuOpen ? styles.active : ""
-                }`}
-              ></div>
-              <div
-                className={`${styles.menuButtonLine} ${
-                  mobileMenuOpen ? styles.active : ""
-                }`}
-              ></div>
-              <div
-                className={`${styles.menuButtonLine} ${
-                  mobileMenuOpen ? styles.active : ""
-                }`}
-              ></div>
+              <div className={`${styles.menuButtonLine} ${mobileMenuOpen ? styles.active : ""}`}></div>
+              <div className={`${styles.menuButtonLine} ${mobileMenuOpen ? styles.active : ""}`}></div>
+              <div className={`${styles.menuButtonLine} ${mobileMenuOpen ? styles.active : ""}`}></div>
             </button>
           </div>
 
           {/* Mobile Menu */}
           <div className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ""}`}>
             <div className={styles.mobileMenuContent}>
-              <Link href="/" onClick={() => setMobileMenuOpen(false)}>
-                Home
-              </Link>
-              <Link href="/#about" onClick={() => setMobileMenuOpen(false)}>
-                About
-              </Link>
-              <Link href="/#work" onClick={() => setMobileMenuOpen(false)}>
-                Work
-              </Link>
-              <Link href="/#contact" onClick={() => setMobileMenuOpen(false)}>
-                Contact
-              </Link>
+              <Link href="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
+              <Link href="/#about" onClick={() => setMobileMenuOpen(false)}>About</Link>
+              <Link href="/#work" onClick={() => setMobileMenuOpen(false)}>Work</Link>
+              <Link href="/#contact" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
             </div>
           </div>
         </header>
 
         <div className={styles.portfolioContent}>
           <section className={styles.instagramAnalyzer}>
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <h2>Instagram Follower Analyzer</h2>
-              <p>Find out who doesn't follow you back on Instagram by uploading your followers and following HTML files.</p>
-              
-              <div className={styles.instructions}>
-                <h3>How to use:</h3>
-                <ol>
-                  <li>Go to your Instagram account and download your data in HTML format 
-                    <button 
-                      className={styles.tutorialButton}
-                      onClick={() => setShowTutorial(true)}
-                    >
-                      See how
-                    </button>
-                  </li>
-                  <li>Upload your <strong>followers.html</strong> and <strong>following.html</strong> files</li>
-                  <li>Click analyze to see who doesn't follow you back</li>
-                </ol>
-                <p className={styles.privacyNote}>Your files are processed entirely in your browser. No data is sent to any server.</p>
+            {/* Content Wrapper to ensure text fits nicely */}
+            <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <h1>~</h1>
+                <h2>Instagram Follower Analyzer</h2>
+                <p>Discover who isn't following you back by simply uploading your Instagram HTML data files.</p>
+              </motion.div>
+            </div>
+
+            <div className={styles.instructions}>
+              <h3>How to Use</h3>
+              <ol>
+                <li>
+                  Visit Instagram and download your data in HTML format{' '}
+                  <button 
+                    className={styles.tutorialButton}
+                    onClick={() => setShowTutorial(true)}
+                  >
+                    See How
+                  </button>
+                </li>
+                <li>Upload your <strong>followers.html</strong> and <strong>following.html</strong> files</li>
+                <li>Click <strong>Analyze</strong> to view unfollowers</li>
+              </ol>
+              <p className={styles.privacyNote}>Your files are processed in your browser. No data is sent to any server.</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className={styles.analyzerForm}>
+              <div className={styles.fileInputs}>
+                <div className={styles.fileInput}>
+                  <label>Followers HTML File</label>
+                  <input 
+                    type="file" 
+                    accept=".html, .htm" 
+                    onChange={handleFollowersFileChange}
+                    ref={followersInputRef}
+                  />
+                  {followersFile && <p className={styles.fileName}>Selected: {followersFile.name}</p>}
+                </div>
+
+                <div className={styles.fileInput}>
+                  <label>Following HTML File</label>
+                  <input 
+                    type="file" 
+                    accept=".html, .htm" 
+                    onChange={handleFollowingFileChange}
+                    ref={followingInputRef}
+                  />
+                  {followingFile && <p className={styles.fileName}>Selected: {followingFile.name}</p>}
+                </div>
               </div>
 
-              <form onSubmit={handleSubmit} className={styles.analyzerForm}>
-                <div className={styles.fileInputs}>
-                  <div className={styles.fileInput}>
-                    <label>Followers HTML file:</label>
-                    <input 
-                      type="file" 
-                      accept=".html, .htm" 
-                      onChange={handleFollowersFileChange}
-                      ref={followersInputRef}
-                    />
-                    {followersFile && <p className={styles.fileName}>Selected: {followersFile.name}</p>}
-                  </div>
-
-                  <div className={styles.fileInput}>
-                    <label>Following HTML file:</label>
-                    <input 
-                      type="file" 
-                      accept=".html, .htm" 
-                      onChange={handleFollowingFileChange}
-                      ref={followingInputRef}
-                    />
-                    {followingFile && <p className={styles.fileName}>Selected: {followingFile.name}</p>}
-                  </div>
-                </div>
-
-                <div className={styles.buttonGroup}>
-                  <button 
-                    type="submit" 
-                    className={styles.analyzeButton}
-                    disabled={isLoading || (!followersFile || !followingFile)}
-                  >
-                    {isLoading ? 'Analyzing...' : 'Analyze'}
-                  </button>
-                  
-                  {(followersFile || followingFile || results) && (
-                    <button 
-                      type="button" 
-                      className={styles.resetButton}
-                      onClick={resetForm}
-                      disabled={isLoading}
-                    >
-                      Reset
-                    </button>
-                  )}
-                </div>
-              </form>
-
-              {error && (
-                <div className={styles.error}>
-                  <p>{error}</p>
-                </div>
-              )}
-
-              {results && (
-                <motion.div 
-                  className={styles.results}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5 }}
+              <div className={styles.buttonGroup}>
+                <button 
+                  type="submit" 
+                  className={styles.analyzeButton}
+                  disabled={isLoading || (!followersFile || !followingFile)}
                 >
-                  <h3>Analysis Results</h3>
-                  <div className={styles.stats}>
-                    <div className={styles.stat}>
-                      <span className={styles.statNumber}>{results.followingCount}</span>
-                      <span className={styles.statLabel}>Following</span>
-                    </div>
-                    <div className={styles.stat}>
-                      <span className={styles.statNumber}>{results.followersCount}</span>
-                      <span className={styles.statLabel}>Followers</span>
-                    </div>
-                    <div className={styles.stat}>
-                      <span className={styles.statNumber}>{results.unfollowersCount}</span>
-                      <span className={styles.statLabel}>Not Following Back</span>
-                    </div>
-                  </div>
+                  {isLoading ? 'Analyzing...' : 'Analyze'}
+                </button>
+                {(followersFile || followingFile || results) && (
+                  <button 
+                    type="button" 
+                    className={styles.resetButton}
+                    onClick={resetForm}
+                    disabled={isLoading}
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
+            </form>
 
-                  <h4>People who don't follow you back:</h4>
-                  {results.unfollowers.length > 0 ? (
-                    <div className={styles.unfollowersList}>
-                      {results.unfollowers.map((username, index) => (
-                        <div key={index} className={styles.unfollower}>
-                          <span>@{username}</span>
-                          <a 
-                            href={`https://www.instagram.com/${username}`} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className={styles.viewProfileButton}
-                          >
-                            View Profile
-                          </a>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className={styles.noUnfollowers}>Great news! Everyone you follow also follows you back.</p>
-                  )}
-                </motion.div>
-              )}
-            </motion.div>
+            {error && (
+              <div className={styles.error}>
+                <p>{error}</p>
+              </div>
+            )}
+
+            {results && (
+              <motion.div 
+                className={styles.results}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <h3>Analysis Results</h3>
+                <div className={styles.stats}>
+                  <div className={styles.stat}>
+                    <span className={styles.statNumber}>{results.followingCount}</span>
+                    <span className={styles.statLabel}>Following</span>
+                  </div>
+                  <div className={styles.stat}>
+                    <span className={styles.statNumber}>{results.followersCount}</span>
+                    <span className={styles.statLabel}>Followers</span>
+                  </div>
+                  <div className={styles.stat}>
+                    <span className={styles.statNumber}>{results.unfollowersCount}</span>
+                    <span className={styles.statLabel}>Not Following Back</span>
+                  </div>
+                </div>
+
+                <h4>Unfollowers</h4>
+                {results.unfollowers.length > 0 ? (
+                  <div className={styles.unfollowersList}>
+                    {results.unfollowers.map((username, index) => (
+                      <div key={index} className={styles.unfollower}>
+                        <span>@{username}</span>
+                        <a 
+                          href={`https://www.instagram.com/${username}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className={styles.viewProfileButton}
+                        >
+                          View Profile
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className={styles.noUnfollowers}>Great news! Everyone you follow also follows you back.</p>
+                )}
+              </motion.div>
+            )}
           </section>
           
           {/* Footer */}
@@ -415,11 +375,9 @@ export default function InstagramAnalyzer() {
               <div className={styles.copyright}>
                 <p>© 2025 Anthony Zhou - All Rights Reserved</p>
               </div>
-              
               <div className={styles.techStack}>
                 <p>Built with Next.js, Framer Motion, and data analysis</p>
               </div>
-              
               <div className={styles.scrollToTop}>
                 <a 
                   href="#" 

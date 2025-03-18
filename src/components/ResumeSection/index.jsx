@@ -1,4 +1,3 @@
-// src/components/ResumeSection/index.jsx
 import React from 'react';
 import { motion } from 'framer-motion';
 import styles from './ResumeSection.module.scss';
@@ -10,8 +9,8 @@ const resumeData = {
       degree: "Bachelor of Science in Computer Science",
       institution: "University of Maryland, College Park",
       location: "College Park, MD",
-      period: "2022 - 2026",
-      description: "Focus on software engineering, data science, and web development."
+      period: "2023 - 2027",
+      description: "Data Science Track, with Focus on software engineering and web development. Minoring in Information Risk Management, Ethics, and Privacy. "
     }
     // Add more education entries as needed
   ],
@@ -41,54 +40,57 @@ const resumeData = {
     // Add more experience entries as needed
   ],
   skills: {
-    technical: ["Python", "JavaScript", "React", "Next.js", "Java", "C", "HTML/CSS", "Data Science", "Git"],
-    soft: ["Problem Solving", "Communication", "Team Leadership", "Project Management", "Attention to Detail"]
+    technical: ["Python", "JavaScript", "React", "Next.js", "Java", "C", "HTML/CSS", "Data Science", "Git", "SQL"],
+    soft: ["Problem Solving", "Team Leadership", "Project Management", "Scrum", "Agile Development", "Public Speaking"]
   },
   certifications: [
     {
       id: 1,
-      name: "Full-Stack Web Development",
+      name: "Frontend Web Development",
       issuer: "University of Maryland",
       date: "2023"
-    }
+    },
+    {
+        id: 2,
+        name: "Python Technical Preparation",
+        issuer: "Code Path",
+        date: "2025"
+      }
     // Add any certifications you have
   ]
 };
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5 }
+  }
+};
+
 const ResumeSection = () => {
-  // Animation variants for staggered reveal
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-  
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 }
-    }
-  };
-  
   return (
     <section className={styles.resumeSection} id="resume">
       <div className={styles.container}>
         <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Resume & Experience</h2>
+          <h2 className={styles.sectionTitle}>Resume &amp; Experience</h2>
           <p className={styles.sectionDescription}>
             My academic background, professional experience, and skill set.
           </p>
-          
           <motion.a 
             href="/resume.pdf" 
-            target="_blank" 
-            rel="noopener noreferrer"
+            download="Anthony_Zhou_Resume.pdf"
             className={styles.downloadButton}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -118,7 +120,6 @@ const ResumeSection = () => {
               </svg>
               Education
             </h3>
-            
             {resumeData.education.map((edu) => (
               <motion.div 
                 key={edu.id} 
@@ -150,7 +151,6 @@ const ResumeSection = () => {
               </svg>
               Professional Experience
             </h3>
-            
             {resumeData.experience.map((exp) => (
               <motion.div 
                 key={exp.id} 
@@ -185,7 +185,6 @@ const ResumeSection = () => {
               </svg>
               Skills
             </h3>
-            
             <motion.div 
               className={styles.skillsContainer}
               variants={itemVariants}
@@ -198,7 +197,6 @@ const ResumeSection = () => {
                   ))}
                 </div>
               </div>
-              
               <div className={styles.skillCategory}>
                 <h4 className={styles.skillCategoryTitle}>Soft Skills</h4>
                 <div className={styles.skillTags}>
@@ -229,7 +227,6 @@ const ResumeSection = () => {
                 </svg>
                 Certifications
               </h3>
-              
               {resumeData.certifications.map((cert) => (
                 <motion.div 
                   key={cert.id} 
@@ -247,8 +244,6 @@ const ResumeSection = () => {
           )}
         </div>
       </div>
-      
-      {/* Decorative elements */}
       <div className={styles.decorativeGrid}></div>
       <div className={styles.decorativeBlur}></div>
     </section>
