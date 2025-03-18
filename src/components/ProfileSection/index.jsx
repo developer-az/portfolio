@@ -27,7 +27,7 @@ const ProfileSection = () => {
                   style={{ y: imageY }}
                 >
                   <Image
-                    src="/images/IMG.png"
+                    src="/images/1.png"
                     alt="Anthony Zhou"
                     width={400}
                     height={400}
@@ -55,7 +55,7 @@ const ProfileSection = () => {
                 
                 <p className={styles.bio}>
                   I'm a passionate developer dedicated to building exceptional software solutions and 
-                  user experiences. With expertise in full-stack development and UI/UX design---Currently looking for Software Engineering Roles.
+                  user experiences. With expertise in full-stack development and UI/UX design
                 </p>
                 
                 <div className={styles.statRow}>
