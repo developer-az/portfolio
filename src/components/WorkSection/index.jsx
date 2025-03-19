@@ -3,48 +3,84 @@ import { motion, AnimatePresence, useInView } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './WorkSection.module.scss';
+import ProjectDetailModal from './ProjectDetailModal';
 
-// Project data (expanded with more details)
+// Real project data with complete details
 const projects = [
   {
     id: 1,
     title: "Instagram Analyzer",
-    description: "A privacy-focused tool that helps users identify who isn't following them back on Instagram. Uses client-side processing for complete privacy.",
-    technologies: ["Next.js", "React", "JavaScript", "Data Analysis"],
+    description: "A privacy-focused tool that helps users identify who isn't following them back on Instagram without uploading any data to external servers.",
+    longDescription: "This client-side application was built with privacy as the top priority. It processes Instagram data entirely in the browser to identify users who don't follow you back. The tool never uploads user data to any server, ensuring complete data privacy and security while providing valuable social media analytics.",
+    technologies: ["Next.js", "React", "JavaScript", "Client-side Processing"],
     image: "/images/projects/instagram-analyzer.jpg",
+    gif: "/images/projects/gif1.gif",
     demoLink: "/instagram-analyzer",
     repoLink: "https://github.com/developer-az/instagram-analyzer",
     category: "web",
+    features: [
+      "Complete client-side processing for ultimate privacy",
+      "Clean, intuitive UI with dark/light mode support",
+      "Detailed analytics with user counts and statistics",
+      "Interactive user list with profile links"
+    ]
   },
   {
     id: 2,
     title: "Portfolio Website",
-    description: "Modern portfolio featuring fluid animations, responsive design, and theme toggling capabilities. Built with performance and accessibility in mind.",
+    description: "Modern portfolio featuring fluid animations, responsive design, and theme toggling capabilities.",
+    longDescription: "A performance-optimized Next.js-based portfolio showcasing my projects and skills. Features include smooth animations with Framer Motion, responsive design for all devices, theme switching capabilities, and dynamic content sections. Built with accessibility and SEO best practices in mind.",
     technologies: ["Next.js", "Framer Motion", "SCSS", "Responsive Design"],
     image: "/images/projects/portfolio.jpg",
+    gif: "/images/projects/gif2.gif",
     demoLink: "/",
     repoLink: "https://github.com/developer-az/portfolio",
     category: "web",
+    features: [
+      "Smooth page transitions and scroll animations",
+      "Dark/light theme toggle with system preference detection",
+      "Interactive project cards with 3D effects",
+      "Fully responsive across all device sizes",
+      "Optimized images and lazy loading for performance"
+    ]
   },
   {
     id: 3,
     title: "Financial Dashboard",
-    description: "Real-time financial data visualization dashboard with interactive charts and data filtering capabilities.",
-    technologies: ["React", "D3.js", "Material UI", "Financial API"],
+    description: "Interactive dashboard for visualizing and analyzing financial market data with customizable chart components.",
+    longDescription: "A comprehensive financial data visualization platform featuring real-time market data, customizable charts, and technical indicators. Users can track stocks, cryptocurrencies, and other assets with personalized watchlists and receive market alerts based on custom parameters.",
+    technologies: ["React", "D3.js", "Material UI", "Financial APIs"],
     image: "/images/projects/finance.jpg",
-    demoLink: "#",
+    gif: "/images/projects/gif3.gif",
+    demoLink: "https://finance-dashboard-demo.vercel.app",
     repoLink: "https://github.com/developer-az/finance-dashboard",
     category: "data",
+    features: [
+      "Real-time financial data visualization",
+      "Interactive charts with zoom, pan, and tooltip functionality",
+      "Customizable technical indicators",
+      "Portfolio performance tracking",
+      "Market alerts and notifications"
+    ]
   },
   {
     id: 4,
     title: "ML Text Classifier",
-    description: "Natural language processing application that classifies text using machine learning algorithms.",
-    technologies: ["Python", "TensorFlow", "NLP", "ML"],
+    description: "Natural language processing application that classifies text using machine learning algorithms with high accuracy.",
+    longDescription: "An advanced NLP application that leverages machine learning to classify text into predefined categories. The system uses a combination of TensorFlow models and pre-trained language models to achieve high accuracy. Features include multi-language support, sentiment analysis, and custom category training.",
+    technologies: ["Python", "TensorFlow", "NLP", "Machine Learning"],
     image: "/images/projects/ml.jpg",
-    demoLink: "#",
+    gif: "/images/projects/gif4.gif",
+    demoLink: "https://ml-text-classifier-demo.vercel.app",
     repoLink: "https://github.com/developer-az/ml-text-classifier",
     category: "ml",
+    features: [
+      "Multi-language support for text classification",
+      "High-accuracy sentiment analysis",
+      "Custom category training for specialized applications",
+      "Exportable models for offline use",
+      "Batch processing capabilities for large datasets"
+    ]
   },
 ];
 
@@ -98,6 +134,7 @@ const cardVariants = {
 const WorkSection = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [filteredProjects, setFilteredProjects] = useState(projects);
+  const [selectedProject, setSelectedProject] = useState(null);
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: false, amount: 0.1 });
   
@@ -109,6 +146,16 @@ const WorkSection = () => {
         : projects.filter(project => project.category === activeFilter)
     );
   }, [activeFilter]);
+
+  // Open project detail modal
+  const openProjectModal = (project) => {
+    setSelectedProject(project);
+  };
+
+  // Close project detail modal
+  const closeProjectModal = () => {
+    setSelectedProject(null);
+  };
 
   return (
     <section ref={sectionRef} className={styles.workSection} id="work">
@@ -174,6 +221,7 @@ const WorkSection = () => {
                   whileHover="hover"
                   initial="hidden"
                   animate="visible"
+                  onClick={() => openProjectModal(project)}
                 >
                   <div className={styles.projectImageContainer}>
                     {project.image ? (
@@ -181,7 +229,7 @@ const WorkSection = () => {
                         <div
                           className={styles.projectImage}
                           style={{
-                            backgroundImage: `url(${project.image})`,
+                            backgroundImage: `url(${project.gif || project.image})`,
                           }}
                         />
                         <motion.div 
@@ -191,7 +239,7 @@ const WorkSection = () => {
                         >
                           <div className={styles.overlayContent}>
                             <h4>{project.title}</h4>
-                            <p>View Project</p>
+                            <p>View Details</p>
                           </div>
                         </motion.div>
                       </>
@@ -202,11 +250,16 @@ const WorkSection = () => {
                     )}
                     <div className={styles.projectOverlay}>
                       <div className={styles.projectTech}>
-                        {project.technologies.map((tech, index) => (
+                        {project.technologies.slice(0, 3).map((tech, index) => (
                           <span key={index} className={styles.techBadge}>
                             {tech}
                           </span>
                         ))}
+                        {project.technologies.length > 3 && (
+                          <span className={`${styles.techBadge} ${styles.moreBadge}`}>
+                            +{project.technologies.length - 3}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -220,6 +273,7 @@ const WorkSection = () => {
                         <Link
                           href={project.demoLink}
                           className={styles.projectLink}
+                          onClick={(e) => e.stopPropagation()} // Prevent card click event
                         >
                           <span>Demo</span>
                           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -236,6 +290,7 @@ const WorkSection = () => {
                           className={`${styles.projectLink} ${styles.githubLink}`}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()} // Prevent card click event
                         >
                           <span>Code</span>
                           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -281,6 +336,16 @@ const WorkSection = () => {
           </motion.a>
         </motion.div>
       </div>
+
+      {/* Project Detail Modal */}
+      <AnimatePresence>
+        {selectedProject && (
+          <ProjectDetailModal 
+            project={selectedProject} 
+            onClose={closeProjectModal} 
+          />
+        )}
+      </AnimatePresence>
 
       {/* Decorative elements */}
       <div className={styles.decorativeElement1} />

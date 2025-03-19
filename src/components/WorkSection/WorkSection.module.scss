@@ -142,6 +142,7 @@
     transform-style: preserve-3d;
     will-change: transform;
     border: 1px solid var(--border-light);
+    cursor: pointer;
     
     &:hover {
       border-color: var(--border-medium);
@@ -259,6 +260,11 @@
             font-weight: 500;
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
+          }
+          
+          .moreBadge {
+            background: rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.9);
           }
         }
       }

@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Header.module.scss';
-import Nav from './nav';
+import RoundedButton from '../../common/RoundedButton';
+import Magnetic from '../../common/Magnetic';
 
-const Header = ({ currentPath, activeSection }) => {
+const Header = ({ activeSection }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const headerRef = useRef(null);
 
@@ -46,37 +47,46 @@ const Header = ({ currentPath, activeSection }) => {
 
         {/* Desktop Navigation */}
         <div className={styles.nav}>
-          <Link href="/#home" className={`${styles.navLink} ${isActive("home") ? styles.active : ""}`}>
-            Home
-          </Link>
-          <Link href="/#about" className={`${styles.navLink} ${isActive("about") ? styles.active : ""}`}>
-            About
-          </Link>
-          <Link href="/#work" className={`${styles.navLink} ${isActive("work") ? styles.active : ""}`}>
-            Work
-          </Link>
-          <Link href="/#contact" className={`${styles.navLink} ${isActive("contact") ? styles.active : ""}`}>
-            Contact
-          </Link>
-          <Link href="/instagram-analyzer" className={styles.navLink}>
-            Instagram Analyzer
-          </Link>
+          <Magnetic>
+            <Link href="/#home" className={`${styles.navLink} ${isActive("home") ? styles.active : ""}`}>
+              Home
+            </Link>
+          </Magnetic>
+          <Magnetic>
+            <Link href="/#about" className={`${styles.navLink} ${isActive("about") ? styles.active : ""}`}>
+              About
+            </Link>
+          </Magnetic>
+          <Magnetic>
+            <Link href="/#work" className={`${styles.navLink} ${isActive("work") ? styles.active : ""}`}>
+              Work
+            </Link>
+          </Magnetic>
+          <Magnetic>
+            <Link href="/#contact" className={`${styles.navLink} ${isActive("contact") ? styles.active : ""}`}>
+              Contact
+            </Link>
+          </Magnetic>
+          <Magnetic>
+            <Link href="/instagram-analyzer" className={styles.navLink}>
+              Instagram Analyzer
+            </Link>
+          </Magnetic>
         </div>
 
         {/* Mobile Menu Button */}
-        <button
-          className={styles.menuButton}
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle menu"
-        >
-          <div className={`${styles.menuButtonLine} ${mobileMenuOpen ? styles.active : ""}`}></div>
-          <div className={`${styles.menuButtonLine} ${mobileMenuOpen ? styles.active : ""}`}></div>
-          <div className={`${styles.menuButtonLine} ${mobileMenuOpen ? styles.active : ""}`}></div>
-        </button>
+        <div className={styles.headerButtonContainer}>
+          <RoundedButton 
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+            className={styles.menuButton}
+          >
+            <div className={`${styles.burger} ${mobileMenuOpen ? styles.burgerActive : ""}`}></div>
+          </RoundedButton>
+        </div>
       </div>
 
       {/* Mobile Menu Overlay */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {mobileMenuOpen && (
           <motion.div 
             className={styles.mobileMenu}
