@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, useInView, useSpring, useMotionValue, useTransform } from 'framer-motion';
 import styles from './SkillsSection.module.scss';
 
-// Skill categories and items
+// Skill categories and items - reusing your existing data
 const skillsData = [
   {
     category: "Programming Languages",
@@ -37,7 +37,116 @@ const skillsData = [
   }
 ];
 
-// Icon components mapping
+// Using the existing icon components
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const skillItemVariants = {
+  hidden: { opacity: 0, y: 20, rotateX: -5 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    rotateX: 0,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 20
+    }
+  }
+};
+
+// 3D Skill Block Component
+const SkillBlock = ({ skill, index }) => {
+  const blockRef = useRef(null);
+  
+  // Mouse tracking values for 3D effect
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  
+  // Convert mouse movement to rotation
+  const rotateX = useTransform(y, [-100, 100], [10, -10]);  
+  const rotateY = useTransform(x, [-100, 100], [-10, 10]);
+  
+  // Add spring physics for smoother movement
+  const springConfig = { stiffness: 150, damping: 15 };
+  const rotateXSpring = useSpring(rotateX, springConfig);
+  const rotateYSpring = useSpring(rotateY, springConfig);
+
+  // Handle mouse move for 3D effect
+  const handleMouseMove = (e) => {
+    if (!blockRef.current) return;
+    
+    const rect = blockRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    const mouseX = e.clientX - centerX;
+    const mouseY = e.clientY - centerY;
+    
+    x.set(mouseX);
+    y.set(mouseY);
+  };
+  
+  // Reset rotation when mouse leaves
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      ref={blockRef}
+      className={styles.skillBlock}
+      variants={skillItemVariants}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateX: rotateXSpring,
+        rotateY: rotateYSpring,
+        transformPerspective: 1200,
+        transformStyle: "preserve-3d"
+      }}
+      whileHover={{ 
+        z: 20, 
+        boxShadow: "0 15px 30px rgba(0, 0, 0, 0.2)"
+      }}
+    >
+      {/* Top edge highlight */}
+      <div className={styles.blockTopEdge}></div>
+      
+      {/* Side edge shadow */}
+      <div className={styles.blockSideEdge}></div>
+      
+      {/* Icon container */}
+      <div className={styles.blockIconContainer}>
+        {IconComponents[skill.icon]}
+      </div>
+      
+      {/* Skill name */}
+      <h3 className={styles.blockTitle}>{skill.name}</h3>
+      
+      {/* Level indicator */}
+      <div className={styles.blockLevelContainer}>
+        <motion.div 
+          className={styles.blockLevelBar}
+          initial={{ width: 0 }}
+          animate={{ width: `${skill.level}%` }}
+          transition={{ duration: 1, delay: index * 0.05 + 0.2 }}
+        />
+        <span className={styles.blockLevelText}>{skill.level}%</span>
+      </div>
+    </motion.div>
+  );
+};
+
 const IconComponents = {
   python: (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -156,104 +265,3 @@ const IconComponents = {
     </svg>
   )
 };
-
-// Animation variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
-
-const categoryVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: "easeOut"
-    }
-  }
-};
-
-const SkillsSection = () => {
-  const [activeCategory, setActiveCategory] = useState(0);
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: false, amount: 0.3 });
-  
-  return (
-    <section ref={sectionRef} className={styles.skillsSection} id="skills">
-      <div className={styles.container}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Technical Skills</h2>
-          <p className={styles.sectionDescription}>
-            My expertise spans across various programming languages, frameworks, and methodologies.
-          </p>
-        </div>
-        
-        <div className={styles.skillsContainer}>
-          {/* Category Navigation */}
-          <div className={styles.categoryNav}>
-            {skillsData.map((category, index) => (
-              <button
-                key={index}
-                className={`${styles.categoryButton} ${activeCategory === index ? styles.active : ''}`}
-                onClick={() => setActiveCategory(index)}
-              >
-                {category.category}
-              </button>
-            ))}
-          </div>
-          
-          {/* Skills Display */}
-          <motion.div 
-            className={styles.skillsDisplay}
-            variants={containerVariants}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-          >
-            {skillsData[activeCategory].skills.map((skill, index) => (
-              <motion.div 
-                key={index} 
-                className={styles.skillItem}
-                variants={categoryVariants}
-              >
-                <div className={styles.skillInfo}>
-                  <div className={styles.iconWrapper}>
-                    {IconComponents[skill.icon]}
-                  </div>
-                  <div className={styles.skillDetails}>
-                    <h3 className={styles.skillName}>{skill.name}</h3>
-                    
-                    <div className={styles.skillBar}>
-                      <motion.div 
-                        className={styles.skillProgress} 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${skill.level}%` }}
-                        transition={{ duration: 1, ease: "easeOut", delay: index * 0.1 }}
-                      />
-                    </div>
-                    
-                    <div className={styles.skillLevel}>
-                      <span>{skill.level}%</span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </div>
-      
-      {/* Decorative elements */}
-      <div className={styles.decorativeElement1}></div>
-      <div className={styles.decorativeElement2}></div>
-    </section>
-  );
-};
-
-export default SkillsSection;

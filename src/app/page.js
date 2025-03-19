@@ -14,6 +14,7 @@ import ProfileSection from '../components/ProfileSection';
 import ResumeSection from '../components/ResumeSection';
 import WorkSection from '../components/WorkSection'; // Add this import
 import ContactSection from '../components/ContactSection';
+import SkillsSection from '../components/SkillsSection/index.jsx';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -319,6 +320,8 @@ export default function Home() {
             <section id="about" className={styles.about}>
               <ProfileSection />
             </section>
+
+            
             
             {/* Resume Section */}
             <ResumeSection />
