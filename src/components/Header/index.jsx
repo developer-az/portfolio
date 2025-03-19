@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import styles from './style.module.scss';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { menuSlide } from '../animation';
+import styles from './nav.module.scss';
+import { menuSlide } from '../../animation';
 import Link from './Link';
 import Curve from './Curve';
 import Footer from './Footer';
@@ -13,21 +13,32 @@ const navItems = [
   },
   {
     title: "Work",
-    href: "/work",
+    href: "/#work",
   },
   {
     title: "About",
-    href: "/about",
+    href: "/#about",
   },
   {
     title: "Contact",
-    href: "/contact",
+    href: "/#contact",
   },
-]
+  {
+    title: "Instagram Analyzer",
+    href: "/instagram-analyzer",
+  },
+];
 
-export default function Index() {
-  // Add the missing state declaration
+export default function Nav({ onClose }) {
   const [selectedIndicator, setSelectedIndicator] = useState("/");
+
+  const handleLinkClick = (href) => {
+    setSelectedIndicator(href);
+    if (onClose) {
+      // Allow time for the navigation to register before closing the menu
+      setTimeout(onClose, 300);
+    }
+  };
 
   return (
     <motion.div 
@@ -51,7 +62,7 @@ export default function Index() {
                 key={index} 
                 data={{...data, index}} 
                 isActive={selectedIndicator === data.href} 
-                setSelectedIndicator={setSelectedIndicator}
+                setSelectedIndicator={handleLinkClick}
               />
             })
           }
@@ -60,5 +71,5 @@ export default function Index() {
       </div>
       <Curve />
     </motion.div>
-  )
+  );
 }

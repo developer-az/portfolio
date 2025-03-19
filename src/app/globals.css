@@ -3,6 +3,7 @@
     font-style: normal;
     font-weight: normal;
     src: url('../../public/fonts/AVGARDD_2.woff') format('woff');
+    font-display: swap; /* Improve loading performance */
 }
 
 * {
@@ -20,14 +21,17 @@ html {
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Avant Garde Book BT', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Avant Garde Book BT', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background-color: var(--bg-primary);
     color: var(--text-primary);
     line-height: 1.6;
     overflow-x: hidden;
-    transition: 
-        background-color 0.5s ease-in-out,
-        color 0.5s ease-in-out;
+    transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+}
+
+/* Improved loading state to prevent FOUC */
+body.loading {
+    opacity: 0;
 }
 
 /* Smoother theme transitions */
@@ -35,8 +39,11 @@ header,
 section, 
 button, 
 a, 
+input, 
+textarea,
 p, 
 h1, h2, h3, h4, h5, h6,
+div,
 .card,
 .container,
 .projectCard,
@@ -45,7 +52,11 @@ h1, h2, h3, h4, h5, h6,
 .footer,
 .nav,
 .button,
-.themeSwitcher {
+.themeSwitcher,
+.analyzerForm,
+.fileInput,
+.results,
+.instructionsContainer {
     transition: 
         background-color 0.5s ease-in-out,
         color 0.5s ease-in-out,
@@ -54,15 +65,17 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* Transitions override for interactive elements */
-button:hover,
-a:hover,
-.projectCard:hover,
-.stat:hover,
-.button:hover {
+button,
+a,
+.projectCard,
+.stat,
+.button,
+.filterButton,
+.themeSwitcher {
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
 }
 
-/* Basic smooth scrolling for anchor links */
+/* Basic link styling */
 a {
     text-decoration: none;
     color: inherit;
@@ -72,6 +85,7 @@ a {
 img {
     max-width: 100%;
     height: auto;
+    display: block; /* Prevents unwanted space below images */
 }
 
 /* Selection styling */
@@ -97,7 +111,7 @@ img {
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -113,34 +127,92 @@ img {
     background: var(--border-medium);
 }
 
-/* Locomotive Scroll v4+ compatibility */
-html.has-scroll-smooth {
-    overflow: hidden;
-}
-
-.has-scroll-smooth body {
-    overflow: hidden;
-}
-
-.has-scroll-smooth [data-scroll-container] {
-    min-height: 100vh;
-}
-
-[data-scroll-direction="horizontal"] [data-scroll-container] {
-    height: 100vh;
-    display: inline-block;
-    white-space: nowrap;
-}
-
-[data-scroll-direction="horizontal"] [data-scroll-section] {
-    display: inline-block;
-    vertical-align: top;
-    white-space: nowrap;
-    height: 100%;
-}
-
-/* Fallback for when Locomotive Scroll fails */
-.mainWrapper {
+/* Container helper class */
+.container {
+    width: 90%;
+    max-width: 1400px;
+    margin: 0 auto;
     position: relative;
-    z-index: 1;
+    z-index: 2;
+}
+
+/* Visually hidden elements for accessibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Utility classes */
+.text-center {
+    text-align: center;
+}
+
+.text-primary {
+    color: var(--primary-color);
+}
+
+.bg-primary {
+    background-color: var(--primary-color);
+}
+
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 1.5rem; }
+.mt-5 { margin-top: 2rem; }
+
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.mb-4 { margin-bottom: 1.5rem; }
+.mb-5 { margin-bottom: 2rem; }
+
+/* Responsive helper classes */
+@media (max-width: 768px) {
+    .hide-mobile {
+        display: none !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .hide-desktop {
+        display: none !important;
+    }
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Animation classes */
+.animate-fadeIn {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.animate-slideUp {
+    animation: slideUp 0.5s ease forwards;
+}
+
+.animate-pulse {
+    animation: pulse 2s infinite ease-in-out;
 }

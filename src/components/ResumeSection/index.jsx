@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
 import styles from './ResumeSection.module.scss';
 
 const resumeData = {
@@ -10,7 +10,7 @@ const resumeData = {
       institution: "University of Maryland, College Park",
       location: "College Park, MD",
       period: "2023 - 2027",
-      description: "Data Science Track, with Focus on software engineering and web development. Minoring in Information Risk Management, Ethics, and Privacy. "
+      description: "Data Science Track, with Focus on software engineering and web development. Minoring in Information Risk Management, Ethics, and Privacy."
     }
     // Add more education entries as needed
   ],
@@ -51,15 +51,16 @@ const resumeData = {
       date: "2023"
     },
     {
-        id: 2,
-        name: "Python Technical Preparation",
-        issuer: "Code Path",
-        date: "2025"
-      }
+      id: 2,
+      name: "Python Technical Preparation",
+      issuer: "Code Path",
+      date: "2025"
+    }
     // Add any certifications you have
   ]
 };
 
+// Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -79,104 +80,129 @@ const itemVariants = {
   }
 };
 
+// Timeline component
+const TimelineItem = ({ year, title, subtitle, children, isRight = false }) => (
+  <motion.div 
+    className={`${styles.timelineItem} ${isRight ? styles.timelineRight : ''}`}
+    variants={itemVariants}
+  >
+    <div className={styles.timelineMarker}>
+      <div className={styles.timelineDate}>{year}</div>
+      <div className={styles.timelineDot}></div>
+      <div className={styles.timelineLine}></div>
+    </div>
+    <div className={styles.timelineContent}>
+      <h4 className={styles.timelineTitle}>{title}</h4>
+      <div className={styles.timelineSubtitle}>{subtitle}</div>
+      <div className={styles.timelineBody}>
+        {children}
+      </div>
+    </div>
+  </motion.div>
+);
+
 const ResumeSection = () => {
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: false, amount: 0.1 });
+  
   return (
-    <section className={styles.resumeSection} id="resume">
+    <section ref={sectionRef} className={styles.resumeSection} id="resume">
       <div className={styles.container}>
         <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Resume &amp; Experience</h2>
-          <p className={styles.sectionDescription}>
-            My academic background, professional experience, and skill set.
-          </p>
-          <motion.a 
-            href="/resume.pdf" 
-            download="Anthony_Zhou_Resume.pdf"
-            className={styles.downloadButton}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          <motion.h2 
+            className={styles.sectionTitle}
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6 }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-            Download Full Resume
-          </motion.a>
+            Resume &amp; Experience
+          </motion.h2>
+          <motion.p 
+            className={styles.sectionDescription}
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            My academic background, professional experience, and skill set.
+          </motion.p>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <a 
+              href="/resume.pdf" 
+              download="Anthony_Zhou_Resume.pdf"
+              className={styles.downloadButton}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Download Full Resume
+            </a>
+          </motion.div>
         </div>
         
         <div className={styles.resumeContent}>
-          {/* Education Section */}
-          <motion.div 
-            className={styles.resumeSection}
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-          >
-            <h3 className={styles.resumeSectionTitle}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
-              </svg>
-              Education
-            </h3>
-            {resumeData.education.map((edu) => (
-              <motion.div 
-                key={edu.id} 
-                className={styles.resumeItem}
-                variants={itemVariants}
-              >
-                <div className={styles.resumeItemHeader}>
-                  <h4 className={styles.resumeItemTitle}>{edu.degree}</h4>
-                  <span className={styles.resumeItemPeriod}>{edu.period}</span>
-                </div>
-                <p className={styles.resumeItemSubtitle}>{edu.institution}, {edu.location}</p>
-                <p className={styles.resumeItemDescription}>{edu.description}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-          
-          {/* Experience Section */}
-          <motion.div 
-            className={styles.resumeSection}
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-          >
-            <h3 className={styles.resumeSectionTitle}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-              </svg>
-              Professional Experience
-            </h3>
-            {resumeData.experience.map((exp) => (
-              <motion.div 
-                key={exp.id} 
-                className={styles.resumeItem}
-                variants={itemVariants}
-              >
-                <div className={styles.resumeItemHeader}>
-                  <h4 className={styles.resumeItemTitle}>{exp.role}</h4>
-                  <span className={styles.resumeItemPeriod}>{exp.period}</span>
-                </div>
-                <p className={styles.resumeItemSubtitle}>{exp.company}, {exp.location}</p>
-                <ul className={styles.resumeItemResponsibilities}>
-                  {exp.responsibilities.map((responsibility, index) => (
-                    <li key={index}>{responsibility}</li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </motion.div>
+          {/* Timeline layout for education and experience */}
+          <div className={styles.timeline}>
+            <motion.div 
+              className={styles.timelineWrapper}
+              variants={containerVariants}
+              initial="hidden"
+              animate={isInView ? "visible" : "hidden"}
+            >
+              {/* Timeline for education */}
+              {resumeData.education.map((edu, index) => (
+                <TimelineItem
+                  key={edu.id}
+                  year={edu.period}
+                  title={edu.degree}
+                  subtitle={`${edu.institution}, ${edu.location}`}
+                  isRight={index % 2 !== 0}
+                >
+                  <p>{edu.description}</p>
+                </TimelineItem>
+              ))}
+              
+              {/* Timeline for experience */}
+              {resumeData.experience.map((exp, index) => (
+                <TimelineItem
+                  key={exp.id}
+                  year={exp.period}
+                  title={exp.role}
+                  subtitle={`${exp.company}, ${exp.location}`}
+                  isRight={(resumeData.education.length + index) % 2 !== 0}
+                >
+                  <ul className={styles.responsibilities}>
+                    {exp.responsibilities.map((responsibility, idx) => (
+                      <li key={idx}>{responsibility}</li>
+                    ))}
+                  </ul>
+                </TimelineItem>
+              ))}
+              
+              {/* Certifications */}
+              {resumeData.certifications.map((cert, index) => (
+                <TimelineItem
+                  key={cert.id}
+                  year={cert.date}
+                  title={cert.name}
+                  subtitle={cert.issuer}
+                  isRight={(resumeData.education.length + resumeData.experience.length + index) % 2 !== 0}
+                />
+              ))}
+            </motion.div>
+          </div>
           
           {/* Skills Section */}
           <motion.div 
-            className={`${styles.resumeSection} ${styles.skillsSection}`}
+            className={styles.skillsSection}
             variants={containerVariants}
             initial="hidden"
-            whileInView="visible"
+            animate={isInView ? "visible" : "hidden"}
             viewport={{ once: true, amount: 0.2 }}
           >
             <h3 className={styles.resumeSectionTitle}>
@@ -185,63 +211,47 @@ const ResumeSection = () => {
               </svg>
               Skills
             </h3>
-            <motion.div 
-              className={styles.skillsContainer}
-              variants={itemVariants}
-            >
-              <div className={styles.skillCategory}>
+            
+            <div className={styles.skillsContainer}>
+              <motion.div 
+                className={styles.skillCategory}
+                variants={itemVariants}
+              >
                 <h4 className={styles.skillCategoryTitle}>Technical Skills</h4>
                 <div className={styles.skillTags}>
                   {resumeData.skills.technical.map((skill, index) => (
-                    <span key={index} className={styles.skillTag}>{skill}</span>
+                    <motion.div 
+                      key={index} 
+                      className={styles.skillTag}
+                      whileHover={{ scale: 1.05, y: -3 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    >
+                      {skill}
+                    </motion.div>
                   ))}
                 </div>
-              </div>
-              <div className={styles.skillCategory}>
+              </motion.div>
+              
+              <motion.div 
+                className={styles.skillCategory}
+                variants={itemVariants}
+              >
                 <h4 className={styles.skillCategoryTitle}>Soft Skills</h4>
                 <div className={styles.skillTags}>
                   {resumeData.skills.soft.map((skill, index) => (
-                    <span key={index} className={`${styles.skillTag} ${styles.softSkill}`}>{skill}</span>
+                    <motion.div 
+                      key={index} 
+                      className={`${styles.skillTag} ${styles.softSkill}`}
+                      whileHover={{ scale: 1.05, y: -3 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    >
+                      {skill}
+                    </motion.div>
                   ))}
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
           </motion.div>
-          
-          {/* Certifications Section */}
-          {resumeData.certifications.length > 0 && (
-            <motion.div 
-              className={styles.resumeSection}
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-            >
-              <h3 className={styles.resumeSectionTitle}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="4" y="5" width="16" height="16" rx="2"></rect>
-                  <path d="M16 2v4"></path>
-                  <path d="M8 2v4"></path>
-                  <path d="M16 12h-8"></path>
-                  <path d="M12 16V8"></path>
-                </svg>
-                Certifications
-              </h3>
-              {resumeData.certifications.map((cert) => (
-                <motion.div 
-                  key={cert.id} 
-                  className={styles.resumeItem}
-                  variants={itemVariants}
-                >
-                  <div className={styles.resumeItemHeader}>
-                    <h4 className={styles.resumeItemTitle}>{cert.name}</h4>
-                    <span className={styles.resumeItemPeriod}>{cert.date}</span>
-                  </div>
-                  <p className={styles.resumeItemSubtitle}>{cert.issuer}</p>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
         </div>
       </div>
       <div className={styles.decorativeGrid}></div>

@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import styles from './ContactSection.module.scss';
-import emailjs from '@emailjs/browser';
 
 // Animation variants
 const containerVariants = {
@@ -40,13 +39,8 @@ const ContactSection = () => {
   const [successMessage, setSuccessMessage] = useState('');
   
   const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: false, amount: 0.3 });
+  const isInView = useInView(sectionRef, { once: false, amount: 0.2 });
   
-  // Initialize EmailJS with your public key
-  useEffect(() => {
-    emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY);
-  }, []);
-
   // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,45 +57,40 @@ const ContactSection = () => {
     setError(null);
     
     try {
-      // Prepare template parameters
-      const templateParams = {
-        from_name: formState.name,
-        from_email: formState.email,
-        subject: formState.subject,
-        message: formState.message,
-      };
+      // Send form data to your API endpoint
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formState),
+      });
       
-      // Send email using EmailJS with environment variables
-      const response = await emailjs.send(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
-        templateParams,
-        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
-      );
+      const data = await response.json();
       
-      if (response.status === 200) {
-        // Handle success
-        setSuccessMessage("Thank you for your message! I'll get back to you soon.");
-        setSubmitted(true);
-        
-        // Reset form
-        setFormState({
-          name: '',
-          email: '',
-          subject: '',
-          message: '',
-        });
-        
-        // Reset submitted state after 8 seconds
-        setTimeout(() => {
-          setSubmitted(false);
-        }, 8000);
-      } else {
-        throw new Error('Failed to send message. Please try again later.');
+      if (!response.ok) {
+        throw new Error(data.message || 'Something went wrong. Please try again later.');
       }
+      
+      // Handle success
+      setSuccessMessage(data.message || "Thank you for your message! I'll get back to you soon.");
+      setSubmitted(true);
+      
+      // Reset form
+      setFormState({
+        name: '',
+        email: '',
+        subject: '',
+        message: '',
+      });
+      
+      // Reset submitted state after 8 seconds
+      setTimeout(() => {
+        setSubmitted(false);
+      }, 8000);
     } catch (err) {
-      console.error('EmailJS error:', err);
-      setError(err.message || 'An error occurred while sending your message.');
+      console.error('Form submission error:', err);
+      setError(err.message || 'An error occurred. Please try again later.');
     } finally {
       setIsSubmitting(false);
     }
@@ -127,7 +116,7 @@ const ContactSection = () => {
             className={styles.sectionDescription}
             variants={itemVariants}
           >
-            Let's collaborate on your next project. Feel free to reach out through the form below or connect with me on social media.
+            Let's collaborate on your next project. Feel free to reach out through the form below or connect with me directly.
           </motion.p>
         </motion.div>
         
@@ -141,6 +130,7 @@ const ContactSection = () => {
             <motion.div 
               className={styles.infoItem}
               variants={itemVariants}
+              whileHover={{ y: -5, transition: { duration: 0.3 } }}
             >
               <div className={styles.infoIcon}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -156,6 +146,7 @@ const ContactSection = () => {
             <motion.div 
               className={styles.infoItem}
               variants={itemVariants}
+              whileHover={{ y: -5, transition: { duration: 0.3 } }}
             >
               <div className={styles.infoIcon}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -172,6 +163,7 @@ const ContactSection = () => {
             <motion.div 
               className={styles.infoItem}
               variants={itemVariants}
+              whileHover={{ y: -5, transition: { duration: 0.3 } }}
             >
               <div className={styles.infoIcon}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -191,42 +183,48 @@ const ContactSection = () => {
             >
               <h3>Connect With Me</h3>
               <div className={styles.socialIcons}>
-                <a 
+                <motion.a 
                   href="https://www.linkedin.com/in/anthony--zhou" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className={styles.socialIcon}
+                  whileHover={{ y: -5, scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
                     <rect x="2" y="9" width="4" height="12"></rect>
                     <circle cx="4" cy="4" r="2"></circle>
                   </svg>
-                </a>
+                </motion.a>
                 
-                <a 
+                <motion.a 
                   href="https://github.com/developer-az" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className={styles.socialIcon}
+                  whileHover={{ y: -5, scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
                   </svg>
-                </a>
+                </motion.a>
                 
-                <a 
+                <motion.a 
                   href="https://www.instagram.com/anthonyyzhou" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className={styles.socialIcon}
+                  whileHover={{ y: -5, scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
                   </svg>
-                </a>
+                </motion.a>
               </div>
             </motion.div>
           </motion.div>
@@ -236,11 +234,12 @@ const ContactSection = () => {
             variants={containerVariants}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
+            viewport={{ once: true }}
           >
             <motion.div 
               className={styles.formCard}
               variants={itemVariants}
-              whileHover={{ scale: 1.01 }}
+              whileHover={{ scale: 1.01, boxShadow: "0 20px 40px rgba(0, 0, 0, 0.2)" }}
               style={{ transformStyle: "preserve-3d" }}
             >
               {submitted ? (
@@ -265,6 +264,7 @@ const ContactSection = () => {
                       value={formState.name}
                       onChange={handleChange}
                       required
+                      placeholder="Your Name"
                     />
                   </div>
                   
@@ -277,6 +277,7 @@ const ContactSection = () => {
                       value={formState.email}
                       onChange={handleChange}
                       required
+                      placeholder="your.email@example.com"
                     />
                   </div>
                   
@@ -289,6 +290,7 @@ const ContactSection = () => {
                       value={formState.subject}
                       onChange={handleChange}
                       required
+                      placeholder="Subject"
                     />
                   </div>
                   
@@ -301,13 +303,16 @@ const ContactSection = () => {
                       value={formState.message}
                       onChange={handleChange}
                       required
+                      placeholder="Your message here..."
                     ></textarea>
                   </div>
                   
-                  <button 
+                  <motion.button 
                     type="submit" 
                     className={styles.submitButton}
                     disabled={isSubmitting}
+                    whileHover={{ scale: 1.03, y: -3 }}
+                    whileTap={{ scale: 0.97 }}
                   >
                     {isSubmitting ? (
                       <span className={styles.spinner}></span>
@@ -320,7 +325,7 @@ const ContactSection = () => {
                         </svg>
                       </>
                     )}
-                  </button>
+                  </motion.button>
                   
                   {error && <p className={styles.errorMessage}>{error}</p>}
                 </form>

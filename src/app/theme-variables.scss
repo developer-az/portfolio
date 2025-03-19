@@ -1,187 +1,157 @@
-/* src/app/theme-variables.scss */
+/* Enhanced theme variables with better contrast */
 
 /* Base variables */
 :root {
-    /* Colors */
-    --primary-color: #fa2104;
-    --primary-light: rgba(250, 33, 4, 0.1);
-    --primary-medium: rgba(250, 33, 4, 0.3);
-    --primary-dark: rgba(250, 33, 4, 0.8);
-    
-    /* Font sizes */
-    --font-size-xs: 0.75rem;   /* 12px */
-    --font-size-sm: 0.875rem;  /* 14px */
-    --font-size-base: 1rem;    /* 16px */
-    --font-size-lg: 1.125rem;  /* 18px */
-    --font-size-xl: 1.25rem;   /* 20px */
-    --font-size-2xl: 1.5rem;   /* 24px */
-    --font-size-3xl: 1.875rem; /* 30px */
-    --font-size-4xl: 2.25rem;  /* 36px */
-    --font-size-5xl: 3rem;     /* 48px */
-    
-    /* Spacing */
-    --spacing-xs: 0.25rem;  /* 4px */
-    --spacing-sm: 0.5rem;   /* 8px */
-    --spacing-md: 1rem;     /* 16px */
-    --spacing-lg: 1.5rem;   /* 24px */
-    --spacing-xl: 2rem;     /* 32px */
-    --spacing-2xl: 3rem;    /* 48px */
-    --spacing-3xl: 4rem;    /* 64px */
-    --spacing-4xl: 6rem;    /* 96px */
-    
-    /* Border radius */
-    --radius-sm: 0.25rem;   /* 4px */
-    --radius-md: 0.5rem;    /* 8px */
-    --radius-lg: 0.75rem;   /* 12px */
-    --radius-xl: 1rem;      /* 16px */
-    --radius-full: 9999px;  /* Rounded full */
-    
-    /* Transitions */
-    --transition-fast: 0.15s ease;
-    --transition-base: 0.3s ease;
-    --transition-slow: 0.5s ease;
-    --transition-bounce: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    
-    /* Box shadows */
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
-    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
-    
-    /* Z-index layers */
-    --z-background: -1;
-    --z-default: 1;
-    --z-above: 10;
-    --z-header: 100;
-    --z-modal: 1000;
-    --z-overlay: 1001;
-    --z-tooltip: 1002;
-  }
+  /* Colors */
+  --primary-color: #fa2104;
+  --primary-light: rgba(250, 33, 4, 0.1);
+  --primary-medium: rgba(250, 33, 4, 0.3);
+  --primary-dark: rgba(250, 33, 4, 0.8);
   
-  /* Dark theme variables - default */
-  :root, html.dark-theme {
-    /* Background colors */
-    --bg-primary: #121212;
-    --bg-secondary: #1a1a1a;
-    --bg-tertiary: #222222;
-    --bg-card: rgba(26, 26, 26, 0.7);
-    --bg-hover: rgba(255, 255, 255, 0.05);
-    --bg-active: rgba(255, 255, 255, 0.1);
-    
-    /* Text colors */
-    --text-primary: #f5f5f5;
-    --text-secondary: #cccccc;
-    --text-tertiary: #999999;
-    --text-muted: #777777;
-    
-    /* Border colors */
-    --border-light: rgba(255, 255, 255, 0.1);
-    --border-medium: rgba(255, 255, 255, 0.15);
-    --border-focused: rgba(250, 33, 4, 0.4);
-    
-    /* Component specific */
-    --header-bg: rgba(18, 18, 18, 0.8);
-    --card-bg: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
-    --card-highlight: rgba(255, 255, 255, 0.03);
-    --input-bg: rgba(0, 0, 0, 0.2);
-    --button-primary-bg: #fa2104;
-    --button-primary-text: #ffffff;
-    --button-primary-hover: #ff3a20;
-    --button-secondary-bg: rgba(255, 255, 255, 0.05);
-    --button-secondary-text: #e0e0e0;
-    --button-secondary-hover: rgba(255, 255, 255, 0.1);
-  }
+  /* Font sizes */
+  --font-size-xs: 0.75rem;   /* 12px */
+  --font-size-sm: 0.875rem;  /* 14px */
+  --font-size-base: 1rem;    /* 16px */
+  --font-size-lg: 1.125rem;  /* 18px */
+  --font-size-xl: 1.25rem;   /* 20px */
+  --font-size-2xl: 1.5rem;   /* 24px */
+  --font-size-3xl: 1.875rem; /* 30px */
+  --font-size-4xl: 2.25rem;  /* 36px */
+  --font-size-5xl: 3rem;     /* 48px */
   
-  /* Light theme variables */
-  html.light-theme {
-    /* Background colors */
-    --bg-primary: #f5f5f5;
-    --bg-secondary: #ffffff;
-    --bg-tertiary: #f0f0f0;
-    --bg-card: rgba(255, 255, 255, 0.8);
-    --bg-hover: rgba(0, 0, 0, 0.03);
-    --bg-active: rgba(0, 0, 0, 0.05);
-    
-    /* Text colors */
-    --text-primary: #333333;
-    --text-secondary: #555555;
-    --text-tertiary: #777777;
-    --text-muted: #999999;
-    
-    /* Border colors */
-    --border-light: rgba(0, 0, 0, 0.1);
-    --border-medium: rgba(0, 0, 0, 0.15);
-    --border-focused: rgba(250, 33, 4, 0.4);
-    
-    /* Component specific */
-    --header-bg: rgba(245, 245, 245, 0.8);
-    --card-bg: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
-    --card-highlight: rgba(0, 0, 0, 0.01);
-    --input-bg: rgba(0, 0, 0, 0.05);
-    --button-primary-bg: #fa2104;
-    --button-primary-text: #ffffff;
-    --button-primary-hover: #ff3a20;
-    --button-secondary-bg: rgba(0, 0, 0, 0.05);
-    --button-secondary-text: #333333;
-    --button-secondary-hover: rgba(0, 0, 0, 0.08);
-  }
+  /* Spacing */
+  --spacing-xs: 0.25rem;  /* 4px */
+  --spacing-sm: 0.5rem;   /* 8px */
+  --spacing-md: 1rem;     /* 16px */
+  --spacing-lg: 1.5rem;   /* 24px */
+  --spacing-xl: 2rem;     /* 32px */
+  --spacing-2xl: 3rem;    /* 48px */
+  --spacing-3xl: 4rem;    /* 64px */
+  --spacing-4xl: 6rem;    /* 96px */
   
-  /* Force dark theme class for compatibility while testing */
-  :root.dark-theme {
-    --bg-primary: #121212;
-    --bg-secondary: #1a1a1a;
-    --bg-tertiary: #222222;
-    --bg-card: rgba(26, 26, 26, 0.7);
-    --bg-hover: rgba(255, 255, 255, 0.05);
-    --bg-active: rgba(255, 255, 255, 0.1);
-    
-    --text-primary: #f5f5f5;
-    --text-secondary: #cccccc;
-    --text-tertiary: #999999;
-    --text-muted: #777777;
-    
-    --border-light: rgba(255, 255, 255, 0.1);
-    --border-medium: rgba(255, 255, 255, 0.15);
-    --border-focused: rgba(250, 33, 4, 0.4);
-    
-    --header-bg: rgba(18, 18, 18, 0.8);
-    --card-bg: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
-    --card-highlight: rgba(255, 255, 255, 0.03);
-    --input-bg: rgba(0, 0, 0, 0.2);
-    --button-primary-bg: #fa2104;
-    --button-primary-text: #ffffff;
-    --button-primary-hover: #ff3a20;
-    --button-secondary-bg: rgba(255, 255, 255, 0.05);
-    --button-secondary-text: #e0e0e0;
-    --button-secondary-hover: rgba(255, 255, 255, 0.1);
-  }
+  /* Border radius */
+  --radius-sm: 0.25rem;   /* 4px */
+  --radius-md: 0.5rem;    /* 8px */
+  --radius-lg: 0.75rem;   /* 12px */
+  --radius-xl: 1rem;      /* 16px */
+  --radius-full: 9999px;  /* Rounded full */
   
-  /* Force light theme class for compatibility while testing */
-  :root.light-theme {
-    --bg-primary: #f5f5f5;
-    --bg-secondary: #ffffff;
-    --bg-tertiary: #f0f0f0;
-    --bg-card: rgba(255, 255, 255, 0.8);
-    --bg-hover: rgba(0, 0, 0, 0.03);
-    --bg-active: rgba(0, 0, 0, 0.05);
-    
-    --text-primary: #333333;
-    --text-secondary: #555555;
-    --text-tertiary: #777777;
-    --text-muted: #999999;
-    
-    --border-light: rgba(0, 0, 0, 0.1);
-    --border-medium: rgba(0, 0, 0, 0.15);
-    --border-focused: rgba(250, 33, 4, 0.4);
-    
-    --header-bg: rgba(245, 245, 245, 0.8);
-    --card-bg: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
-    --card-highlight: rgba(0, 0, 0, 0.01);
-    --input-bg: rgba(0, 0, 0, 0.05);
-    --button-primary-bg: #fa2104;
-    --button-primary-text: #ffffff;
-    --button-primary-hover: #ff3a20;
-    --button-secondary-bg: rgba(0, 0, 0, 0.05);
-    --button-secondary-text: #333333;
-    --button-secondary-hover: rgba(0, 0, 0, 0.08);
-  }
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  --transition-bounce: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* Box shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+  
+  /* Z-index layers */
+  --z-background: -1;
+  --z-default: 1;
+  --z-above: 10;
+  --z-header: 100;
+  --z-modal: 1000;
+  --z-overlay: 1001;
+  --z-tooltip: 1002;
+}
+
+/* Dark theme variables - default */
+:root, html.dark-theme {
+  /* Background colors */
+  --bg-primary: #121212;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #222222;
+  --bg-card: rgba(26, 26, 26, 0.8);
+  --bg-hover: rgba(255, 255, 255, 0.05);
+  --bg-active: rgba(255, 255, 255, 0.1);
+  
+  /* Text colors */
+  --text-primary: #f5f5f5;
+  --text-secondary: #cccccc;
+  --text-tertiary: #999999;
+  --text-muted: #777777;
+  
+  /* Border colors */
+  --border-light: rgba(255, 255, 255, 0.1);
+  --border-medium: rgba(255, 255, 255, 0.15);
+  --border-focused: rgba(250, 33, 4, 0.5);
+  
+  /* Component specific */
+  --header-bg: rgba(18, 18, 18, 0.9);
+  --card-bg: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+  --card-highlight: rgba(255, 255, 255, 0.03);
+  --input-bg: rgba(0, 0, 0, 0.2);
+  --button-primary-bg: #fa2104;
+  --button-primary-text: #ffffff;
+  --button-primary-hover: #ff3a20;
+  --button-secondary-bg: rgba(255, 255, 255, 0.05);
+  --button-secondary-text: #e0e0e0;
+  --button-secondary-hover: rgba(255, 255, 255, 0.1);
+  
+  /* Project card specific */
+  --card-title-color: #f5f5f5;
+  --card-description-color: #b0b0b0;
+  --card-tech-badge-bg: rgba(250, 33, 4, 0.15);
+  --card-tech-badge-text: #f5f5f5;
+  
+  /* Form elements */
+  --input-text: #f5f5f5;
+  --input-placeholder: #999999;
+  --input-border: rgba(255, 255, 255, 0.1);
+  --input-focus-border: rgba(250, 33, 4, 0.5);
+}
+
+/* Light theme variables */
+html.light-theme {
+  /* Background colors */
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f0f0f0;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-hover: rgba(0, 0, 0, 0.03);
+  --bg-active: rgba(0, 0, 0, 0.05);
+  
+  /* Text colors */
+  --text-primary: #333333;
+  --text-secondary: #555555;
+  --text-tertiary: #777777;
+  --text-muted: #999999;
+  
+  /* Border colors */
+  --border-light: rgba(0, 0, 0, 0.1);
+  --border-medium: rgba(0, 0, 0, 0.15);
+  --border-focused: rgba(250, 33, 4, 0.5);
+  
+  /* Component specific */
+  --header-bg: rgba(255, 255, 255, 0.9);
+  --card-bg: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  --card-highlight: rgba(0, 0, 0, 0.01);
+  --input-bg: rgba(0, 0, 0, 0.05);
+  --button-primary-bg: #fa2104;
+  --button-primary-text: #ffffff;
+  --button-primary-hover: #ff3a20;
+  --button-secondary-bg: rgba(0, 0, 0, 0.05);
+  --button-secondary-text: #333333;
+  --button-secondary-hover: rgba(0, 0, 0, 0.08);
+  
+  /* Project card specific */
+  --card-title-color: #333333;
+  --card-description-color: #555555;
+  --card-tech-badge-bg: rgba(250, 33, 4, 0.1);
+  --card-tech-badge-text: #333333;
+  
+  /* Form elements */
+  --input-text: #333333;
+  --input-placeholder: #777777;
+  --input-border: rgba(0, 0, 0, 0.1);
+  --input-focus-border: rgba(250, 33, 4, 0.5);
+  
+  /* Box shadow overrides for light theme */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 16px 32px rgba(0, 0, 0, 0.16);
+}

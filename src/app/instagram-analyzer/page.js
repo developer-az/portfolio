@@ -4,6 +4,7 @@ import styles from './instagram-analyzer.module.scss';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function InstagramAnalyzer() {
   const [followersFile, setFollowersFile] = useState(null);
@@ -16,23 +17,27 @@ export default function InstagramAnalyzer() {
   const followersInputRef = useRef(null);
   const followingInputRef = useRef(null);
   const headerRef = useRef(null);
+  const { theme } = useTheme();
 
   // Header scroll effect for slight background/light shadow changes
   useEffect(() => {
     const handleScroll = () => {
       if (headerRef.current) {
         if (window.scrollY > 100) {
-          headerRef.current.style.backgroundColor = 'rgba(18, 18, 18, 0.95)';
-          headerRef.current.style.boxShadow = '0 3px 10px rgba(0, 0, 0, 0.3)';
+          headerRef.current.style.backgroundColor = theme === 'dark' ? 
+            'rgba(18, 18, 18, 0.95)' : 'rgba(248, 249, 250, 0.95)';
+          headerRef.current.style.boxShadow = theme === 'dark' ?
+            '0 3px 10px rgba(0, 0, 0, 0.3)' : '0 3px 10px rgba(0, 0, 0, 0.1)';
         } else {
-          headerRef.current.style.backgroundColor = 'rgba(18, 18, 18, 0.8)';
+          headerRef.current.style.backgroundColor = theme === 'dark' ? 
+            'rgba(18, 18, 18, 0.8)' : 'rgba(248, 249, 250, 0.8)';
           headerRef.current.style.boxShadow = 'none';
         }
       }
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [theme]);
 
   const handleFollowersFileChange = (e) => {
     if (e.target.files.length > 0) {
@@ -104,69 +109,82 @@ export default function InstagramAnalyzer() {
     if (followingInputRef.current) followingInputRef.current.value = "";
   };
 
-  // Tutorial component – text has been lightly adjusted for clarity
+  // Tutorial component
   const InstagramDataTutorial = () => (
     <motion.div 
       className={styles.tutorialOverlay}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      onClick={() => setShowTutorial(false)}
     >
-      <div className={styles.tutorialContent}>
+      <motion.div 
+        className={styles.tutorialContent}
+        onClick={e => e.stopPropagation()}
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+      >
         <button 
           className={styles.closeButton}
           onClick={() => setShowTutorial(false)}
         >
-          ✕
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
         </button>
         
         <h2>How to Download Your Instagram Data</h2>
         
-        <div className={styles.tutorialStep}>
-          <div className={styles.stepNumber}>1</div>
-          <div className={styles.stepContent}>
-            <h3>Log in to Instagram</h3>
-            <p>Open Instagram in your browser and sign in.</p>
+        <div className={styles.tutorialSteps}>
+          <div className={styles.tutorialStep}>
+            <div className={styles.stepNumber}>1</div>
+            <div className={styles.stepContent}>
+              <h3>Log in to Instagram</h3>
+              <p>Open Instagram in your browser and sign in to your account.</p>
+            </div>
           </div>
-        </div>
-        
-        <div className={styles.tutorialStep}>
-          <div className={styles.stepNumber}>2</div>
-          <div className={styles.stepContent}>
-            <h3>Access Settings</h3>
-            <p>Click your profile picture and select <strong>Settings and privacy</strong>.</p>
+          
+          <div className={styles.tutorialStep}>
+            <div className={styles.stepNumber}>2</div>
+            <div className={styles.stepContent}>
+              <h3>Access Settings</h3>
+              <p>Click your profile picture in the top right and select <strong>Settings and privacy</strong>.</p>
+            </div>
           </div>
-        </div>
-        
-        <div className={styles.tutorialStep}>
-          <div className={styles.stepNumber}>3</div>
-          <div className={styles.stepContent}>
-            <h3>Request Data</h3>
-            <p>Scroll to <strong>Data download</strong> and click <strong>Request download</strong>.</p>
+          
+          <div className={styles.tutorialStep}>
+            <div className={styles.stepNumber}>3</div>
+            <div className={styles.stepContent}>
+              <h3>Request Data</h3>
+              <p>Scroll to <strong>Data download</strong> and click <strong>Request download</strong>.</p>
+            </div>
           </div>
-        </div>
-        
-        <div className={styles.tutorialStep}>
-          <div className={styles.stepNumber}>4</div>
-          <div className={styles.stepContent}>
-            <h3>Select HTML</h3>
-            <p>Choose <strong>HTML</strong> format and select <strong>Information about you</strong>.</p>
+          
+          <div className={styles.tutorialStep}>
+            <div className={styles.stepNumber}>4</div>
+            <div className={styles.stepContent}>
+              <h3>Select HTML Format</h3>
+              <p>Choose <strong>HTML</strong> format and select <strong>Information about you</strong>.</p>
+            </div>
           </div>
-        </div>
-        
-        <div className={styles.tutorialStep}>
-          <div className={styles.stepNumber}>5</div>
-          <div className={styles.stepContent}>
-            <h3>Confirm & Download</h3>
-            <p>Enter your email and password, then submit. Instagram will email you the download link (usually within 48 hours).</p>
+          
+          <div className={styles.tutorialStep}>
+            <div className={styles.stepNumber}>5</div>
+            <div className={styles.stepContent}>
+              <h3>Confirm & Download</h3>
+              <p>Enter your email and password, then submit. Instagram will email you the download link (usually within 48 hours).</p>
+            </div>
           </div>
-        </div>
-        
-        <div className={styles.tutorialStep}>
-          <div className={styles.stepNumber}>6</div>
-          <div className={styles.stepContent}>
-            <h3>Extract Files</h3>
-            <p>Extract the ZIP file and locate <strong>followers.html</strong> and <strong>following.html</strong>.</p>
+          
+          <div className={styles.tutorialStep}>
+            <div className={styles.stepNumber}>6</div>
+            <div className={styles.stepContent}>
+              <h3>Extract Files</h3>
+              <p>Download and extract the ZIP file. Locate <strong>followers.html</strong> and <strong>following.html</strong> in the extracted files.</p>
+            </div>
           </div>
         </div>
         
@@ -176,226 +194,368 @@ export default function InstagramAnalyzer() {
             <line x1="12" y1="8" x2="12" y2="12"></line>
             <line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>
-          <p>Your data is processed entirely in your browser – ensuring complete privacy.</p>
+          <p>Your data is processed entirely in your browser – ensuring complete privacy. No data is uploaded to any server.</p>
         </div>
         
-        <button 
-          className={styles.closeButton}
+        <motion.button 
+          className={styles.actionButton}
           onClick={() => setShowTutorial(false)}
+          whileHover={{ scale: 1.03, y: -2 }}
+          whileTap={{ scale: 0.98 }}
         >
-          Close Tutorial
-        </button>
-      </div>
+          Got It
+        </motion.button>
+      </motion.div>
     </motion.div>
   );
 
   return (
     <div className={styles.mainWrapper}>
-      <div className={styles.portfolioWrapper}>
-        {/* Header */}
-        <header ref={headerRef} className={styles.header}>
-          <div className={styles.headerContent}>
-            <Link href="/" className={styles.logo}>
-              <p className={styles.copyright}>©</p>
-              <div className={styles.logoText}>
-                <p className={styles.codeBy}>Code by</p>
-                <h1 className={styles.name}>
-                  <span className={styles.firstName}>Anthony</span>
-                  <span className={styles.lastName}>Zhou</span>
-                </h1>
-              </div>
-            </Link>
-            
-            {/* Desktop Navigation */}
-            <div className={styles.nav}>
-              <Link href="/" className={styles.navLink}>Home</Link>
-              <Link href="/#work" className={styles.navLink}>Work</Link>
-              <Link href="/#about" className={styles.navLink}>About</Link>
-              <Link href="/#contact" className={styles.navLink}>Contact</Link>
+      {/* Header */}
+      <header ref={headerRef} className={styles.header}>
+        <div className={styles.headerContent}>
+          <Link href="/" className={styles.logo}>
+            <div className={styles.logoIcon}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM13 7H11V13H17V11H13V7Z" fill="currentColor"/>
+              </svg>
             </div>
-            
-            {/* Mobile Menu Button */}
-            <button
-              className={styles.menuButton}
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle menu"
+            <div className={styles.logoText}>
+              <p>Anthony Zhou</p>
+            </div>
+          </Link>
+          
+          {/* Desktop Navigation */}
+          <div className={styles.nav}>
+            <Link href="/" className={styles.navLink}>Home</Link>
+            <Link href="/#work" className={styles.navLink}>Work</Link>
+            <Link href="/#about" className={styles.navLink}>About</Link>
+            <Link href="/#contact" className={styles.navLink}>Contact</Link>
+          </div>
+          
+          {/* Mobile Menu Button */}
+          <button
+            className={styles.menuButton}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            <div className={`${styles.menuButtonLine} ${mobileMenuOpen ? styles.active : ""}`}></div>
+            <div className={`${styles.menuButtonLine} ${mobileMenuOpen ? styles.active : ""}`}></div>
+            <div className={`${styles.menuButtonLine} ${mobileMenuOpen ? styles.active : ""}`}></div>
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        <div className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ""}`}>
+          <div className={styles.mobileMenuContent}>
+            <Link href="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
+            <Link href="/#about" onClick={() => setMobileMenuOpen(false)}>About</Link>
+            <Link href="/#work" onClick={() => setMobileMenuOpen(false)}>Work</Link>
+            <Link href="/#contact" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
+          </div>
+        </div>
+      </header>
+
+      <div className={styles.analyzer}>
+        {/* Background elements */}
+        <div className={styles.backgroundElements}>
+          <div className={styles.gradientBlur1}></div>
+          <div className={styles.gradientBlur2}></div>
+          <div className={styles.grid}></div>
+        </div>
+        
+        <div className={styles.container}>
+          {/* Hero section */}
+          <motion.div
+            className={styles.hero}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <h1>Instagram Follower Analyzer</h1>
+            <p>Discover who isn't following you back with complete privacy and security.</p>
+          </motion.div>
+
+          <div className={styles.content}>
+            <motion.div 
+              className={styles.infoCard}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             >
-              <div className={`${styles.menuButtonLine} ${mobileMenuOpen ? styles.active : ""}`}></div>
-              <div className={`${styles.menuButtonLine} ${mobileMenuOpen ? styles.active : ""}`}></div>
-              <div className={`${styles.menuButtonLine} ${mobileMenuOpen ? styles.active : ""}`}></div>
-            </button>
-          </div>
-
-          {/* Mobile Menu */}
-          <div className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ""}`}>
-            <div className={styles.mobileMenuContent}>
-              <Link href="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
-              <Link href="/#about" onClick={() => setMobileMenuOpen(false)}>About</Link>
-              <Link href="/#work" onClick={() => setMobileMenuOpen(false)}>Work</Link>
-              <Link href="/#contact" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
-            </div>
-          </div>
-        </header>
-
-        <div className={styles.portfolioContent}>
-          <section className={styles.instagramAnalyzer}>
-            {/* Content Wrapper to ensure text fits nicely */}
-            <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-              >
-                <h1>~</h1>
-                <h2>Instagram Follower Analyzer</h2>
-                <p>Discover who isn't following you back by simply uploading your Instagram HTML data files.</p>
-              </motion.div>
-            </div>
-
-            <div className={styles.instructions}>
-              <h3>How to Use</h3>
-              <ol>
+              <div className={styles.iconContainer}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M12 16v-4"></path>
+                  <path d="M12 8h.01"></path>
+                </svg>
+              </div>
+              <h2>How It Works</h2>
+              <ol className={styles.instructionsList}>
                 <li>
-                  Visit Instagram and download your data in HTML format{' '}
-                  <button 
-                    className={styles.tutorialButton}
-                    onClick={() => setShowTutorial(true)}
-                  >
-                    See How
-                  </button>
+                  <span className={styles.step}>1</span>
+                  <span className={styles.instruction}>
+                    Visit Instagram and <strong>download your data</strong> in HTML format{' '}
+                    <button 
+                      className={styles.tutorialButton}
+                      onClick={() => setShowTutorial(true)}
+                    >
+                      See How
+                    </button>
+                  </span>
                 </li>
-                <li>Upload your <strong>followers.html</strong> and <strong>following.html</strong> files</li>
-                <li>Click <strong>Analyze</strong> to view unfollowers</li>
+                <li>
+                  <span className={styles.step}>2</span>
+                  <span className={styles.instruction}>
+                    Upload your <strong>followers.html</strong> and <strong>following.html</strong> files
+                  </span>
+                </li>
+                <li>
+                  <span className={styles.step}>3</span>
+                  <span className={styles.instruction}>
+                    Click <strong>Analyze</strong> to see who's not following you back
+                  </span>
+                </li>
               </ol>
-              <p className={styles.privacyNote}>Your files are processed in your browser. No data is sent to any server.</p>
-            </div>
-
-            <form onSubmit={handleSubmit} className={styles.analyzerForm}>
-              <div className={styles.fileInputs}>
-                <div className={styles.fileInput}>
-                  <label>Followers HTML File</label>
-                  <input 
-                    type="file" 
-                    accept=".html, .htm" 
-                    onChange={handleFollowersFileChange}
-                    ref={followersInputRef}
-                  />
-                  {followersFile && <p className={styles.fileName}>Selected: {followersFile.name}</p>}
-                </div>
-
-                <div className={styles.fileInput}>
-                  <label>Following HTML File</label>
-                  <input 
-                    type="file" 
-                    accept=".html, .htm" 
-                    onChange={handleFollowingFileChange}
-                    ref={followingInputRef}
-                  />
-                  {followingFile && <p className={styles.fileName}>Selected: {followingFile.name}</p>}
-                </div>
+              <div className={styles.privacyNote}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <p>Your files are processed entirely in your browser. No data is sent to any server, ensuring complete privacy.</p>
               </div>
+            </motion.div>
 
-              <div className={styles.buttonGroup}>
-                <button 
-                  type="submit" 
-                  className={styles.analyzeButton}
-                  disabled={isLoading || (!followersFile || !followingFile)}
-                >
-                  {isLoading ? 'Analyzing...' : 'Analyze'}
-                </button>
-                {(followersFile || followingFile || results) && (
-                  <button 
-                    type="button" 
-                    className={styles.resetButton}
-                    onClick={resetForm}
-                    disabled={isLoading}
+            <motion.div 
+              className={styles.formCard}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            >
+              <h2>Upload Your Files</h2>
+              <form onSubmit={handleSubmit} className={styles.analyzerForm}>
+                <div className={styles.fileInputs}>
+                  <div className={styles.fileInput}>
+                    <label>
+                      <span>Followers HTML File</span>
+                      <div className={styles.customFileInput}>
+                        <input 
+                          type="file" 
+                          accept=".html, .htm" 
+                          onChange={handleFollowersFileChange}
+                          ref={followersInputRef}
+                        />
+                        <div className={styles.fileInputButton}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                          </svg>
+                          <span>{followersFile ? 'Change File' : 'Choose File'}</span>
+                        </div>
+                        {followersFile && <p className={styles.fileName}>{followersFile.name}</p>}
+                      </div>
+                    </label>
+                  </div>
+
+                  <div className={styles.fileInput}>
+                    <label>
+                      <span>Following HTML File</span>
+                      <div className={styles.customFileInput}>
+                        <input 
+                          type="file" 
+                          accept=".html, .htm" 
+                          onChange={handleFollowingFileChange}
+                          ref={followingInputRef}
+                        />
+                        <div className={styles.fileInputButton}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                          </svg>
+                          <span>{followingFile ? 'Change File' : 'Choose File'}</span>
+                        </div>
+                        {followingFile && <p className={styles.fileName}>{followingFile.name}</p>}
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <div className={styles.formActions}>
+                  <motion.button 
+                    type="submit" 
+                    className={styles.analyzeButton}
+                    disabled={isLoading || (!followersFile || !followingFile)}
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    Reset
-                  </button>
-                )}
-              </div>
-            </form>
+                    {isLoading ? (
+                      <>
+                        <span className={styles.spinner}></span>
+                        <span>Analyzing</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M9 5H2v7l6 6 4-4-6-6zm10 14l-6-6 4-4 6 6V8h-7"></path>
+                        </svg>
+                        <span>Analyze</span>
+                      </>
+                    )}
+                  </motion.button>
+                  
+                  {(followersFile || followingFile || results) && (
+                    <motion.button 
+                      type="button" 
+                      className={styles.resetButton}
+                      onClick={resetForm}
+                      disabled={isLoading}
+                      whileHover={{ scale: 1.03, y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 2v6h6"></path>
+                        <path d="M3 13a9 9 0 1 0 3-7.7L3 8"></path>
+                      </svg>
+                      <span>Reset</span>
+                    </motion.button>
+                  )}
+                </div>
+              </form>
 
-            {error && (
-              <div className={styles.error}>
-                <p>{error}</p>
-              </div>
-            )}
+              {error && (
+                <motion.div 
+                  className={styles.error}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                  </svg>
+                  <p>{error}</p>
+                </motion.div>
+              )}
+            </motion.div>
+          </div>
 
+          {/* Results section */}
+          <AnimatePresence>
             {results && (
               <motion.div 
-                className={styles.results}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
+                className={styles.resultsContainer}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -30 }}
+                transition={{ duration: 0.6 }}
               >
-                <h3>Analysis Results</h3>
+                <h2>Analysis Results</h2>
                 <div className={styles.stats}>
-                  <div className={styles.stat}>
-                    <span className={styles.statNumber}>{results.followingCount}</span>
-                    <span className={styles.statLabel}>Following</span>
-                  </div>
-                  <div className={styles.stat}>
-                    <span className={styles.statNumber}>{results.followersCount}</span>
-                    <span className={styles.statLabel}>Followers</span>
-                  </div>
-                  <div className={styles.stat}>
-                    <span className={styles.statNumber}>{results.unfollowersCount}</span>
-                    <span className={styles.statLabel}>Not Following Back</span>
-                  </div>
+                  <motion.div 
+                    className={styles.stat}
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.1, duration: 0.4 }}
+                    whileHover={{ y: -5, scale: 1.02 }}
+                  >
+                    <div className={styles.statValue}>{results.followingCount}</div>
+                    <div className={styles.statLabel}>Following</div>
+                  </motion.div>
+                  
+                  <motion.div 
+                    className={styles.stat}
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.2, duration: 0.4 }}
+                    whileHover={{ y: -5, scale: 1.02 }}
+                  >
+                    <div className={styles.statValue}>{results.followersCount}</div>
+                    <div className={styles.statLabel}>Followers</div>
+                  </motion.div>
+                  
+                  <motion.div 
+                    className={`${styles.stat} ${styles.highlightStat}`}
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.3, duration: 0.4 }}
+                    whileHover={{ y: -5, scale: 1.02 }}
+                  >
+                    <div className={styles.statValue}>{results.unfollowersCount}</div>
+                    <div className={styles.statLabel}>Not Following Back</div>
+                  </motion.div>
                 </div>
 
-                <h4>Unfollowers</h4>
-                {results.unfollowers.length > 0 ? (
-                  <div className={styles.unfollowersList}>
-                    {results.unfollowers.map((username, index) => (
-                      <div key={index} className={styles.unfollower}>
-                        <span>@{username}</span>
-                        <a 
-                          href={`https://www.instagram.com/${username}`} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className={styles.viewProfileButton}
+                <div className={styles.unfollowersList}>
+                  <h3>Accounts Not Following You Back</h3>
+                  
+                  {results.unfollowers.length > 0 ? (
+                    <div className={styles.accountsGrid}>
+                      {results.unfollowers.map((username, index) => (
+                        <motion.div 
+                          key={username} 
+                          className={styles.accountCard}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.1 + (index * 0.03), duration: 0.4 }}
+                          whileHover={{ scale: 1.03, y: -3 }}
                         >
-                          View Profile
-                        </a>
+                          <div className={styles.accountInfo}>
+                            <div className={styles.userAvatar}>
+                              <div className={styles.avatarPlaceholder}>
+                                {username.charAt(0).toUpperCase()}
+                              </div>
+                            </div>
+                            <div className={styles.userName}>@{username}</div>
+                          </div>
+                          <a 
+                            href={`https://www.instagram.com/${username}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className={styles.profileLink}
+                          >
+                            View Profile
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                              <polyline points="15 3 21 3 21 9"></polyline>
+                              <line x1="10" y1="14" x2="21" y2="3"></line>
+                            </svg>
+                          </a>
+                        </motion.div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className={styles.noUnfollowers}>
+                      <div className={styles.successIcon}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className={styles.noUnfollowers}>Great news! Everyone you follow also follows you back.</p>
-                )}
+                      <h4>Perfect Match!</h4>
+                      <p>Good news! Everyone you follow also follows you back.</p>
+                    </div>
+                  )}
+                </div>
               </motion.div>
             )}
-          </section>
-          
-          {/* Footer */}
-          <footer className={styles.footer}>
-            <div className={styles.footerContent}>
-              <div className={styles.copyright}>
-                <p>© 2025 Anthony Zhou - All Rights Reserved</p>
-              </div>
-              <div className={styles.techStack}>
-                <p>Built with Next.js, Framer Motion, and data analysis</p>
-              </div>
-              <div className={styles.scrollToTop}>
-                <a 
-                  href="#" 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  aria-label="Scroll to top"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="12" y1="19" x2="12" y2="5"></line>
-                    <polyline points="5 12 12 5 19 12"></polyline>
-                  </svg>
-                </a>
-              </div>
-            </div>
-          </footer>
+          </AnimatePresence>
         </div>
+
+        {/* Footer */}
+        <footer className={styles.footer}>
+          <div className={styles.footerContent}>
+            <div className={styles.copyright}>
+              <p>© 2025 Anthony Zhou - All Rights Reserved</p>
+            </div>
+            <div className={styles.footerLinks}>
+              <Link href="/#about">About</Link>
+              <Link href="/#work">Projects</Link>
+              <Link href="/#contact">Contact</Link>
+            </div>
+          </div>
+        </footer>
       </div>
       
       {/* Tutorial Overlay */}

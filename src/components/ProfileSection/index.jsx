@@ -5,38 +5,62 @@ import styles from './ProfileSection.module.scss';
 
 const ProfileSection = () => {
   const sectionRef = useRef(null);
+  
+  // Create parallax scroll effect
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"]
   });
 
-  // Parallax effects for image and content
-  const imageY = useTransform(scrollYProgress, [0, 1], ['-5%', '5%']);
-  const contentY = useTransform(scrollYProgress, [0, 1], ['5%', '-5%']);
+  // Parallax effects
+  const imageY = useTransform(scrollYProgress, [0, 1], ['-2%', '5%']);
+  const contentY = useTransform(scrollYProgress, [0, 1], ['2%', '-5%']);
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.5, 0.8], [0, 1, 1, 0.8]);
+
+  // Card tilt animation variants
+  const cardVariants = {
+    initial: { opacity: 0, y: 30, scale: 0.95 },
+    animate: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1,
+      transition: { 
+        duration: 0.8, 
+        ease: "easeOut",
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.5 }
+    }
+  };
 
   return (
     <section ref={sectionRef} className={styles.profileSection} id="about">
       <div className={styles.container}>
         <motion.div 
           className={styles.card}
-          initial={{ opacity: 0, y: 30, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          whileHover={{ 
-            scale: 1.02, 
-            rotateX: 2, 
-            rotateY: 2, 
-            boxShadow: "0 20px 40px rgba(0,0,0,0.3)" 
-          }}
+          variants={cardVariants}
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.1 }}
+          whileHover={{ scale: 1.02 }}
         >
           <div className={styles.cardContent}>
             <motion.div 
-              className={styles.imageCol} 
+              className={styles.imageCol}
               style={{ y: imageY }}
             >
               <motion.div 
                 className={styles.imageContainer}
-                whileHover={{ scale: 1.05, rotate: 1 }}
+                variants={itemVariants}
+                whileHover={{ scale: 1.03, rotate: 1 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
                 <Image
@@ -47,62 +71,76 @@ const ProfileSection = () => {
                   className={styles.profileImage}
                   priority
                 />
-                <div className={styles.imageBorder}></div>
+                <motion.div 
+                  className={styles.imageBorder}
+                  animate={{ 
+                    scale: [1, 1.03, 1],
+                    opacity: [0.6, 0.8, 0.6]
+                  }}
+                  transition={{ 
+                    duration: 4, 
+                    repeat: Infinity,
+                    repeatType: "reverse"
+                  }}
+                />
               </motion.div>
             </motion.div>
+            
             <motion.div 
               className={styles.infoCol}
-              style={{ y: contentY }}
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              style={{ y: contentY, opacity }}
+              variants={itemVariants}
             >
-              <h1 className={styles.name}>Anthony Zhou</h1>
-              <h2 className={styles.title}>Current Software Engineer &amp; Web Designer</h2>
-              <div className={styles.tagline}>
+              <motion.h1 className={styles.name} variants={itemVariants}>Anthony Zhou</motion.h1>
+              <motion.h2 className={styles.title} variants={itemVariants}>Software Engineer &amp; Web Designer</motion.h2>
+              
+              <motion.div className={styles.tagline} variants={itemVariants}>
                 <span className={styles.taglineText}>
-                  Engineering elegant solutions to complex problems
+                  Engineering elegant solutions for complex problems
                 </span>
-              </div>
-              <div className={styles.technicalSnapshot}>
-                <h3>UMD 27' Computer Science, Data Science</h3>
-                <ul className={styles.expertiseList}>
-                  <li>Full-stack architecture design</li>
-                  <li>React/Next.js optimization</li>
-                  <li>Java &amp; Python Development</li>
-                  <li>Mentor &amp; Data Analyst</li>
-                </ul>
-              </div>
-              <div className={styles.statRow}>
+              </motion.div>
+              
+              <motion.div className={styles.qualifications} variants={itemVariants}>
+                <div className={styles.qualificationItem}>
+                  <h3>Education</h3>
+                  <p>UMD '27 Computer Science, Data Science Track</p>
+                </div>
+                <div className={styles.qualificationItem}>
+                  <h3>Specialization</h3>
+                  <p>Full-stack development, React/Next.js, Java &amp; Python</p>
+                </div>
+              </motion.div>
+              
+              <motion.div className={styles.statRow} variants={itemVariants}>
                 <motion.div 
                   className={styles.stat}
                   whileHover={{ y: -5, scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 300, damping: 15 }}
                 >
-                  <span className={styles.statIcon}>⚡</span>
                   <span className={styles.statNumber}>3+</span>
                   <span className={styles.statLabel}>Years Experience</span>
                 </motion.div>
+                
                 <motion.div 
                   className={styles.stat}
                   whileHover={{ y: -5, scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 300, damping: 15 }}
                 >
-                  <span className={styles.statIcon}>🔧</span>
                   <span className={styles.statNumber}>15+</span>
-                  <span className={styles.statLabel}>Projects Delivered</span>
+                  <span className={styles.statLabel}>Projects</span>
                 </motion.div>
+                
                 <motion.div 
                   className={styles.stat}
                   whileHover={{ y: -5, scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 300, damping: 15 }}
                 >
-                  <span className={styles.statIcon}>🚀</span>
                   <span className={styles.statNumber}>5+</span>
-                  <span className={styles.statLabel}>Tech Stack Depth</span>
+                  <span className={styles.statLabel}>Tech Stack</span>
                 </motion.div>
-              </div>
-              <div className={styles.buttons}>
+              </motion.div>
+              
+              <motion.div className={styles.buttons} variants={itemVariants}>
                 <motion.a 
                   href="#contact" 
                   className={`${styles.button} ${styles.primaryButton}`}
@@ -111,6 +149,7 @@ const ProfileSection = () => {
                 >
                   Contact Me
                 </motion.a>
+                
                 <motion.a 
                   href="#work" 
                   className={`${styles.button} ${styles.secondaryButton}`}
@@ -119,13 +158,45 @@ const ProfileSection = () => {
                 >
                   View Projects
                 </motion.a>
-              </div>
+              </motion.div>
             </motion.div>
           </div>
         </motion.div>
       </div>
+      
+      {/* Decorative elements */}
       <div className={styles.decorativeGrid}></div>
       <div className={styles.decorativeBlur}></div>
+      
+      {/* Additional decorative elements */}
+      <motion.div
+        className={styles.floatingParticle}
+        animate={{
+          y: [0, -20, 0],
+          opacity: [0.3, 0.6, 0.3],
+          scale: [1, 1.2, 1]
+        }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          repeatType: "reverse"
+        }}
+      />
+      
+      <motion.div
+        className={`${styles.floatingParticle} ${styles.particle2}`}
+        animate={{
+          y: [0, -15, 0],
+          x: [0, 10, 0],
+          opacity: [0.2, 0.4, 0.2],
+          scale: [1, 1.1, 1]
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          repeatType: "reverse"
+        }}
+      />
     </section>
   );
 };
