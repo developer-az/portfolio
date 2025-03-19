@@ -216,3 +216,33 @@ img {
 .animate-pulse {
     animation: pulse 2s infinite ease-in-out;
 }
+
+/* Modal open state - add this to your globals.css */
+body.modal-open {
+    overflow: hidden; /* Prevent scrolling when modal is open */
+  }
+  
+  /* Hide the header when modal is open */
+  body.modal-open .header {
+    z-index: 0; /* Reduce z-index so it's below the modal */
+    opacity: 0; /* Hide visually */
+    transition: opacity 0.3s ease;
+  }
+  
+  /* Hide the theme switcher when modal is open */
+  body.modal-open .themeSwitcher {
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  /* Ensure smooth transition when the modal closes */
+  .header, .themeSwitcher {
+    transition: opacity 0.3s ease;
+  }
+  
+  /* Ensure the modal backdrop is above everything */
+  .modalBackdrop {
+    z-index: 1100 !important;
+  }
+

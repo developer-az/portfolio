@@ -1,5 +1,3 @@
-/* Enhanced theme variables with better contrast */
-
 /* Base variables */
 :root {
   /* Colors */
@@ -59,7 +57,9 @@
 }
 
 /* Dark theme variables - default */
-:root, html.dark-theme {
+:root,
+html,
+html.dark-theme {
   /* Background colors */
   --bg-primary: #121212;
   --bg-secondary: #1a1a1a;

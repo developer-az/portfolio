@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import Image from 'next/image';
 import Link from 'next/link';
 import styles from './ProjectCard.module.scss';
 
@@ -9,12 +8,14 @@ const ProjectCard = ({
   description, 
   imageSrc = null,
   demoLink = null,
-  repoLink = null, // GitHub repository link
+  repoLink = null,
   technologies = [],
   icon = null,
-  iconLabel = ""
+  iconLabel = "",
+  onClick = null
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const cardRef = useRef(null);
   
   // Mouse position values
@@ -53,14 +54,21 @@ const ProjectCard = ({
     y.set(0);
   };
 
-  // Navigate to repo when clicked
+  // Handle image loading error
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  // Handle card click
   const handleCardClick = (e) => {
-    // Don't navigate if user clicked on the demo button
+    // Don't navigate if user clicked on the demo or repo button
     if (e.target.closest('a')) {
       return;
     }
     
-    if (repoLink) {
+    if (onClick) {
+      onClick();
+    } else if (repoLink) {
       window.open(repoLink, '_blank', 'noopener,noreferrer');
     }
   };
@@ -77,7 +85,7 @@ const ProjectCard = ({
         rotateX: isHovered ? rotateX : 0,
         rotateY: isHovered ? rotateY : 0,
         transformStyle: "preserve-3d",
-        cursor: repoLink ? 'pointer' : 'default'
+        cursor: (onClick || repoLink) ? 'pointer' : 'default'
       }}
       whileHover={{ scale: 1.02 }}
       transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -85,24 +93,45 @@ const ProjectCard = ({
       <div className={styles.content} style={{ transform: "translateZ(0px)" }}>
         {/* Project Image */}
         <div className={styles.imageContainer}>
-          {imageSrc ? (
-            <Image 
-              src={imageSrc} 
-              alt={title}
-              width={400}
-              height={225}
+          {imageSrc && !imageError ? (
+            <div 
               className={styles.projectImage}
+              style={{
+                backgroundImage: `url(${imageSrc})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                width: '100%',
+                height: '100%'
+              }}
+              onError={handleImageError}
             />
           ) : (
             <div className={styles.fallbackImage}>
-              {icon && (
+              {icon ? (
                 <div className={styles.iconContainer}>
                   {icon}
                   {iconLabel && <span className={styles.iconLabel}>{iconLabel}</span>}
                 </div>
+              ) : (
+                <div className={styles.projectPlaceholder}>
+                  <span>{title.charAt(0)}</span>
+                </div>
               )}
             </div>
           )}
+          
+          {/* Show overlay with "View Details" on hover */}
+          <motion.div 
+            className={styles.projectImageOverlay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isHovered ? 1 : 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className={styles.overlayContent}>
+              <h4>{title}</h4>
+              <p>View Details</p>
+            </div>
+          </motion.div>
           
           {/* Floating technology tags */}
           {technologies.length > 0 && (
@@ -133,9 +162,9 @@ const ProjectCard = ({
           <h3 className={styles.title}>{title}</h3>
           <p className={styles.description}>{description}</p>
           
-          {/* Links - Only show Demo button (if provided) */}
-          {demoLink && (
-            <div className={styles.links}>
+          {/* Links */}
+          <div className={styles.links}>
+            {demoLink && (
               <Link 
                 href={demoLink} 
                 className={styles.link} 
@@ -148,8 +177,23 @@ const ProjectCard = ({
                 </svg>
                 Demo
               </Link>
-            </div>
-          )}
+            )}
+            
+            {repoLink && (
+              <a 
+                href={repoLink}
+                className={`${styles.link} ${styles.githubLink}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                </svg>
+                Code
+              </a>
+            )}
+          </div>
         </div>
         
         {/* 3D elements */}

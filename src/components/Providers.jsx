@@ -7,12 +7,10 @@ export default function Providers({ children }) {
   // This effect applies a class to the body to prevent FOUC 
   // (Flash of Unstyled Content) during initial load
   useEffect(() => {
-    // Get stored theme or use system preference
+    // Get stored theme or default to dark
     const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    // Apply initial theme
-    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+    // Default to dark theme
+    const initialTheme = savedTheme || 'dark';
     document.documentElement.classList.add(`${initialTheme}-theme`);
     
     // Remove loader class

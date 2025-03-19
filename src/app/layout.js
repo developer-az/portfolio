@@ -18,10 +18,9 @@ export const viewport = {
   themeColor: '#fa2104'
 }
 
-
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark-theme" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
@@ -43,8 +42,8 @@ export default function RootLayout({ children }) {
           (function() {
             try {
               const savedTheme = localStorage.getItem('theme');
-              const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-              const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+              // Default to dark theme if no preference is saved
+              const theme = savedTheme || 'dark';
               document.documentElement.classList.add(\`\${theme}-theme\`);
             } catch (e) {
               // Fallback to dark theme if localStorage is unavailable

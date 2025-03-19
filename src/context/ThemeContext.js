@@ -5,31 +5,32 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  // Start with undefined to avoid hydration mismatch
-  const [theme, setTheme] = useState(undefined);
+  // Start with 'dark' as the default theme
+  const [theme, setTheme] = useState('dark');
   const [mounted, setMounted] = useState(false);
   
-  // After component mounts, check for saved preference and apply it
+  // After component mounts, check for saved preference but default to dark
   useEffect(() => {
     // First set mounted to true so we know hydration is complete
     setMounted(true);
     
-    // Get stored theme or use system preference
+    // Get stored theme or use dark as default
     const savedTheme = localStorage.getItem('theme');
     
     if (savedTheme) {
       setTheme(savedTheme);
-    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setTheme('dark');
     } else {
-      setTheme('light');
+      // Set dark as default instead of checking system preference
+      setTheme('dark');
+      // Save the default to localStorage
+      localStorage.setItem('theme', 'dark');
     }
     
-    // Listen for system preference changes
+    // Listen for system preference changes (optional)
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = (e) => {
       if (!localStorage.getItem('theme')) {
-        setTheme(e.matches ? 'dark' : 'light');
+        setTheme('dark'); // Always default to dark even on system changes
       }
     };
     
