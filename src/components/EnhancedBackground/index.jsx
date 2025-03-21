@@ -32,7 +32,12 @@ const EnhancedBackground = ({ color = "#121212" }) => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 0);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit pixel ratio for performance
-    containerRef.current.appendChild(renderer.domElement);
+    
+    // Store reference to container for cleanup
+    const currentContainer = containerRef.current;
+    
+    // Store for use in cleanup function
+    currentContainer.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
     // Create particles - reduce count for better performance
@@ -121,7 +126,6 @@ const EnhancedBackground = ({ color = "#121212" }) => {
     window.addEventListener('scroll', handleScroll);
 
     // Optimized connection update interval
-    let frame = 0;
     let lastUpdateTime = 0;
     
     // Animation loop with performance optimizations
@@ -212,8 +216,8 @@ const EnhancedBackground = ({ color = "#121212" }) => {
       
       if (rendererRef.current) {
         rendererRef.current.dispose();
-        if (containerRef.current && containerRef.current.contains(rendererRef.current.domElement)) {
-          containerRef.current.removeChild(rendererRef.current.domElement);
+        if (currentContainer && currentContainer.contains(rendererRef.current.domElement)) {
+          currentContainer.removeChild(rendererRef.current.domElement);
         }
       }
     };

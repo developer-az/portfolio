@@ -8,8 +8,6 @@ export const metadata = {
   description: 'Portfolio of Anthony Zhou, a software engineer and web designer specializing in creating innovative digital experiences.',
   keywords: 'Anthony Zhou, Software Engineer, Web Designer, Portfolio, React, JavaScript, Full Stack Developer',
   authors: [{ name: 'Anthony Zhou' }],
-  viewport: 'width=device-width, initial-scale=1',
-  themeColor: '#fa2104'
 }
 
 export const viewport = {

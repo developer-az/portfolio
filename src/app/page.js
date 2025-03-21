@@ -41,6 +41,36 @@ export default function Home() {
     setMobileMenuOpen(prev => !prev);
   }, []);
 
+  // Setup scroll triggers as a separate function
+  const registerScrollTriggers = useCallback(() => {
+    if (!header.current || !portfolioContent.current) return;
+    
+    // Header animation
+    gsap.to(header.current, {
+      scrollTrigger: {
+        trigger: portfolioContent.current,
+        start: "top top",
+        end: "100 top",
+        scrub: 1,
+      },
+      backgroundColor: theme === 'dark' ? "rgba(18, 18, 18, 0.95)" : "rgba(245, 245, 245, 0.95)",
+      boxShadow: "0 3px 10px rgba(0, 0, 0, 0.3)",
+    });
+    
+    // Update active section on scroll
+    const sections = document.querySelectorAll('section[id]');
+    
+    sections.forEach(section => {
+      ScrollTrigger.create({
+        trigger: section,
+        start: "top center",
+        end: "bottom center",
+        onEnter: () => setActiveSection(section.id),
+        onEnterBack: () => setActiveSection(section.id)
+      });
+    });
+  }, [theme]);
+
   useEffect(() => {
     // Initialize GSAP plugins
     if (typeof window !== "undefined") {
@@ -86,37 +116,7 @@ export default function Home() {
         ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
       }
     };
-  }, []);
-  
-  // Setup scroll triggers as a separate function
-  const registerScrollTriggers = useCallback(() => {
-    if (!header.current || !portfolioContent.current) return;
-    
-    // Header animation
-    gsap.to(header.current, {
-      scrollTrigger: {
-        trigger: portfolioContent.current,
-        start: "top top",
-        end: "100 top",
-        scrub: 1,
-      },
-      backgroundColor: theme === 'dark' ? "rgba(18, 18, 18, 0.95)" : "rgba(245, 245, 245, 0.95)",
-      boxShadow: "0 3px 10px rgba(0, 0, 0, 0.3)",
-    });
-    
-    // Update active section on scroll
-    const sections = document.querySelectorAll('section[id]');
-    
-    sections.forEach(section => {
-      ScrollTrigger.create({
-        trigger: section,
-        start: "top center",
-        end: "bottom center",
-        onEnter: () => setActiveSection(section.id),
-        onEnterBack: () => setActiveSection(section.id)
-      });
-    });
-  }, [theme]);
+  }, [registerScrollTriggers, showPortfolio]);
 
   // Handle scroll to update active section - with throttling for performance
   useEffect(() => {
@@ -154,8 +154,9 @@ export default function Home() {
   const size = isHovered ? 400 : 40;
 
   // Navigation components - memoized to prevent unnecessary re-renders
-  const Navigation = useMemo(() => {
-    return ({ currentPath }) => {
+  const NavigationComponent = useMemo(() => {
+    // Named function for ESLint display-name rule
+    function Navigation({ currentPath }) {
       // Only show the Home link when not on the main page
       const isMainPage = currentPath === '/' || !currentPath;
       
@@ -176,11 +177,15 @@ export default function Home() {
           </Link>
         </div>
       );
-    };
+    }
+    
+    Navigation.displayName = 'Navigation';
+    return Navigation;
   }, [activeSection]);
 
-  const MobileMenu = useMemo(() => {
-    return ({ currentPath, setMobileMenuOpen }) => {
+  const MobileMenuComponent = useMemo(() => {
+    // Named function for ESLint display-name rule
+    function MobileMenu({ currentPath, setMobileMenuOpen }) {
       const isMainPage = currentPath === '/' || !currentPath;
       
       return (
@@ -240,7 +245,10 @@ export default function Home() {
           </div>
         </div>
       );
-    };
+    }
+    
+    MobileMenu.displayName = 'MobileMenu';
+    return MobileMenu;
   }, [mobileMenuOpen]);
 
   // Only render content if theme is loaded to avoid flashing
@@ -307,7 +315,7 @@ export default function Home() {
               </div>
 
               {/* Desktop Navigation */}
-              <Navigation currentPath="/" />
+              <NavigationComponent currentPath="/" />
 
               {/* Mobile Menu Button */}
               <button
@@ -334,7 +342,7 @@ export default function Home() {
             </div>
 
             {/* Mobile Menu */}
-            <MobileMenu currentPath="/" setMobileMenuOpen={setMobileMenuOpen} />
+            <MobileMenuComponent currentPath="/" setMobileMenuOpen={setMobileMenuOpen} />
           </header>
 
           {/* Portfolio Content */}
