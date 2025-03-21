@@ -3,30 +3,27 @@ import styles from "./page.module.scss";
 import { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import useMousePosition from "./utils/useMousePosition";
+import Preloader from "../components/Preloader";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 
-// Import enhanced components
+// Import components
 import EnhancedBackground from '../components/EnhancedBackground';
 import ProfileSection from '../components/ProfileSection';
-//import EnhancedResumeSection from '../components/EnhancedResumeSection';
+import ResumeSection from '../components/ResumeSection';
 import WorkSection from '../components/WorkSection';
 import ContactSection from '../components/ContactSection';
-import Header from '../components/Header';
-
-// Import creative elements
-import { 
-  RevealText, 
-  CustomCursor, 
-  ScrollProgress, 
-  FloatingElement 
-} from '../components/CreativeDetails';
+import SkillsSection from '../components/SkillsSection'; // Ensure this is imported
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [showPortfolio, setShowPortfolio] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  
+  // Set a default theme instead of trying to use the context
   const [currentTheme, setCurrentTheme] = useState('dark');
 
   // Detect theme from HTML class on initial load
@@ -62,6 +59,7 @@ export default function Home() {
   }, []);
 
   // Refs for GSAP animations
+  const header = useRef(null);
   const portfolioContent = useRef(null);
 
   useEffect(() => {
@@ -84,9 +82,14 @@ export default function Home() {
       document.body.style.cursor = "default";
       
       setTimeout(() => {
-        setShowPortfolio(true);
-        document.body.style.overflow = "auto";
-      }, 3000);
+        setIsFadingOut(true);
+        
+        setTimeout(() => {
+          setShowPortfolio(true);
+          setIsFadingOut(false);
+          document.body.style.overflow = "auto";
+        }, 1000);
+      }, 2000);
     }, 2000);
 
     // Cleanup
@@ -120,244 +123,261 @@ export default function Home() {
     }
   }, [showPortfolio]);
 
-  // Mouse tracking for intro effect
-  const { x, y } = useMousePosition();
-  const [isHovered, setIsHovered] = useState(false);
-  const size = isHovered ? 400 : 40;
-
-  // Intro animation variants
-  const introVariants = {
-    initial: { opacity: 0 },
-    animate: { 
-      opacity: 1,
-      transition: { 
-        duration: 0.8,
-        delay: 0.2
-      }
-    },
-    exit: { 
-      opacity: 0,
-      transition: { 
-        duration: 0.8
+  // Update header animation to use currentTheme
+  useEffect(() => {
+    if (showPortfolio && portfolioContent.current) {
+      // Header animation
+      if (header.current) {
+        gsap.to(header.current, {
+          scrollTrigger: {
+            trigger: portfolioContent.current,
+            start: "top top",
+            end: "100 top",
+            scrub: 1,
+          },
+          backgroundColor: currentTheme === 'dark' ? "rgba(18, 18, 18, 0.95)" : "rgba(245, 245, 245, 0.95)",
+          boxShadow: "0 3px 10px rgba(0, 0, 0, 0.3)",
+        });
       }
     }
+  }, [showPortfolio, currentTheme]);
+
+  // Mouse tracking for intro effect
+  const [isHovered, setIsHovered] = useState(false);
+  const { x, y } = useMousePosition();
+  const size = isHovered ? 400 : 40;
+
+  // Navigation components
+  const Navigation = ({ currentPath }) => {
+    // Only show the Home link when not on the main page
+    const isMainPage = currentPath === '/' || !currentPath;
+    
+    return (
+      <div className={styles.nav}>
+        {!isMainPage && (
+          <Link href="/" className={styles.navLink}>
+            Home
+          </Link>
+        )}
+        <a href="#about" className={`${styles.navLink} ${activeSection === 'about' ? styles.active : ''}`}>About</a>
+        <a href="#skills" className={`${styles.navLink} ${activeSection === 'skills' ? styles.active : ''}`}>Skills</a>
+        <a href="#resume" className={`${styles.navLink} ${activeSection === 'resume' ? styles.active : ''}`}>Resume</a>
+        <a href="#work" className={`${styles.navLink} ${activeSection === 'work' ? styles.active : ''}`}>Work</a>
+        <a href="#contact" className={`${styles.navLink} ${activeSection === 'contact' ? styles.active : ''}`}>Contact</a>
+        <Link href="/instagram-analyzer" className={styles.navLink}>
+          Instagram Analyzer
+        </Link>
+      </div>
+    );
+  };
+
+  const MobileMenu = ({ currentPath, setMobileMenuOpen }) => {
+    const isMainPage = currentPath === '/' || !currentPath;
+    
+    return (
+      <div className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ""}`}>
+        <div className={styles.mobileMenuContent}>
+          {!isMainPage && (
+            <Link 
+              href="/" 
+              onClick={() => setMobileMenuOpen(false)}
+              className={styles.navLink}
+            >
+              Home
+            </Link>
+          )}
+          <a 
+            href="#about" 
+            onClick={() => setMobileMenuOpen(false)}
+            className={styles.navLink}
+          >
+            About
+          </a>
+          <a 
+            href="#skills" 
+            onClick={() => setMobileMenuOpen(false)}
+            className={styles.navLink}
+          >
+            Skills
+          </a>
+          <a 
+            href="#resume" 
+            onClick={() => setMobileMenuOpen(false)}
+            className={styles.navLink}
+          >
+            Resume
+          </a>
+          <a 
+            href="#work" 
+            onClick={() => setMobileMenuOpen(false)}
+            className={styles.navLink}
+          >
+            Work
+          </a>
+          <a 
+            href="#contact" 
+            onClick={() => setMobileMenuOpen(false)}
+            className={styles.navLink}
+          >
+            Contact
+          </a>
+          <Link 
+            href="/instagram-analyzer" 
+            onClick={() => setMobileMenuOpen(false)}
+            className={styles.navLink}
+          >
+            Instagram Analyzer
+          </Link>
+        </div>
+      </div>
+    );
   };
 
   return (
     <div className={styles.mainWrapper}>
-      {/* Custom cursor for desktop devices */}
-      <CustomCursor />
-      
-      {/* Scroll progress indicator */}
-      <ScrollProgress />
-      
-      {/* Initial Intro Effect - Margiela-inspired */}
+      {/* Preloader Animation */}
       <AnimatePresence mode="wait">
-        {!showPortfolio && !isLoading && (
-          <motion.div 
-            className={styles.introContainer}
-            variants={introVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-          >
-            <div className={styles.introInner}>
-              <motion.div
-                className={styles.mask}
-                animate={{
-                  WebkitMaskPosition: `${x - size / 2}px ${y - size / 2}px`,
-                  WebkitMaskSize: `${size}px`,
-                }}
-                transition={{ type: "tween", ease: "backOut", duration: 0.5 }}
-              >
-                <RevealText delay={0.5}>
-                  <p
-                    onMouseEnter={() => setIsHovered(true)}
-                    onMouseLeave={() => setIsHovered(false)}
-                  >
-                    你好我是周嘉成<span>.</span>
-                  </p>
-                </RevealText>
-              </motion.div>
-
-              <div className={styles.body}>
-                <RevealText delay={1.0}>
-                  <p>
-                    Hello, I am <span>Anthony Zhou</span>.
-                  </p>
-                </RevealText>
-              </div>
-              
-              <motion.div 
-                className={styles.introSubtext}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.5, duration: 0.8 }}
-              >
-                <p>Software Engineer & Web Designer</p>
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
+        {isLoading && <Preloader />}
       </AnimatePresence>
 
-      {/* Portfolio Preloader Animation */}
-      <AnimatePresence mode="wait">
-        {isLoading && (
-          <motion.div 
-            className={styles.preloader}
-            exit={{ opacity: 0 }}
+      {/* Initial Intro Effect */}
+      {!showPortfolio && !isLoading && (
+        <main className={`${styles.main} ${isFadingOut ? styles.fadeOut : ''}`}>
+          <motion.div
+            className={styles.mask}
+            animate={{
+              WebkitMaskPosition: `${x - size / 2}px ${y - size / 2}px`,
+              WebkitMaskSize: `${size}px`,
+            }}
+            transition={{ type: "tween", ease: "backOut", duration: 0.5 }}
           >
-            <div className={styles.preloaderLogo}>AZ</div>
-            <div className={styles.preloaderBar}>
-              <motion.div 
-                className={styles.preloaderProgress}
-                initial={{ width: 0 }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 2, ease: "easeInOut" }}
-              />
-            </div>
+            <p
+              onMouseEnter={() => {
+                setIsHovered(true);
+              }}
+              onMouseLeave={() => {
+                setIsHovered(false);
+              }}
+            >
+              你好我是周嘉成<span>.</span>
+            </p>
           </motion.div>
-        )}
-      </AnimatePresence>
+
+          <div className={styles.body}>
+            <p>
+              Hello, I am <span>Anthony Zhou</span>.
+            </p>
+          </div>
+        </main>
+      )}
 
       {/* Portfolio Content */}
-      <AnimatePresence mode="wait">
-        {showPortfolio && (
-          <motion.div 
-            className={styles.portfolioWrapper}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-          >
-            {/* Enhanced 3D Background */}
-            <EnhancedBackground color={currentTheme === 'dark' ? "#0a0a0a" : "#f5f5f5"} />
-            
-            {/* Margiela-inspired Header */}
-            <Header activeSection={activeSection} />
+      {showPortfolio && (
+        <div className={styles.portfolioWrapper}>
+          {/* Enhanced 3D Background */}
+          <EnhancedBackground color={currentTheme === 'dark' ? "#121212" : "#f5f5f5"} />
+          
+          {/* Header */}
+          <header ref={header} className={styles.header} id="home">
+            <div className={styles.headerContent}>
+              <div className={styles.logo}>
+                <p className={styles.copyright}>©</p>
+                <div className={styles.logoText}>
+                  <p className={styles.codeBy}>Code by</p>
+                  <h1 className={styles.name}>
+                    <span className={styles.firstName}>Anthony</span>
+                    <span className={styles.lastName}>Zhou</span>
+                  </h1>
+                </div>
+              </div>
 
-            {/* Portfolio Content */}
-            <div ref={portfolioContent} className={styles.portfolioContent}>
-              {/* Hero Section */}
-              <section id="home" className={styles.heroSection}>
-                <FloatingElement amplitude={20} speed={6} className={styles.heroFloatingElement}>
-                  <div className={styles.heroSubtitle}>Portfolio 2025</div>
-                </FloatingElement>
-                
-                <div className={styles.heroContent}>
-                  <RevealText delay={0.3} direction="up">
-                    <h1 className={styles.heroTitle}>
-                      Engineering elegant solutions for complex problems
-                    </h1>
-                  </RevealText>
-                  
-                  <RevealText delay={0.6} direction="up">
-                    <p className={styles.heroDescription}>
-                      Full-stack developer specializing in creating immersive digital experiences that merge innovation with aesthetics
-                    </p>
-                  </RevealText>
-                  
-                  <div className={styles.heroButtons}>
-                    <motion.a 
-                      href="#work" 
-                      className={styles.primaryButton}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.8, duration: 0.5 }}
-                      whileHover={{ y: -5 }}
-                      whileTap={{ y: 0 }}
-                    >
-                      View Projects
-                    </motion.a>
-                    
-                    <motion.a 
-                      href="#contact" 
-                      className={styles.secondaryButton}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.9, duration: 0.5 }}
-                      whileHover={{ y: -5 }}
-                      whileTap={{ y: 0 }}
-                    >
-                      Contact Me
-                    </motion.a>
-                  </div>
-                </div>
-                
-                <div className={styles.scrollIndicator}>
-                  <div className={styles.mouseIcon}></div>
-                  <p>Scroll Down</p>
-                </div>
-              </section>
-              
-              {/* About Section with Profile */}
-              <section id="about" className={styles.about}>
-                <ProfileSection />
-              </section>
-              
-              {/* Resume Section with Skills Integration */}
-              <EnhancedResumeSection />
-              
-              {/* Work Section */}
-              <WorkSection />
-              
-              {/* Contact Section */}
-              <ContactSection />
-              
-              {/* Footer */}
-              <footer className={styles.footer}>
-                <div className={styles.footerContent}>
-                  <div className={styles.footerLeft}>
-                    <div className={styles.footerLogo}>AZ</div>
-                    <p className={styles.copyright}>© {new Date().getFullYear()} Anthony Zhou</p>
-                  </div>
-                  
-                  <div className={styles.footerLinks}>
-                    <a href="#home">Home</a>
-                    <a href="#about">About</a>
-                    <a href="#resume">Resume</a>
-                    <a href="#work">Work</a>
-                    <a href="#contact">Contact</a>
-                  </div>
-                  
-                  <div className={styles.footerRight}>
-                    <div className={styles.socialLinks}>
-                      <a href="https://github.com/developer-az" target="_blank" rel="noopener noreferrer">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-                        </svg>
-                      </a>
-                      <a href="https://linkedin.com/in/anthony--zhou" target="_blank" rel="noopener noreferrer">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                          <rect x="2" y="9" width="4" height="12"></rect>
-                          <circle cx="4" cy="4" r="2"></circle>
-                        </svg>
-                      </a>
-                    </div>
-                    
-                    <button 
-                      className={styles.scrollTopButton}
-                      onClick={() => {
-                        window.scrollTo({
-                          top: 0,
-                          behavior: 'smooth'
-                        });
-                      }}
-                      aria-label="Scroll to top"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="12" y1="19" x2="12" y2="5"></line>
-                        <polyline points="5 12 12 5 19 12"></polyline>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </footer>
+              {/* Desktop Navigation */}
+              <Navigation currentPath="/" />
+
+              {/* Mobile Menu Button */}
+              <button
+                className={styles.menuButton}
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Toggle menu"
+              >
+                <div
+                  className={`${styles.menuButtonLine} ${
+                    mobileMenuOpen ? styles.active : ""
+                  }`}
+                ></div>
+                <div
+                  className={`${styles.menuButtonLine} ${
+                    mobileMenuOpen ? styles.active : ""
+                  }`}
+                ></div>
+                <div
+                  className={`${styles.menuButtonLine} ${
+                    mobileMenuOpen ? styles.active : ""
+                  }`}
+                ></div>
+              </button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+            {/* Mobile Menu */}
+            <MobileMenu currentPath="/" setMobileMenuOpen={setMobileMenuOpen} />
+          </header>
+
+          {/* Portfolio Content */}
+          <div ref={portfolioContent} className={styles.portfolioContent}>
+            {/* About Section with Profile */}
+            <section id="about" className={styles.about}>
+              <ProfileSection />
+            </section>
+            
+            {/* Skills Section - Interactive 3D cubes */}
+            <section id="skills">
+              <SkillsSection />
+            </section>
+            
+            {/* Resume Section */}
+            <ResumeSection />
+            
+            {/* Work Section */}
+            <WorkSection />
+            
+            {/* Contact Section */}
+            <ContactSection />
+            
+            {/* Footer */}
+            <footer className={styles.footer}>
+              <div className={styles.footerContent}>
+                <div className={styles.copyright}>
+                  <p>© 2025 Anthony Zhou - All Rights Reserved</p>
+                </div>
+                
+                <div className={styles.techStack}>
+                  <p>Built with Next.js, Framer Motion, Three.js, and GSAP</p>
+                </div>
+                
+                <div className={styles.scrollToTop}>
+                  <motion.button 
+                    onClick={() => {
+                      window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                      });
+                    }}
+                    aria-label="Scroll to top"
+                    className={styles.scrollTopButton}
+                    whileHover={{ y: -5 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="12" y1="19" x2="12" y2="5"></line>
+                      <polyline points="5 12 12 5 19 12"></polyline>
+                    </svg>
+                  </motion.button>
+                </div>
+              </div>
+            </footer>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
