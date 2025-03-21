@@ -1,152 +1,284 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, useInView, useSpring, useMotionValue, useTransform } from 'framer-motion';
+import { motion, useAnimation, useMotionValue } from 'framer-motion';
 import styles from './SkillsSection.module.scss';
 
-// Skill categories and items - reusing your existing data
+// Skill categories and items
 const skillsData = [
   {
     category: "Programming Languages",
     skills: [
-      { name: "Python", level: 90, icon: "python" },
-      { name: "JavaScript", level: 85, icon: "javascript" },
-      { name: "Java", level: 80, icon: "java" },
-      { name: "C", level: 75, icon: "c" },
-      { name: "HTML", level: 95, icon: "html" },
-      { name: "CSS", level: 90, icon: "css" }
+      { name: "Python", icon: "python", color: "#3572A5" },
+      { name: "JavaScript", icon: "javascript", color: "#F7DF1E" },
+      { name: "Java", icon: "java", color: "#B07219" },
+      { name: "C", icon: "c", color: "#555555" },
+      { name: "HTML", icon: "html", color: "#E34F26" },
+      { name: "CSS", icon: "css", color: "#264DE4" }
     ]
   },
   {
     category: "Frameworks & Libraries",
     skills: [
-      { name: "React", level: 88, icon: "react" },
-      { name: "Next.js", level: 82, icon: "nextjs" },
-      { name: "Node.js", level: 78, icon: "nodejs" },
-      { name: "Express", level: 75, icon: "express" },
-      { name: "Data Science Libraries", level: 85, icon: "data" }
+      { name: "React", icon: "react", color: "#61DAFB" },
+      { name: "Next.js", icon: "nextjs", color: "#000000" },
+      { name: "Node.js", icon: "nodejs", color: "#339933" },
+      { name: "Express", icon: "express", color: "#000000" },
+      { name: "Data Science", icon: "data", color: "#4169E1" }
     ]
   },
   {
     category: "Tools & Methodologies",
     skills: [
-      { name: "Git", level: 92, icon: "git" },
-      { name: "Agile/Scrum", level: 88, icon: "agile" },
-      { name: "UI/UX Design", level: 85, icon: "uiux" },
-      { name: "Object-Oriented Programming", level: 90, icon: "oop" },
-      { name: "GitHub", level: 95, icon: "github" }
+      { name: "Git", icon: "git", color: "#F05032" },
+      { name: "Agile/Scrum", icon: "agile", color: "#6DB33F" },
+      { name: "UI/UX Design", icon: "uiux", color: "#FF7F50" },
+      { name: "OOP", icon: "oop", color: "#8A2BE2" },
+      { name: "GitHub", icon: "github", color: "#4078C0" }
     ]
   }
 ];
 
-// Using the existing icon components
-// Animation variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
-
-const skillItemVariants = {
-  hidden: { opacity: 0, y: 20, rotateX: -5 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    rotateX: 0,
-    transition: {
-      type: "spring",
-      stiffness: 300,
-      damping: 20
-    }
-  }
-};
-
-// 3D Skill Block Component
-const SkillBlock = ({ skill, index }) => {
-  const blockRef = useRef(null);
+// 3D Interactive Cube Component
+const SkillCube = ({ skill, index }) => {
+  const controls = useAnimation();
+  const cubeRef = useRef(null);
   
-  // Mouse tracking values for 3D effect
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
+  // Motion values for interactive rotation
+  const rotateX = useMotionValue(0);
+  const rotateY = useMotionValue(0);
+  const rotateZ = useMotionValue(0);
   
-  // Convert mouse movement to rotation
-  const rotateX = useTransform(y, [-100, 100], [10, -10]);  
-  const rotateY = useTransform(x, [-100, 100], [-10, 10]);
   
-  // Add spring physics for smoother movement
-  const springConfig = { stiffness: 150, damping: 15 };
-  const rotateXSpring = useSpring(rotateX, springConfig);
-  const rotateYSpring = useSpring(rotateY, springConfig);
-
-  // Handle mouse move for 3D effect
-  const handleMouseMove = (e) => {
-    if (!blockRef.current) return;
+  // Auto-rotation animation
+  useEffect(() => {
+    let timeoutId;
     
-    const rect = blockRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
+    const startAnimation = () => {
+      controls.start({
+        rotateX: [0, 360],
+        rotateY: [0, 360],
+        transition: { 
+          duration: 20, 
+          ease: "linear", 
+          repeat: Infinity,
+          repeatType: "loop" 
+        }
+      });
+    };
     
-    const mouseX = e.clientX - centerX;
-    const mouseY = e.clientY - centerY;
+    // Start auto-rotation after a delay based on index
+    timeoutId = setTimeout(() => {
+      startAnimation();
+    }, index * 100);
     
-    x.set(mouseX);
-    y.set(mouseY);
+    return () => {
+      clearTimeout(timeoutId);
+      controls.stop();
+    };
+  }, [controls, index]);
+  
+  // Stop animation on interaction and resume after
+  const handleHoverStart = () => {
+    controls.stop();
   };
   
-  // Reset rotation when mouse leaves
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
+  const handleHoverEnd = () => {
+    controls.start({
+      rotateX: [rotateX.get(), rotateX.get() + 360],
+      rotateY: [rotateY.get(), rotateY.get() + 360],
+      transition: { 
+        duration: 20, 
+        ease: "linear", 
+        repeat: Infinity,
+        repeatType: "loop" 
+      }
+    });
+  };
+  
+  // Handle mouse down for custom rotation
+  const handleMouseDown = (e) => {
+    e.preventDefault();
+    
+    const cube = cubeRef.current;
+    if (!cube) return;
+    
+    controls.stop();
+    
+    // Initial position
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const initialRotateX = rotateX.get();
+    const initialRotateY = rotateY.get();
+    
+    // Mouse move handler
+    const handleMouseMove = (e) => {
+      const deltaX = e.clientX - startX;
+      const deltaY = e.clientY - startY;
+      
+      rotateX.set(initialRotateX + deltaY * 0.5);
+      rotateY.set(initialRotateY - deltaX * 0.5);
+    };
+    
+    // Mouse up handler
+    const handleMouseUp = () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      
+      // Resume auto-rotation after release
+      controls.start({
+        rotateX: [rotateX.get(), rotateX.get() + 360],
+        rotateY: [rotateY.get(), rotateY.get() + 360],
+        transition: { 
+          duration: 20, 
+          ease: "linear", 
+          repeat: Infinity,
+          repeatType: "loop" 
+        }
+      });
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
   };
 
   return (
-    <motion.div
-      ref={blockRef}
-      className={styles.skillBlock}
-      variants={skillItemVariants}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        rotateX: rotateXSpring,
-        rotateY: rotateYSpring,
-        transformPerspective: 1200,
-        transformStyle: "preserve-3d"
-      }}
-      whileHover={{ 
-        z: 20, 
-        boxShadow: "0 15px 30px rgba(0, 0, 0, 0.2)"
-      }}
-    >
-      {/* Top edge highlight */}
-      <div className={styles.blockTopEdge}></div>
-      
-      {/* Side edge shadow */}
-      <div className={styles.blockSideEdge}></div>
-      
-      {/* Icon container */}
-      <div className={styles.blockIconContainer}>
-        {IconComponents[skill.icon]}
-      </div>
-      
-      {/* Skill name */}
-      <h3 className={styles.blockTitle}>{skill.name}</h3>
-      
-      {/* Level indicator */}
-      <div className={styles.blockLevelContainer}>
-        <motion.div 
-          className={styles.blockLevelBar}
-          initial={{ width: 0 }}
-          animate={{ width: `${skill.level}%` }}
-          transition={{ duration: 1, delay: index * 0.05 + 0.2 }}
-        />
-        <span className={styles.blockLevelText}>{skill.level}%</span>
-      </div>
-    </motion.div>
+    <div className={styles.cubeContainer}>
+      <motion.div
+        ref={cubeRef}
+        className={styles.cube}
+        style={{ 
+          rotateX,
+          rotateY,
+          rotateZ,
+          backgroundColor: skill.color + "22" // Adding transparency
+        }}
+        whileHover={{ scale: 1.1 }}
+        onHoverStart={handleHoverStart}
+        onHoverEnd={handleHoverEnd}
+        onMouseDown={handleMouseDown}
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ 
+          opacity: 1, 
+          scale: 1,
+          transition: { delay: index * 0.1, duration: 0.5 }
+        }}
+      >
+        {/* Cube Faces */}
+        <div className={`${styles.face} ${styles.front}`} style={{ borderColor: skill.color }}>
+          <div className={styles.faceContent}>
+            <div className={styles.skillIcon}>{IconComponents[skill.icon]}</div>
+            <div className={styles.skillName}>{skill.name}</div>
+          </div>
+        </div>
+        <div className={`${styles.face} ${styles.back}`} style={{ borderColor: skill.color }}>
+          <div className={styles.faceContent}>
+            <div className={styles.skillIcon}>{IconComponents[skill.icon]}</div>
+            <div className={styles.skillName}>{skill.name}</div>
+          </div>
+        </div>
+        <div className={`${styles.face} ${styles.left}`} style={{ borderColor: skill.color }}>
+          <div className={styles.faceContent}>
+            <div className={styles.skillIcon}>{IconComponents[skill.icon]}</div>
+          </div>
+        </div>
+        <div className={`${styles.face} ${styles.right}`} style={{ borderColor: skill.color }}>
+          <div className={styles.faceContent}>
+            <div className={styles.skillIcon}>{IconComponents[skill.icon]}</div>
+          </div>
+        </div>
+        <div className={`${styles.face} ${styles.top}`} style={{ borderColor: skill.color }}>
+          <div className={styles.faceContent}>
+            <div className={styles.skillIcon}>{IconComponents[skill.icon]}</div>
+          </div>
+        </div>
+        <div className={`${styles.face} ${styles.bottom}`} style={{ borderColor: skill.color }}>
+          <div className={styles.faceContent}>
+            <div className={styles.skillIcon}>{IconComponents[skill.icon]}</div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
   );
 };
 
+const SkillsSection = () => {
+  const [activeCategory, setActiveCategory] = useState(0);
+  const [isDisabled3D, setIsDisabled3D] = useState(true);
+  const sectionRef = useRef(null);
+  
+  // Toggle 3D effects (simplified rotation when disabled)
+  const toggle3DEffects = () => {
+    setIsDisabled3D(!isDisabled3D);
+  };
+  
+  return (
+    <section ref={sectionRef} className={styles.skillsSection} id="skills">
+      <div className={styles.container}>
+        <div className={styles.sectionHeader}>
+          <h2 className={styles.sectionTitle}>Technical Skills</h2>
+          <p className={styles.sectionDescription}>
+            A showcase of my technical toolkit and expertise
+          </p>
+          
+          <button 
+            className={styles.effectsToggle}
+            onClick={toggle3DEffects}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            </svg>
+            {isDisabled3D ? "Enable 3D Effects" : "Disable 3D Effects"}
+          </button>
+        </div>
+        
+        <div className={`${styles.skillsContainer} ${isDisabled3D ? styles.disabled3D : ''}`}>
+          {/* Category tabs */}
+          <div className={styles.categoryNav}>
+            {skillsData.map((category, index) => (
+              <button
+                key={index}
+                className={`${styles.categoryButton} ${activeCategory === index ? styles.active : ''}`}
+                onClick={() => setActiveCategory(index)}
+              >
+                {category.category}
+              </button>
+            ))}
+          </div>
+          
+          {/* Cubes display area */}
+          <div className={styles.cubesWrapper}>
+            {skillsData.map((category, catIndex) => (
+              <motion.div
+                key={catIndex}
+                className={styles.cubesContainer}
+                initial={{ opacity: 0 }}
+                animate={{ 
+                  opacity: activeCategory === catIndex ? 1 : 0,
+                  display: activeCategory === catIndex ? 'grid' : 'none'
+                }}
+                transition={{ duration: 0.5 }}
+              >
+                {category.skills.map((skill, skillIndex) => (
+                  <SkillCube 
+                    key={skillIndex} 
+                    skill={skill} 
+                    index={skillIndex}
+                    disabled3D={isDisabled3D}
+                  />
+                ))}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      {/* Decorative elements */}
+      <div className={styles.decorativeElement1}></div>
+      <div className={styles.decorativeElement2}></div>
+    </section>
+  );
+};
+
+// Icon components for skills
 const IconComponents = {
   python: (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -265,3 +397,5 @@ const IconComponents = {
     </svg>
   )
 };
+
+export default SkillsSection;

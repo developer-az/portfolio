@@ -3,6 +3,7 @@
   position: relative;
   overflow: hidden;
   background: var(--bg-primary);
+  perspective: 1000px;
   
   .container {
     width: 90%;
@@ -15,7 +16,6 @@
   .sectionHeader {
     text-align: center;
     margin-bottom: 60px;
-    position: relative;
     
     .sectionTitle {
       font-size: 36px;
@@ -41,87 +41,94 @@
       font-size: 18px;
       color: var(--text-secondary);
       max-width: 700px;
-      margin: 0 auto 20px;
+      margin: 0 auto 30px;
     }
-
-    .rotationToggle {
+    
+    .effectsToggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       background: rgba(250, 33, 4, 0.1);
       border: 1px solid rgba(250, 33, 4, 0.2);
       color: var(--primary-color);
-      border-radius: 20px;
-      padding: 8px 16px;
+      border-radius: 30px;
+      padding: 10px 20px;
       font-size: 14px;
       font-weight: 500;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0 auto;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
       
       &:hover {
         background: rgba(250, 33, 4, 0.15);
+        transform: translateY(-2px);
       }
       
       svg {
-        transition: transform 0.3s ease;
-      }
-      
-      &:hover svg {
-        transform: rotate(45deg);
+        stroke: var(--primary-color);
       }
     }
   }
   
   .skillsContainer {
-    display: flex;
-    flex-direction: column;
+    position: relative;
     background: rgba(26, 26, 26, 0.7);
     backdrop-filter: blur(10px);
-    border-radius: 12px;
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
     overflow: hidden;
-    box-shadow: 
-      0 10px 30px rgba(0, 0, 0, 0.2),
-      0 1px 1px rgba(255, 255, 255, 0.05) inset;
-    position: relative;
+    perspective: 1200px;
+    min-height: 500px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.05) 0%,
-        rgba(255, 255, 255, 0.02) 25%,
-        rgba(255, 255, 255, 0) 50%,
-        rgba(255, 255, 255, 0) 100%
-      );
-      pointer-events: none;
-      z-index: 1;
-    }
-    
-    // Add perspective for 3D effect
-    &.rotation3dEnabled {
-      perspective: 1200px;
+    // When 3D is disabled (default state)
+    &.disabled3D {
+      .cube {
+        transform-style: flat !important;
+        animation: none !important;
+        cursor: default;
+        
+        // Override face transforms to remove 3D
+        .face {
+          transform: none !important;
+          box-shadow: none !important;
+        }
+        
+        // Hide all faces except the front
+        .face:not(.front) {
+          display: none;
+        }
+        
+        // Restyle the front face for a minimal, high‑end look
+        .face.front {
+          border: 1px solid var(--border-color, #e0e0e0);
+          background: transparent; // Let the inline background on the cube show through
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          
+          &:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          }
+        }
+      }
     }
   }
   
   .categoryNav {
     display: flex;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    z-index: 5;
     
     @media (max-width: 768px) {
       flex-direction: column;
     }
     
     .categoryButton {
-      padding: 16px 24px;
+      padding: 20px 30px;
       background: transparent;
       border: none;
-      color: #b0b0b0;
+      color: var(--text-secondary);
       font-size: 16px;
       font-weight: 500;
       cursor: pointer;
@@ -142,7 +149,7 @@
       }
       
       &:hover {
-        color: #f5f5f5;
+        color: var(--text-primary);
         
         &::after {
           width: 30%;
@@ -150,7 +157,7 @@
       }
       
       &.active {
-        color: #f5f5f5;
+        color: var(--text-primary);
         
         &::after {
           width: 100%;
@@ -159,174 +166,173 @@
     }
   }
   
-  /* 3D Blocks Container */
-  .blocksContainer {
+  .cubesWrapper {
+    position: relative;
+    width: 100%;
+    min-height: 400px;
+  }
+  
+  .cubesContainer {
+    padding: 60px 30px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 24px;
-    padding: 40px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 60px;
+    perspective: 1000px;
+    position: absolute;
+    width: 100%;
+    min-height: 400px;
     
-    @media (max-width: 1200px) {
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    @media (max-width: 992px) {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 40px;
     }
     
     @media (max-width: 768px) {
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      padding: 30px 20px;
+      padding: 40px 20px;
     }
     
-    // Prevent transition stacking when switching categories
-    &:not(:last-child) {
-      position: absolute;
-      opacity: 0;
-      pointer-events: none;
+    @media (max-width: 576px) {
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 30px;
     }
   }
   
-  /* Individual 3D Skill Block */
-  .skillBlock {
-    position: relative;
-    background: rgba(30, 30, 30, 0.8);
-    border-radius: 12px;
-    padding: 24px 20px;
+  // Cube container and styling
+  .cubeContainer {
+    perspective: 1000px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 180px;
+    
+    @media (max-width: 576px) {
+      height: 150px;
+    }
+  }
+  
+  .cube {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    transform-style: preserve-3d;
+    cursor: grab;
+    transform-origin: center center;
+    will-change: transform;
+    
+    &:active {
+      cursor: grabbing;
+    }
+    
+    @media (max-width: 576px) {
+      width: 110px;
+      height: 110px;
+    }
+  }
+  
+  // Cube faces (normal 3D mode)
+  .face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid;
+    background: rgba(30, 30, 30, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backface-visibility: visible;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    
+    &.front {
+      transform: translateZ(70px);
+      
+      @media (max-width: 576px) {
+        transform: translateZ(55px);
+      }
+    }
+    
+    &.back {
+      transform: rotateY(180deg) translateZ(70px);
+      
+      @media (max-width: 576px) {
+        transform: rotateY(180deg) translateZ(55px);
+      }
+    }
+    
+    &.left {
+      transform: rotateY(-90deg) translateZ(70px);
+      
+      @media (max-width: 576px) {
+        transform: rotateY(-90deg) translateZ(55px);
+      }
+    }
+    
+    &.right {
+      transform: rotateY(90deg) translateZ(70px);
+      
+      @media (max-width: 576px) {
+        transform: rotateY(90deg) translateZ(55px);
+      }
+    }
+    
+    &.top {
+      transform: rotateX(90deg) translateZ(70px);
+      
+      @media (max-width: 576px) {
+        transform: rotateX(90deg) translateZ(55px);
+      }
+    }
+    
+    &.bottom {
+      transform: rotateX(-90deg) translateZ(70px);
+      
+      @media (max-width: 576px) {
+        transform: rotateX(-90deg) translateZ(55px);
+      }
+    }
+  }
+  
+  .faceContent {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    cursor: default;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    transform-style: preserve-3d;
-    overflow: hidden;
-    transform: translateZ(0); // Hardware acceleration
-    
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.03) 0%,
-        rgba(255, 255, 255, 0) 50%
-      );
-      pointer-events: none;
-      z-index: 0;
-    }
-    
-    &:hover {
-      z-index: 10;
-      transform: translateZ(30px);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-      
-      .blockTopEdge {
-        opacity: 1;
-      }
-      
-      .blockSideEdge {
-        opacity: 0.8;
-      }
-      
-      .blockIconContainer {
-        transform: translateZ(25px) scale(1.1);
-      }
-      
-      .blockTitle {
-        transform: translateZ(20px);
-      }
-      
-      .blockLevelContainer {
-        transform: translateZ(15px);
-      }
-    }
-    
-    @media (max-width: 768px) {
-      height: 160px;
-      padding: 15px;
-    }
-  }
-  
-  // 3D effects for blocks
-  .blockTopEdge {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
-    opacity: 0.6;
-    transform: translateZ(1px);
-    transition: opacity 0.3s ease;
-  }
-  
-  .blockSideEdge {
-    position: absolute;
-    top: 5px;
-    right: 0;
-    width: 2px;
-    height: calc(100% - 10px);
-    background: linear-gradient(to bottom, var(--primary-color), transparent);
-    opacity: 0.3;
-    transform: translateZ(1px);
-    transition: opacity 0.3s ease;
-  }
-  
-  .blockIconContainer {
-    width: 50px;
-    height: 50px;
-    border-radius: 10px;
-    background: rgba(250, 33, 4, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 15px;
-    color: var(--primary-color);
-    position: relative;
-    z-index: 1;
-    transition: transform 0.3s ease;
-    transform: translateZ(10px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    
-    svg {
-      width: 24px;
-      height: 24px;
-    }
-  }
-  
-  .blockTitle {
-    margin: 0 0 15px 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
-    position: relative;
-    z-index: 1;
-    transition: transform 0.3s ease;
-    transform: translateZ(8px);
-    text-align: center;
-  }
-  
-  .blockLevelContainer {
     width: 100%;
-    position: relative;
-    z-index: 1;
-    transition: transform 0.3s ease;
-    transform: translateZ(5px);
-  }
-  
-  .blockLevelBar {
-    height: 6px;
-    background: linear-gradient(90deg, var(--primary-color), #fa5f4a);
-    border-radius: 3px;
-    margin-bottom: 8px;
-    width: 0%;
-  }
-  
-  .blockLevelText {
-    font-size: 14px;
-    color: var(--text-tertiary);
-    position: absolute;
-    right: 0;
-    top: -20px;
+    height: 100%;
+    color: var(--text-primary);
+    transform-style: preserve-3d;
+    padding: 10px;
+    
+    .skillIcon {
+      font-size: 28px;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+      
+      svg {
+        stroke: currentColor;
+      }
+      
+      // Only show icon (no text) on non-front/back faces
+      .face:not(.front):not(.back) & {
+        margin: 0;
+        font-size: 36px;
+      }
+      
+      @media (max-width: 576px) {
+        font-size: 24px;
+      }
+    }
+    
+    .skillName {
+      font-size: 16px;
+      font-weight: 500;
+      text-align: center;
+      
+      @media (max-width: 576px) {
+        font-size: 14px;
+      }
+    }
   }
   
   // Decorative elements
@@ -343,8 +349,9 @@
     );
     border-radius: 50%;
     filter: blur(60px);
-    z-index: 1;
+    z-index: 0;
     pointer-events: none;
+    opacity: 0.6;
   }
   
   .decorativeElement2 {
@@ -360,48 +367,38 @@
     );
     border-radius: 50%;
     filter: blur(50px);
-    z-index: 1;
+    z-index: 0;
     pointer-events: none;
-  }
-  
-  // Original skillsDisplay (keeping for compatibility, but hidden)
-  .skillsDisplay {
-    display: none;
-  }
-  
-  .skillItem, .skillInfo, .iconWrapper, .skillDetails, 
-  .skillName, .skillBar, .skillProgress, .skillLevel {
-    display: none;
+    opacity: 0.6;
   }
   
   // Light theme overrides
   html.light-theme & {
     .skillsContainer {
       background: rgba(255, 255, 255, 0.8);
-      box-shadow: 
-        0 10px 30px rgba(0, 0, 0, 0.1),
-        0 1px 3px rgba(0, 0, 0, 0.05);
-      
-      .categoryButton {
-        color: #555;
-        
-        &:hover, &.active {
-          color: #222;
-        }
-      }
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.1);
     }
     
-    .skillBlock {
-      background: rgba(250, 250, 250, 0.9);
-      box-shadow: 
-        0 8px 16px rgba(0, 0, 0, 0.08),
-        0 1px 4px rgba(0, 0, 0, 0.04);
-      
-      &:hover {
-        box-shadow: 
-          0 15px 30px rgba(0, 0, 0, 0.12),
-          0 5px 15px rgba(0, 0, 0, 0.06);
+    .face {
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .categoryButton {
+      &:hover, &.active {
+        color: var(--primary-color);
       }
+    }
+  }
+  
+  // Animations (for 3D enabled mode only)
+  @keyframes spin {
+    0% {
+      transform: rotateX(0) rotateY(0);
+    }
+    100% {
+      transform: rotateX(360deg) rotateY(360deg);
     }
   }
 }

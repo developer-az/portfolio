@@ -12,9 +12,9 @@ import Link from "next/link";
 import EnhancedBackground from '../components/EnhancedBackground';
 import ProfileSection from '../components/ProfileSection';
 import ResumeSection from '../components/ResumeSection';
-import WorkSection from '../components/WorkSection'; // Add this import
+import WorkSection from '../components/WorkSection';
 import ContactSection from '../components/ContactSection';
-import SkillsSection from '../components/SkillsSection/index.jsx';
+import SkillsSection from '../components/SkillsSection'; // Ensure this is imported
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -160,6 +160,7 @@ export default function Home() {
           </Link>
         )}
         <a href="#about" className={`${styles.navLink} ${activeSection === 'about' ? styles.active : ''}`}>About</a>
+        <a href="#skills" className={`${styles.navLink} ${activeSection === 'skills' ? styles.active : ''}`}>Skills</a>
         <a href="#resume" className={`${styles.navLink} ${activeSection === 'resume' ? styles.active : ''}`}>Resume</a>
         <a href="#work" className={`${styles.navLink} ${activeSection === 'work' ? styles.active : ''}`}>Work</a>
         <a href="#contact" className={`${styles.navLink} ${activeSection === 'contact' ? styles.active : ''}`}>Contact</a>
@@ -191,6 +192,13 @@ export default function Home() {
             className={styles.navLink}
           >
             About
+          </a>
+          <a 
+            href="#skills" 
+            onClick={() => setMobileMenuOpen(false)}
+            className={styles.navLink}
+          >
+            Skills
           </a>
           <a 
             href="#resume" 
@@ -320,13 +328,16 @@ export default function Home() {
             <section id="about" className={styles.about}>
               <ProfileSection />
             </section>
-
             
+            {/* Skills Section - Interactive 3D cubes */}
+            <section id="skills">
+              <SkillsSection />
+            </section>
             
             {/* Resume Section */}
             <ResumeSection />
             
-            {/* Work Section - Now using the dedicated component */}
+            {/* Work Section */}
             <WorkSection />
             
             {/* Contact Section */}
