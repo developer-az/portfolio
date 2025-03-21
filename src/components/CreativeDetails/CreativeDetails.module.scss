@@ -1,0 +1,211 @@
+/* Creative Details and Micro-interactions Styles */
+
+/* Animated Text Link */
+.animatedTextLink {
+    position: relative;
+    display: inline-block;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    
+    .textContent {
+      position: relative;
+      z-index: 2;
+      transition: color 0.3s ease;
+    }
+    
+    .underline {
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      height: 1px;
+      background-color: var(--primary-color);
+      z-index: 1;
+    }
+    
+    &:hover .textContent {
+      color: var(--primary-color);
+    }
+  }
+  
+  /* Magnetic Element */
+  .magneticElement {
+    display: inline-block;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    
+    .magneticContent {
+      position: relative;
+      will-change: transform;
+    }
+  }
+  
+  /* Parallax Element */
+  .parallaxContainer {
+    overflow: hidden;
+    position: relative;
+    
+    .parallaxContent {
+      will-change: transform;
+    }
+  }
+  
+  /* Custom Cursor */
+  .cursor {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.3s ease, width 0.3s ease, height 0.3s ease;
+    
+    &.active {
+      opacity: 1;
+    }
+    
+    &.clicking {
+      transform: translate(-50%, -50%) scale(0.8);
+    }
+    
+    &.hoveringLink {
+      width: 24px;
+      height: 24px;
+      background-color: transparent;
+      border: 1px solid var(--primary-color);
+    }
+  }
+  
+  .cursorFollower {
+    position: fixed;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--primary-color);
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.3s ease, background-color 0.3s ease;
+    
+    &.active {
+      opacity: 0.5;
+    }
+    
+    &.clicking {
+      transform: translate(-50%, -50%) scale(1.2);
+      background-color: rgba(var(--primary-color-rgb), 0.05);
+    }
+    
+    &.hoveringLink {
+      opacity: 0.8;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(var(--primary-color-rgb), 0.05);
+    }
+  }
+  
+  /* Split Text Animation */
+  .splitTextContainer {
+    display: inline-block;
+    overflow: hidden;
+    
+    .word {
+      display: inline-block;
+      white-space: nowrap;
+      margin-right: 0.2em;
+      
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+    
+    .char {
+      display: inline-block;
+    }
+  }
+  
+  /* Scroll Progress */
+  .scrollProgressContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: rgba(var(--border-light-rgb), 0.3);
+    z-index: 100;
+    
+    .scrollProgressBar {
+      height: 100%;
+      background-color: var(--primary-color);
+      transition: width 0.1s linear;
+    }
+  }
+  
+  /* Image Reveal Effect */
+  .imageRevealContainer {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    
+    .imageWrapper {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  }
+  
+  /* Floating Element */
+  .floatingElement {
+    will-change: transform;
+  }
+  
+  /* Text Highlight */
+  .textHighlight {
+    position: relative;
+    display: inline-block;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      z-index: -1;
+      transition: height 0.3s ease;
+    }
+    
+    &:hover::after {
+      height: 40%;
+    }
+    
+    &.primary::after {
+      background-color: rgba(var(--primary-color-rgb), 0.2);
+    }
+    
+    &.secondary::after {
+      background-color: rgba(68, 107, 255, 0.2);
+    }
+    
+    &.accent::after {
+      background-color: rgba(255, 193, 7, 0.2);
+    }
+  }
+  
+  /* Media Query for touch devices */
+  @media (hover: none) {
+    .cursor, .cursorFollower {
+      display: none;
+    }
+  }
