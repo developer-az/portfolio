@@ -16,6 +16,8 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden; /* Prevent horizontal scrollbar */
+    width: 100%;
 }
 
 body {
@@ -26,52 +28,63 @@ body {
     color: var(--text-primary);
     line-height: 1.6;
     overflow-x: hidden;
-    transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+    width: 100%;
+    
+    /* Use will-change for smoother background color transitions */
+    will-change: background-color, color;
+    transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-/* Improved loading state to prevent FOUC */
+/* Loading state styling */
 body.loading {
     opacity: 0;
 }
 
-/* Smoother theme transitions */
+.loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--bg-primary);
+}
+
+/* More optimized transitions - only transition properties that need it */
 header, 
-section, 
 button, 
 a, 
 input, 
-textarea,
-p, 
-h1, h2, h3, h4, h5, h6,
-div,
+textarea {
+    transition: 
+        background-color 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        transform 0.3s ease,
+        opacity 0.3s ease;
+}
+
+/* Separate transition for elements that don't need background/color transitions */
 .card,
 .container,
 .projectCard,
-.profileSection,
 .header,
-.footer,
-.nav,
 .button,
-.themeSwitcher,
-.analyzerForm,
-.fileInput,
-.results,
-.instructionsContainer {
-    transition: 
-        background-color 0.5s ease-in-out,
-        color 0.5s ease-in-out,
-        border-color 0.5s ease-in-out,
-        box-shadow 0.5s ease-in-out;
+.themeSwitcher {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Transitions override for interactive elements */
-button,
-a,
-.projectCard,
-.stat,
-.button,
-.filterButton,
-.themeSwitcher {
+/* Remove transitions from elements that don't need them */
+p, h1, h2, h3, h4, h5, h6, div:not(.animated) {
+    transition: none !important;
+}
+
+/* Interactive elements get more precise transitions */
+button:hover,
+a:hover,
+.projectCard:hover,
+.button:hover,
+.filterButton:hover,
+.themeSwitcher:hover {
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
 }
 
@@ -109,7 +122,7 @@ img {
     outline-offset: 2px;
 }
 
-/* Custom scrollbar */
+/* More efficient scrollbar styling */
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -150,18 +163,11 @@ img {
 }
 
 /* Utility classes */
-.text-center {
-    text-align: center;
-}
+.text-center { text-align: center; }
+.text-primary { color: var(--primary-color); }
+.bg-primary { background-color: var(--primary-color); }
 
-.text-primary {
-    color: var(--primary-color);
-}
-
-.bg-primary {
-    background-color: var(--primary-color);
-}
-
+/* Margin utilities */
 .mt-1 { margin-top: 0.25rem; }
 .mt-2 { margin-top: 0.5rem; }
 .mt-3 { margin-top: 1rem; }
@@ -176,18 +182,14 @@ img {
 
 /* Responsive helper classes */
 @media (max-width: 768px) {
-    .hide-mobile {
-        display: none !important;
-    }
+    .hide-mobile { display: none !important; }
 }
 
 @media (min-width: 769px) {
-    .hide-desktop {
-        display: none !important;
-    }
+    .hide-desktop { display: none !important; }
 }
 
-/* Animation keyframes */
+/* Animation keyframes - optimized to use transform and opacity */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -204,45 +206,42 @@ img {
     100% { transform: scale(1); }
 }
 
-/* Animation classes */
+/* Animation classes with will-change for better performance */
 .animate-fadeIn {
+    will-change: opacity;
     animation: fadeIn 0.5s ease forwards;
 }
 
 .animate-slideUp {
+    will-change: transform, opacity;
     animation: slideUp 0.5s ease forwards;
 }
 
 .animate-pulse {
+    will-change: transform;
     animation: pulse 2s infinite ease-in-out;
 }
 
-/* Modal open state - add this to your globals.css */
+/* Modal states - improved for performance */
 body.modal-open {
     overflow: hidden; /* Prevent scrolling when modal is open */
-  }
-  
-  /* Hide the header when modal is open */
-  body.modal-open .header {
-    z-index: 0; /* Reduce z-index so it's below the modal */
-    opacity: 0; /* Hide visually */
-    transition: opacity 0.3s ease;
-  }
-  
-  /* Hide the theme switcher when modal is open */
-  body.modal-open .themeSwitcher {
-    z-index: 0;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  
-  /* Ensure smooth transition when the modal closes */
-  .header, .themeSwitcher {
-    transition: opacity 0.3s ease;
-  }
-  
-  /* Ensure the modal backdrop is above everything */
-  .modalBackdrop {
-    z-index: 1100 !important;
-  }
+}
 
+/* Hide the header when modal is open */
+body.modal-open .header {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Hide the theme switcher when modal is open */
+body.modal-open .themeSwitcher {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Ensure higher z-index for modal backdrop */
+.modalBackdrop {
+    z-index: 1100 !important;
+}

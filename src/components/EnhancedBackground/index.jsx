@@ -5,6 +5,7 @@ import styles from './EnhancedBackground.module.scss';
 const EnhancedBackground = ({ color = "#121212" }) => {
   const containerRef = useRef(null);
   const rendererRef = useRef(null);
+  const animationRef = useRef(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -21,36 +22,37 @@ const EnhancedBackground = ({ color = "#121212" }) => {
     );
     camera.position.z = 30;
 
-    // Renderer setup
+    // Renderer setup with better performance options
     const renderer = new THREE.WebGLRenderer({ 
       antialias: true,
-      alpha: true 
+      alpha: true,
+      powerPreference: 'high-performance',
+      precision: 'mediump'  // Use medium precision for better performance
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 0);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit pixel ratio for performance
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Create particles
+    // Create particles - reduce count for better performance
+    const particlesCount = window.innerWidth < 768 ? 200 : 350; // Reduce particles on mobile
     const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 500;
-    
     const posArray = new Float32Array(particlesCount * 3);
     
     // Fill positions with random values
     for (let i = 0; i < particlesCount * 3; i++) {
-      // Create wider distribution, concentrated toward center
       posArray[i] = (Math.random() - 0.5) * 50;
     }
     
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
     
-    // Material with custom shaders for more professional look
+    // Use simpler material for better performance
     const particlesMaterial = new THREE.PointsMaterial({
       size: 0.05,
       color: 0xffffff,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.6,
       blending: THREE.AdditiveBlending
     });
     
@@ -58,23 +60,17 @@ const EnhancedBackground = ({ color = "#121212" }) => {
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
 
-    // Add subtle ambient light
-    const ambientLight = new THREE.AmbientLight(0x404040, 1);
+    // Add minimal lighting
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
     scene.add(ambientLight);
 
-    // Add directional light for more dimension
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    directionalLight.position.set(0, 1, 0);
-    scene.add(directionalLight);
-
-    // Lines connecting nearby particles
+    // Simplified lines for better performance
     const lineMaterial = new THREE.LineBasicMaterial({ 
       color: 0xffffff,
       transparent: true,
-      opacity: 0.05
+      opacity: 0.03
     });
     
-    // Create empty line mesh for later use
     const linesMesh = new THREE.LineSegments(
       new THREE.BufferGeometry(),
       lineMaterial
@@ -85,82 +81,106 @@ const EnhancedBackground = ({ color = "#121212" }) => {
     let mouseX = 0;
     let mouseY = 0;
     
+    // Throttled mouse move handler for performance
+    let lastMoveTime = 0;
     const handleMouseMove = (event) => {
+      const now = performance.now();
+      if (now - lastMoveTime < 50) return; // Throttle to 20 updates per second
+      lastMoveTime = now;
+      
       mouseX = (event.clientX / window.innerWidth - 0.5) * 2;
       mouseY = (event.clientY / window.innerHeight - 0.5) * 2;
     };
 
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Handle window resize
+    // Efficient window resize handler
+    let resizeTimeout;
     const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }, 150);
     };
 
     window.addEventListener('resize', handleResize);
 
-    // Scroll parallax effect
+    // Optimize scroll handling
     let scrollY = 0;
+    let lastScrollTime = 0;
     const handleScroll = () => {
+      const now = performance.now();
+      if (now - lastScrollTime < 100) return; // Throttle scroll updates
+      lastScrollTime = now;
+      
       scrollY = window.scrollY;
     };
 
     window.addEventListener('scroll', handleScroll);
 
-    // Animation loop
+    // Optimized connection update interval
     let frame = 0;
+    let lastUpdateTime = 0;
+    
+    // Animation loop with performance optimizations
     const animate = () => {
-      const animationId = requestAnimationFrame(animate);
-      frame += 0.01;
-
-      // Rotate particle system slightly based on mouse position
-      particlesMesh.rotation.x += 0.0005;
-      particlesMesh.rotation.y += 0.0003;
+      animationRef.current = requestAnimationFrame(animate);
       
-      // Add subtle mouse interaction
-      particlesMesh.rotation.x += mouseY * 0.0002;
-      particlesMesh.rotation.y += mouseX * 0.0002;
+      // Reduce rotation speed for better performance
+      particlesMesh.rotation.x += 0.0002;
+      particlesMesh.rotation.y += 0.0001;
       
-      // Subtle parallax effect on scroll
-      particlesMesh.position.y = scrollY * 0.0005;
+      // Add very subtle mouse interaction
+      particlesMesh.rotation.x += mouseY * 0.0001;
+      particlesMesh.rotation.y += mouseX * 0.0001;
+      
+      // Very subtle parallax effect on scroll
+      particlesMesh.position.y = scrollY * 0.0002;
 
-      // Update line connections periodically (less frequently for performance)
-      if (frame % 5 < 0.1) {
+      // Update line connections periodically and less frequently for performance
+      const now = performance.now();
+      if (now - lastUpdateTime > 2000) { // Only update every 2 seconds
         updateConnections(particlesGeometry, linesMesh);
+        lastUpdateTime = now;
       }
 
       renderer.render(scene, camera);
     };
 
-    // Function to update line connections between particles
+    // Optimized function to update line connections between particles
     const updateConnections = (particlesGeometry, linesMesh) => {
       const positions = particlesGeometry.attributes.position.array;
       const vertices = [];
-      const maxDistance = 5; // Maximum distance for connection
+      const maxDistance = 5;
+      // Limit connections to improve performance
+      const maxConnectionsPerParticle = 2;
       
-      // Check distances between particles
+      // Use a more efficient algorithm to find connections
       for (let i = 0; i < positions.length; i += 3) {
         const x1 = positions[i];
         const y1 = positions[i + 1];
         const z1 = positions[i + 2];
         
-        for (let j = i + 3; j < positions.length; j += 3) {
+        let connectionCount = 0;
+        
+        // Check only a subset of particles for connections, and limit the number of connections
+        for (let j = i + 3; j < positions.length && connectionCount < maxConnectionsPerParticle; j += 9) {
           const x2 = positions[j];
           const y2 = positions[j + 1];
           const z2 = positions[j + 2];
           
-          // Calculate distance
-          const distance = Math.sqrt(
-            Math.pow(x2 - x1, 2) + 
-            Math.pow(y2 - y1, 2) + 
-            Math.pow(z2 - z1, 2)
-          );
+          // Calculate squared distance (faster than using Math.sqrt)
+          const distanceSquared = 
+            (x2 - x1) * (x2 - x1) + 
+            (y2 - y1) * (y2 - y1) + 
+            (z2 - z1) * (z2 - z1);
           
           // Connect if close enough
-          if (distance < maxDistance) {
+          if (distanceSquared < maxDistance * maxDistance) {
             vertices.push(x1, y1, z1, x2, y2, z2);
+            connectionCount++;
           }
         }
       }
@@ -176,6 +196,10 @@ const EnhancedBackground = ({ color = "#121212" }) => {
 
     // Cleanup function
     return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('scroll', handleScroll);
@@ -200,6 +224,7 @@ const EnhancedBackground = ({ color = "#121212" }) => {
       ref={containerRef} 
       className={styles.enhancedBackground}
       style={{ backgroundColor: color }}
+      aria-hidden="true"
     />
   );
 };
