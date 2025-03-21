@@ -17,7 +17,7 @@ const ProfileSection = () => {
   const contentY = useTransform(scrollYProgress, [0, 1], ['2%', '-5%']);
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.5, 0.8], [0, 1, 1, 0.8]);
 
-  // Card tilt animation variants
+  // Card animation variants
   const cardVariants = {
     initial: { opacity: 0, y: 30, scale: 0.95 },
     animate: { 
@@ -50,7 +50,7 @@ const ProfileSection = () => {
           initial="initial"
           whileInView="animate"
           viewport={{ once: true, amount: 0.1 }}
-          whileHover={{ scale: 1.02 }}
+          whileHover={{ scale: 1.01 }}
         >
           <div className={styles.cardContent}>
             <motion.div 
@@ -60,8 +60,8 @@ const ProfileSection = () => {
               <motion.div 
                 className={styles.imageContainer}
                 variants={itemVariants}
-                whileHover={{ scale: 1.03, rotate: 1 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 200, damping: 25 }}
               >
                 <Image
                   src="/images/1.png"
@@ -114,7 +114,7 @@ const ProfileSection = () => {
               <motion.div className={styles.statRow} variants={itemVariants}>
                 <motion.div 
                   className={styles.stat}
-                  whileHover={{ y: -5, scale: 1.05 }}
+                  whileHover={{ y: -5, scale: 1.03 }}
                   transition={{ type: "spring", stiffness: 300, damping: 15 }}
                 >
                   <span className={styles.statNumber}>3+</span>
@@ -123,7 +123,7 @@ const ProfileSection = () => {
                 
                 <motion.div 
                   className={styles.stat}
-                  whileHover={{ y: -5, scale: 1.05 }}
+                  whileHover={{ y: -5, scale: 1.03 }}
                   transition={{ type: "spring", stiffness: 300, damping: 15 }}
                 >
                   <span className={styles.statNumber}>15+</span>
@@ -132,7 +132,7 @@ const ProfileSection = () => {
                 
                 <motion.div 
                   className={styles.stat}
-                  whileHover={{ y: -5, scale: 1.05 }}
+                  whileHover={{ y: -5, scale: 1.03 }}
                   transition={{ type: "spring", stiffness: 300, damping: 15 }}
                 >
                   <span className={styles.statNumber}>5+</span>
@@ -144,7 +144,7 @@ const ProfileSection = () => {
                 <motion.a 
                   href="#contact" 
                   className={`${styles.button} ${styles.primaryButton}`}
-                  whileHover={{ scale: 1.05, y: -3 }}
+                  whileHover={{ scale: 1.03, y: -3 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   Contact Me
@@ -153,7 +153,7 @@ const ProfileSection = () => {
                 <motion.a 
                   href="#work" 
                   className={`${styles.button} ${styles.secondaryButton}`}
-                  whileHover={{ scale: 1.05, y: -3 }}
+                  whileHover={{ scale: 1.03, y: -3 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   View Projects
@@ -167,36 +167,6 @@ const ProfileSection = () => {
       {/* Decorative elements */}
       <div className={styles.decorativeGrid}></div>
       <div className={styles.decorativeBlur}></div>
-      
-      {/* Additional decorative elements */}
-      <motion.div
-        className={styles.floatingParticle}
-        animate={{
-          y: [0, -20, 0],
-          opacity: [0.3, 0.6, 0.3],
-          scale: [1, 1.2, 1]
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          repeatType: "reverse"
-        }}
-      />
-      
-      <motion.div
-        className={`${styles.floatingParticle} ${styles.particle2}`}
-        animate={{
-          y: [0, -15, 0],
-          x: [0, 10, 0],
-          opacity: [0.2, 0.4, 0.2],
-          scale: [1, 1.1, 1]
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          repeatType: "reverse"
-        }}
-      />
     </section>
   );
 };
