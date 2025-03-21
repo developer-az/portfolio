@@ -10,7 +10,7 @@ import Link from "next/link";
 // Import enhanced components
 import EnhancedBackground from '../components/EnhancedBackground';
 import ProfileSection from '../components/ProfileSection';
-import EnhancedResumeSection from '../components/EnhancedResumeSection';
+//import EnhancedResumeSection from '../components/EnhancedResumeSection';
 import WorkSection from '../components/WorkSection';
 import ContactSection from '../components/ContactSection';
 import Header from '../components/Header';
