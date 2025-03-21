@@ -23,13 +23,13 @@ const ProjectCard = ({
   const y = useMotionValue(0);
   
   // Smooth spring physics for more natural movement
-  const springConfig = { damping: 25, stiffness: 200 };
+  const springConfig = { damping: 20, stiffness: 300 };
   const xSpring = useSpring(x, springConfig);
   const ySpring = useSpring(y, springConfig);
   
-  // Transform mouse position into rotation values - reduced for subtlety
-  const rotateX = useTransform(ySpring, [-0.5, 0.5], ["-5deg", "5deg"]);
-  const rotateY = useTransform(xSpring, [-0.5, 0.5], ["5deg", "-5deg"]);
+  // Transform mouse position into rotation values
+  const rotateX = useTransform(ySpring, [-0.5, 0.5], ["-10deg", "10deg"]);
+  const rotateY = useTransform(xSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
   
   // Handle mouse move on the card
   const handleMouseMove = (e) => {
@@ -88,7 +88,7 @@ const ProjectCard = ({
         cursor: (onClick || repoLink) ? 'pointer' : 'default'
       }}
       whileHover={{ scale: 1.02 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
     >
       <div className={styles.content} style={{ transform: "translateZ(0px)" }}>
         {/* Project Image */}
@@ -120,7 +120,7 @@ const ProjectCard = ({
             </div>
           )}
           
-          {/* Subtle overlay with "View Details" on hover */}
+          {/* Show overlay with "View Details" on hover */}
           <motion.div 
             className={styles.projectImageOverlay}
             initial={{ opacity: 0 }}
@@ -128,6 +128,7 @@ const ProjectCard = ({
             transition={{ duration: 0.3 }}
           >
             <div className={styles.overlayContent}>
+              <h4>{title}</h4>
               <p>View Details</p>
             </div>
           </motion.div>
@@ -149,7 +150,7 @@ const ProjectCard = ({
               e.stopPropagation();
               window.open(repoLink, '_blank', 'noopener,noreferrer');
             }}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
               </svg>
             </div>
@@ -169,7 +170,7 @@ const ProjectCard = ({
                 className={styles.link} 
                 onClick={(e) => e.stopPropagation()} // Prevent card click when clicking demo link
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                   <polyline points="15 3 21 3 21 9"></polyline>
                   <line x1="10" y1="14" x2="21" y2="3"></line>
@@ -186,7 +187,7 @@ const ProjectCard = ({
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
                 </svg>
                 Code
@@ -195,7 +196,7 @@ const ProjectCard = ({
           </div>
         </div>
         
-        {/* Subtle shine effect */}
+        {/* 3D elements */}
         <div 
           className={`${styles.shine} ${isHovered ? styles.visible : ''}`} 
           style={{ 
@@ -209,7 +210,7 @@ const ProjectCard = ({
           className={styles.shadow}
           style={{
             transform: isHovered 
-              ? `translateX(${-x.get() * 10}px) translateY(${-y.get() * 10}px) scale(0.98)` 
+              ? `translateX(${-x.get() * 20}px) translateY(${-y.get() * 20}px) scale(0.95)` 
               : "translateX(0) translateY(0) scale(1)"
           }}
         />
