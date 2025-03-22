@@ -12,7 +12,6 @@ const resumeData = {
       period: "2023 - 2027",
       description: "Data Science Track, with Focus on software engineering and web development. Minoring in Information Risk Management, Ethics, and Privacy."
     }
-    // Add more education entries as needed
   ],
   experience: [
     {
@@ -37,7 +36,6 @@ const resumeData = {
         "Cultivated an inclusive & inviting environment to ensure a seamless transition for new students"
       ]
     }
-    // Add more experience entries as needed
   ],
   skills: {
     technical: ["Python", "JavaScript", "React", "Next.js", "Java", "C", "HTML/CSS", "Data Science", "Git", "SQL"],
@@ -56,7 +54,6 @@ const resumeData = {
       issuer: "Code Path",
       date: "2025"
     }
-    // Add any certifications you have
   ]
 };
 
@@ -80,17 +77,21 @@ const itemVariants = {
   }
 };
 
-// Timeline component
+// Timeline component - redesigned for better mobile experience
 const TimelineItem = ({ year, title, subtitle, children, isRight = false }) => (
   <motion.div 
     className={`${styles.timelineItem} ${isRight ? styles.timelineRight : ''}`}
     variants={itemVariants}
   >
     <div className={styles.timelineMarker}>
-      <div className={styles.timelineDate}>{year}</div>
       <div className={styles.timelineDot}></div>
       <div className={styles.timelineLine}></div>
     </div>
+    
+    <div className={styles.timelineDate}>
+      <span>{year}</span>
+    </div>
+    
     <div className={styles.timelineContent}>
       <h4 className={styles.timelineTitle}>{title}</h4>
       <div className={styles.timelineSubtitle}>{subtitle}</div>
@@ -109,14 +110,18 @@ const ResumeSection = () => {
     <section ref={sectionRef} className={styles.resumeSection} id="resume">
       <div className={styles.container}>
         <div className={styles.sectionHeader}>
-          <motion.h2 
-            className={styles.sectionTitle}
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.6 }}
-          >
-            Resume &amp; Experience
-          </motion.h2>
+          <div className={styles.titleRow}>
+            <motion.h2 
+              className={styles.sectionTitle}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.6 }}
+            >
+              Resume
+            </motion.h2>
+            <span className={styles.designNumber}>Experience Timeline</span>
+          </div>
+          
           <motion.p 
             className={styles.sectionDescription}
             initial={{ opacity: 0, y: 20 }}
@@ -125,7 +130,9 @@ const ResumeSection = () => {
           >
             My academic background, professional experience, and skill set.
           </motion.p>
+          
           <motion.div 
+            className={styles.buttonContainer}
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -154,6 +161,11 @@ const ResumeSection = () => {
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
             >
+              <h3 className={styles.timelineSectionTitle}>
+                <span className={styles.sectionIndicator}></span>
+                Education
+              </h3>
+              
               {/* Timeline for education */}
               {resumeData.education.map((edu, index) => (
                 <TimelineItem
@@ -167,6 +179,11 @@ const ResumeSection = () => {
                 </TimelineItem>
               ))}
               
+              <h3 className={styles.timelineSectionTitle}>
+                <span className={styles.sectionIndicator}></span>
+                Work Experience
+              </h3>
+              
               {/* Timeline for experience */}
               {resumeData.experience.map((exp, index) => (
                 <TimelineItem
@@ -174,7 +191,7 @@ const ResumeSection = () => {
                   year={exp.period}
                   title={exp.role}
                   subtitle={`${exp.company}, ${exp.location}`}
-                  isRight={(resumeData.education.length + index) % 2 !== 0}
+                  isRight={index % 2 !== 0}
                 >
                   <ul className={styles.responsibilities}>
                     {exp.responsibilities.map((responsibility, idx) => (
@@ -185,13 +202,18 @@ const ResumeSection = () => {
               ))}
               
               {/* Certifications */}
+              <h3 className={styles.timelineSectionTitle}>
+                <span className={styles.sectionIndicator}></span>
+                Certifications
+              </h3>
+              
               {resumeData.certifications.map((cert, index) => (
                 <TimelineItem
                   key={cert.id}
                   year={cert.date}
                   title={cert.name}
                   subtitle={cert.issuer}
-                  isRight={(resumeData.education.length + resumeData.experience.length + index) % 2 !== 0}
+                  isRight={index % 2 !== 0}
                 />
               ))}
             </motion.div>
@@ -206,10 +228,8 @@ const ResumeSection = () => {
             viewport={{ once: true, amount: 0.2 }}
           >
             <h3 className={styles.resumeSectionTitle}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
-              </svg>
-              Skills
+              <span className={styles.sectionIndicator}></span>
+              Additional Skills
             </h3>
             
             <div className={styles.skillsContainer}>
@@ -254,8 +274,13 @@ const ResumeSection = () => {
           </motion.div>
         </div>
       </div>
-      <div className={styles.decorativeGrid}></div>
-      <div className={styles.decorativeBlur}></div>
+      
+      {/* Decorative elements */}
+      <div className={styles.designElements}>
+        <div className={styles.designGrid}></div>
+        <div className={styles.designCircle1}></div>
+        <div className={styles.designCircle2}></div>
+      </div>
     </section>
   );
 };

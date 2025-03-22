@@ -1,198 +1,207 @@
 .resumeSection {
-  padding: 120px 0;
+  padding: 80px 0; 
   position: relative;
   overflow: hidden;
   background: var(--bg-primary);
   
-  /* Subtle gradient background */
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: linear-gradient(
-      to bottom right,
-      var(--bg-primary),
-      var(--bg-secondary),
-      var(--bg-primary)
-    );
-    opacity: 0.8;
-    z-index: 0;
+  // For when section is first in viewport, eliminate top spacing
+  &:first-child {
+    padding-top: 40px;
   }
   
   .container {
     width: 90%;
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
     position: relative;
     z-index: 2;
   }
   
+  /* Section header styles */
   .sectionHeader {
-    text-align: center;
     margin-bottom: 60px;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 20px;
+    
+    .titleRow {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 16px;
+    }
     
     .sectionTitle {
-      font-size: 36px;
-      font-weight: 700;
+      font-size: 32px;
+      font-weight: 600;
       color: var(--text-primary);
-      margin-bottom: 16px;
-      position: relative;
-      display: inline-block;
-      
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 3px;
-        background: linear-gradient(to right, var(--primary-color), rgba(250, 33, 4, 0.5));
-      }
+      margin: 0;
+      letter-spacing: 1px;
+    }
+    
+    .designNumber {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      font-weight: 400;
+      letter-spacing: 1px;
     }
     
     .sectionDescription {
-      font-size: 18px;
+      font-size: 16px;
       color: var(--text-secondary);
-      max-width: 800px;
-      margin: 0 auto 24px;
+      margin: 0 0 20px 0;
+      font-weight: 300;
+      max-width: 600px;
     }
     
-    .downloadButton {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 24px;
-      background: var(--primary-color);
-      color: white;
-      border-radius: 30px;
-      border: none;
-      text-decoration: none;
-      font-size: 16px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      box-shadow: 0 5px 15px rgba(250, 33, 4, 0.2);
-      
-      &:hover {
-        background: var(--button-primary-hover);
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(250, 33, 4, 0.3);
-      }
-      
-      svg {
-        transition: transform 0.3s ease;
-      }
-      
-      &:hover svg {
-        transform: translateY(2px);
-      }
+    .buttonContainer {
+      margin-top: 20px;
     }
   }
   
-  /* Timeline layout styles */
+  .downloadButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: transparent;
+    border: 1px solid var(--border-light);
+    color: var(--text-primary);
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: var(--button-secondary-hover);
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+    
+    svg {
+      transition: transform 0.3s ease;
+    }
+  }
+  
+  /* Timeline layout styles - improved for mobile with date outside */
   .timeline {
     position: relative;
-    padding: 20px 0;
+    padding: 40px 0;
     margin-bottom: 60px;
+  }
+  
+  .timelineSectionTitle {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 40px 0 30px 0;
+    letter-spacing: 0.5px;
     
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: var(--border-light);
-      left: 50%;
-      margin-left: -1px;
-      
-      @media (max-width: 768px) {
-        left: 30px;
-      }
+    .sectionIndicator {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background-color: var(--primary-color);
+      margin-right: 12px;
+      border-radius: 50%;
+    }
+    
+    // First title shouldn't have top margin
+    &:first-of-type {
+      margin-top: 0;
     }
   }
   
   .timelineWrapper {
     position: relative;
+    
+    // Center line
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: var(--border-light);
+      left: 120px; // Position for the line - adjusted to make space for the date
+      
+      @media (max-width: 768px) {
+        left: 80px; // Smaller offset on mobile
+      }
+      
+      @media (max-width: 576px) {
+        left: 60px; // Even smaller offset on small mobile
+      }
+    }
   }
   
   .timelineItem {
     display: flex;
     margin-bottom: 50px;
     position: relative;
+    padding-left: 150px; // Make room for the date on the left
     
+    @media (max-width: 768px) {
+      padding-left: 100px; // Smaller padding on mobile
+    }
+    
+    @media (max-width: 576px) {
+      padding-left: 80px; // Even smaller padding on small mobile
+    }
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    // Right side items - not used on mobile to avoid complexity
     &.timelineRight {
-      justify-content: flex-end;
-      
-      .timelineContent {
-        text-align: right;
+      @media (min-width: 992px) {
+        padding-left: 0;
+        padding-right: 150px;
+        justify-content: flex-end;
         
-        @media (max-width: 768px) {
-          text-align: left;
+        .timelineMarker {
+          left: auto;
+          right: 120px;
         }
-      }
-      
-      .timelineMarker {
-        order: 2;
         
         .timelineDate {
           left: auto;
-          right: 50px;
+          right: 0;
+          text-align: right;
+        }
+        
+        .timelineContent {
+          text-align: right;
           
-          @media (max-width: 768px) {
-            left: 0;
-            right: auto;
+          .responsibilities {
+            padding-left: 0;
+            padding-right: 20px;
+            text-align: right;
           }
         }
       }
-      
-      .timelineContent {
-        order: 1;
-        margin-right: 50px;
-        margin-left: 0;
-        
-        @media (max-width: 768px) {
-          margin-left: 80px;
-          margin-right: 0;
-        }
-      }
-      
-      @media (max-width: 768px) {
-        justify-content: flex-start;
-      }
-    }
-    
-    @media (max-width: 768px) {
-      margin-bottom: 40px;
     }
   }
   
+  // Marker for the timeline
   .timelineMarker {
-    flex: 0 0 60px;
-    position: relative;
+    position: absolute;
+    left: 120px;
+    transform: translateX(-50%);
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     
-    .timelineDate {
-      position: absolute;
-      top: 0;
-      left: 50px;
-      white-space: nowrap;
-      background: var(--primary-light);
-      color: var(--primary-color);
-      padding: 5px 10px;
-      border-radius: 15px;
-      font-size: 14px;
-      font-weight: 500;
-      z-index: 2;
-      
-      @media (max-width: 768px) {
-        left: 0;
-        transform: translateX(0);
-        top: -30px;
-      }
+    @media (max-width: 768px) {
+      left: 80px;
+    }
+    
+    @media (max-width: 576px) {
+      left: 60px;
     }
     
     .timelineDot {
@@ -203,17 +212,14 @@
       border: 3px solid var(--bg-primary);
       position: relative;
       z-index: 2;
-      box-shadow: 0 0 0 2px var(--primary-light);
     }
     
     .timelineLine {
       position: absolute;
       top: 16px;
       bottom: -50px;
-      width: 2px;
+      width: 1px;
       background: var(--border-light);
-      left: 50%;
-      transform: translateX(-50%);
       z-index: 1;
       
       // Don't show the line for the last item
@@ -223,56 +229,64 @@
     }
   }
   
-  .timelineContent {
-    flex: 0 0 calc(50% - 80px);
-    background: var(--bg-card);
-    border: 1px solid var(--border-light);
-    border-radius: 10px;
-    padding: 25px;
-    margin-left: 50px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-    position: relative;
+  // Date displayed outside the content box
+  .timelineDate {
+    position: absolute;
+    top: -6px; // Align with top of content
+    left: 0;
+    width: 100px;
+    text-align: right;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--primary-color);
+    padding-right: 15px;
     
-    &::before {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: var(--bg-card);
-      transform: rotate(45deg);
-      border-left: 1px solid var(--border-light);
-      border-bottom: 1px solid var(--border-light);
-      left: -10px;
-      top: 15px;
+    span {
+      display: inline-block;
+      background: var(--primary-light);
+      padding: 5px 10px;
+      border-radius: 4px;
+    }
+    
+    @media (max-width: 768px) {
+      width: 75px;
+      font-size: 13px;
+      padding-right: 10px;
       
-      .timelineRight & {
-        left: auto;
-        right: -10px;
-        border-left: none;
-        border-right: 1px solid var(--border-light);
-        border-top: 1px solid var(--border-light);
-        border-bottom: none;
-        
-        @media (max-width: 768px) {
-          left: -10px;
-          right: auto;
-          border-left: 1px solid var(--border-light);
-          border-bottom: 1px solid var(--border-light);
-          border-right: none;
-          border-top: none;
-        }
+      span {
+        padding: 4px 8px;
       }
     }
+    
+    @media (max-width: 576px) {
+      width: 55px;
+      font-size: 12px;
+      padding-right: 5px;
+      
+      span {
+        padding: 3px 6px;
+      }
+    }
+  }
+  
+  // Content box
+  .timelineContent {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 20px 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
     
     &:hover {
       transform: translateY(-5px);
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      border-color: var(--border-medium);
     }
     
-    @media (max-width: 768px) {
-      flex: 0 0 calc(100% - 80px);
-      margin-left: 50px;
+    @media (max-width: 576px) {
+      padding: 15px 20px;
     }
   }
   
@@ -280,13 +294,23 @@
     font-size: 18px;
     font-weight: 600;
     color: var(--text-primary);
-    margin: 0 0 10px 0;
+    margin: 0 0 8px 0;
+    
+    @media (max-width: 576px) {
+      font-size: 16px;
+    }
   }
   
   .timelineSubtitle {
     font-size: 14px;
     color: var(--text-secondary);
     margin-bottom: 15px;
+    font-weight: 300;
+    
+    @media (max-width: 576px) {
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
   }
   
   .timelineBody {
@@ -314,28 +338,28 @@
         }
       }
       
-      .timelineRight & {
-        padding-left: 0;
-        padding-right: 20px;
-        text-align: right;
+      @media (max-width: 576px) {
+        padding-left: 15px;
         
-        @media (max-width: 768px) {
-          padding-left: 20px;
-          padding-right: 0;
-          text-align: left;
+        li {
+          margin-bottom: 6px;
+          font-size: 14px;
         }
       }
+    }
+    
+    @media (max-width: 576px) {
+      font-size: 14px;
     }
   }
   
   /* Skills section styles */
   .skillsSection {
-    padding: 30px 40px;
     background: var(--bg-card);
-    border-radius: 15px;
-    margin-top: 60px;
     border: 1px solid var(--border-light);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    padding: 30px;
+    margin-top: 60px;
     
     @media (max-width: 768px) {
       padding: 25px 20px;
@@ -343,18 +367,22 @@
   }
   
   .resumeSectionTitle {
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 25px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 25px;
     color: var(--text-primary);
     padding-bottom: 15px;
     border-bottom: 1px solid var(--border-light);
     
-    svg {
-      color: var(--primary-color);
+    .sectionIndicator {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background-color: var(--primary-color);
+      margin-right: 12px;
+      border-radius: 50%;
     }
   }
   
@@ -373,8 +401,12 @@
     flex: 1;
     min-width: 250px;
     
+    @media (max-width: 768px) {
+      min-width: auto;
+    }
+    
     .skillCategoryTitle {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 500;
       color: var(--text-primary);
       margin-bottom: 15px;
@@ -401,7 +433,7 @@
         background: var(--primary-light);
         color: var(--primary-color);
         padding: 8px 16px;
-        border-radius: 30px;
+        border-radius: 6px;
         font-size: 14px;
         font-weight: 500;
         transition: all 0.3s ease;
@@ -415,13 +447,27 @@
         &.softSkill {
           background: rgba(68, 107, 255, 0.1);
           color: #446BFF;
+          
+          &:hover {
+            box-shadow: 0 5px 15px rgba(68, 107, 255, 0.15);
+          }
         }
       }
     }
   }
   
   /* Decorative elements */
-  .decorativeGrid {
+  .designElements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  .designGrid {
     position: absolute;
     top: 0;
     left: 0;
@@ -431,25 +477,38 @@
       linear-gradient(to right, var(--border-light) 1px, transparent 1px),
       linear-gradient(to bottom, var(--border-light) 1px, transparent 1px);
     background-size: 40px 40px;
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0.3;
+    opacity: 0.1;
   }
   
-  .decorativeBlur {
+  .designCircle1 {
     position: absolute;
-    bottom: -100px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 400px;
-    height: 400px;
+    top: -100px;
+    right: -150px;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
     background: radial-gradient(
       circle at center,
       rgba(250, 33, 4, 0.08) 0%,
       rgba(250, 33, 4, 0) 70%
     );
     filter: blur(50px);
-    z-index: 0;
-    pointer-events: none;
+    opacity: 0.5;
+  }
+  
+  .designCircle2 {
+    position: absolute;
+    bottom: -150px;
+    left: -100px;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at center,
+      rgba(68, 107, 255, 0.08) 0%,
+      rgba(68, 107, 255, 0) 70%
+    );
+    filter: blur(40px);
+    opacity: 0.5;
   }
 }
