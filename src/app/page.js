@@ -76,16 +76,15 @@ export default function Home() {
     if (typeof window !== "undefined") {
       gsap.registerPlugin(ScrollTrigger);
     }
-
+  
     // Fix for initial scroll position
     window.scrollTo(0, 0);
     
-    // Hide overflow during intro
-    if (!showPortfolio) {
-      document.body.style.overflow = 'hidden';
-    }
-
-    // Optimize loading sequence with reduced timeouts for better responsiveness
+    // Set initial body overflow to hidden
+    document.body.style.overflow = 'hidden';
+    document.body.style.height = '100vh'; // Force fullscreen height during loading
+  
+    // Optimize loading sequence
     const loadTimer = setTimeout(() => {
       setIsLoading(false);
       document.body.style.cursor = "default";
@@ -94,20 +93,28 @@ export default function Home() {
         setIsFadingOut(true);
         
         const showTimer = setTimeout(() => {
+          // Prepare content before showing
+          document.body.style.visibility = 'hidden';
           setShowPortfolio(true);
-          setIsFadingOut(false);
-          document.body.style.overflow = "auto";
           
-          // Register scroll trigger for sections once portfolio is shown
-          registerScrollTriggers();
-        }, 800); // Reduced from 1000
+          // Allow a moment for the DOM to update
+          setTimeout(() => {
+            setIsFadingOut(false);
+            document.body.style.overflow = "auto";
+            document.body.style.height = 'auto'; // Reset height restriction
+            document.body.style.visibility = 'visible';
+            
+            // Register scroll trigger for sections once portfolio is shown
+            registerScrollTriggers();
+          }, 100);
+        }, 800);
         
         return () => clearTimeout(showTimer);
-      }, 1500); // Reduced from 2000
+      }, 1500);
       
       return () => clearTimeout(fadeTimer);
-    }, 1500); // Reduced from 2000
-
+    }, 1500);
+  
     // Cleanup function
     return () => {
       clearTimeout(loadTimer);

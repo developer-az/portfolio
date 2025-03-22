@@ -46,17 +46,36 @@ export const ThemeProvider = ({ children }) => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme, mounted]);
   
-  // Toggle theme function
+  // Toggle theme function with scroll position preservation
   const toggleTheme = () => {
     if (!mounted) return;
+    
+    // Store current scroll position
+    const scrollPosition = window.scrollY;
+    
+    // Toggle theme
     setTheme(prevTheme => (prevTheme === 'dark' ? 'light' : 'dark'));
+    
+    // Restore scroll position after theme change
+    setTimeout(() => {
+      window.scrollTo(0, scrollPosition);
+    }, 0);
   };
   
   // Set a specific theme
   const setThemeMode = (mode) => {
     if (!mounted) return;
     if (mode === 'dark' || mode === 'light') {
+      // Store current scroll position
+      const scrollPosition = window.scrollY;
+      
+      // Set theme
       setTheme(mode);
+      
+      // Restore scroll position
+      setTimeout(() => {
+        window.scrollTo(0, scrollPosition);
+      }, 0);
     }
   };
   

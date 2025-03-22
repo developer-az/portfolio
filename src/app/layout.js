@@ -28,8 +28,47 @@ export default function RootLayout({ children }) {
         
         {/* Preload essential assets */}
         <link rel="preload" href="/fonts/AVGARDD_2.woff" as="font" type="font/woff" crossOrigin="anonymous" />
+        
+        {/* Preload critical CSS */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          .preload-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #121212;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s;
+          }
+          
+          .preload-hidden {
+            opacity: 0;
+            pointer-events: none;
+          }
+          
+          .preload-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #fa2104;
+            border-radius: 50%;
+            animation: spinner 1s linear infinite;
+          }
+          
+          @keyframes spinner {
+            to {transform: rotate(360deg);}
+          }
+        `}} />
       </head>
       <body className="loading">
+        <div id="preload-overlay" className="preload-overlay">
+          <div className="preload-spinner"></div>
+        </div>
+        
         <Providers>
           {children}
           <ThemeSwitcher />
@@ -43,6 +82,19 @@ export default function RootLayout({ children }) {
               // Default to dark theme if no preference is saved
               const theme = savedTheme || 'dark';
               document.documentElement.classList.add(\`\${theme}-theme\`);
+              
+              // Handle preloader
+              window.addEventListener('load', function() {
+                const preloader = document.getElementById('preload-overlay');
+                if (preloader) {
+                  setTimeout(function() {
+                    preloader.classList.add('preload-hidden');
+                    setTimeout(function() {
+                      preloader.remove();
+                    }, 500);
+                  }, 500);
+                }
+              });
             } catch (e) {
               // Fallback to dark theme if localStorage is unavailable
               document.documentElement.classList.add('dark-theme');

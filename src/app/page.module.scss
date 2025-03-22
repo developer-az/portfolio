@@ -388,21 +388,29 @@
 .portfolioContent {
   position: relative;
   z-index: 1;
-  padding-top: 60px; // Reduced from 80px to 60px
+  padding-top: 60px;
   color: var(--text-primary);
+  min-height: 100vh; /* Ensure full viewport height */
+  display: flex;
+  flex-direction: column;
+  
+  /* Footer should stay at the bottom */
+  .footer {
+    margin-top: auto;
+  }
   
   section {
-    padding: 80px 0; // Reduced from 120px to 80px to match new section spacing
+    padding: 80px 0;
     position: relative;
     overflow: hidden;
     
-    // For when section is first in viewport, eliminate top spacing
+    /* For when section is first in viewport, eliminate top spacing */
     &:first-child {
-      padding-top: 40px;
+      padding-top: 15px; /* Ensure content starts below header */
+      min-height: calc(100vh - 60px);
     }
   }
 }
-
 
 // Work Section with Modern Project Showcase
 .work {
