@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useTheme } from '@/context/ThemeContext';
+import FloatingNav from '@/components/FloatingNav';
 
 export default function InstagramAnalyzer() {
   const [followersFile, setFollowersFile] = useState(null);
@@ -211,50 +212,7 @@ export default function InstagramAnalyzer() {
 
   return (
     <div className={styles.mainWrapper}>
-      {/* Header */}
-      <header ref={headerRef} className={styles.header}>
-        <div className={styles.headerContent}>
-          <Link href="/" className={styles.logo}>
-            <div className={styles.logoIcon}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM13 7H11V13H17V11H13V7Z" fill="currentColor"/>
-              </svg>
-            </div>
-            <div className={styles.logoText}>
-              <p>Anthony Zhou</p>
-            </div>
-          </Link>
-          
-          {/* Desktop Navigation */}
-          <div className={styles.nav}>
-            <Link href="/" className={styles.navLink}>Home</Link>
-            <Link href="/#work" className={styles.navLink}>Work</Link>
-            <Link href="/#about" className={styles.navLink}>About</Link>
-            <Link href="/#contact" className={styles.navLink}>Contact</Link>
-          </div>
-          
-          {/* Mobile Menu Button */}
-          <button
-            className={styles.menuButton}
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            <div className={`${styles.menuButtonLine} ${mobileMenuOpen ? styles.active : ""}`}></div>
-            <div className={`${styles.menuButtonLine} ${mobileMenuOpen ? styles.active : ""}`}></div>
-            <div className={`${styles.menuButtonLine} ${mobileMenuOpen ? styles.active : ""}`}></div>
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        <div className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ""}`}>
-          <div className={styles.mobileMenuContent}>
-            <Link href="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
-            <Link href="/#about" onClick={() => setMobileMenuOpen(false)}>About</Link>
-            <Link href="/#work" onClick={() => setMobileMenuOpen(false)}>Work</Link>
-            <Link href="/#contact" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
-          </div>
-        </div>
-      </header>
+      <FloatingNav activeSection="instagram-analyzer" />
 
       <div className={styles.analyzer}>
         {/* Background elements */}

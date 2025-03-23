@@ -8,6 +8,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import { useTheme } from '@/context/ThemeContext';
+import FloatingNav from '../components/FloatingNav';
 
 // Import components with React.lazy for code-splitting
 import dynamic from 'next/dynamic';
@@ -25,37 +26,18 @@ const SkillsSection = dynamic(() => import('../components/SkillsSection'), { ssr
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [showPortfolio, setShowPortfolio] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
-  const [activeSection, setActiveSection] = useState("home");
+  const [activeSection, setActiveSection] = useState("about");
   
   // Use the theme context properly
   const { mounted } = useTheme();
 
   // Refs for GSAP animations
-  const header = useRef(null);
   const portfolioContent = useRef(null);
   
-  // Use memo for menu toggle to avoid unnecessary re-renders
-  const toggleMobileMenu = useCallback(() => {
-    setMobileMenuOpen(prev => !prev);
-  }, []);
-
   // Setup scroll triggers as a separate function
   const registerScrollTriggers = useCallback(() => {
-    if (!header.current || !portfolioContent.current) return;
-    
-    // Header animation - always using dark theme
-    gsap.to(header.current, {
-      scrollTrigger: {
-        trigger: portfolioContent.current,
-        start: "top top",
-        end: "100 top",
-        scrub: 1,
-      },
-      backgroundColor: "rgba(18, 18, 18, 0.95)",
-      boxShadow: "0 3px 10px rgba(0, 0, 0, 0.3)",
-    });
+    if (!portfolioContent.current) return;
     
     // Update active section on scroll
     const sections = document.querySelectorAll('section[id]');
@@ -66,7 +48,13 @@ export default function Home() {
         start: "top center",
         end: "bottom center",
         onEnter: () => setActiveSection(section.id),
-        onEnterBack: () => setActiveSection(section.id)
+        onEnterBack: () => setActiveSection(section.id),
+        onLeaveBack: () => {
+          // If scrolling back up past the first section, set active to "about"
+          if (section.id === "about") {
+            setActiveSection("about");
+          }
+        }
       });
     });
   }, []);
@@ -139,19 +127,36 @@ export default function Home() {
       
       const scrollPosition = window.scrollY;
       
+      // Default to "about" when at the top of the page
+      if (scrollPosition < 100) {
+        setActiveSection("about");
+        return;
+      }
+      
       // Find which section is currently in view based on scroll position
       const sections = document.querySelectorAll('section[id]');
+      let found = false;
+      
       sections.forEach(section => {
-        const sectionTop = section.offsetTop - 100;
+        const sectionTop = section.offsetTop - 200;
         const sectionHeight = section.offsetHeight;
         
         if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
           setActiveSection(section.id);
+          found = true;
         }
       });
+      
+      // If no section is found in view and we're scrolled down, keep the last section
+      if (!found && scrollPosition > 100) {
+        // Do nothing, keep the current active section
+      }
     };
     
     window.addEventListener('scroll', handleScroll);
+    // Call once on mount to set initial section
+    handleScroll();
+    
     return () => window.removeEventListener('scroll', handleScroll);
   }, [showPortfolio]);
 
@@ -159,104 +164,6 @@ export default function Home() {
   const [isHovered, setIsHovered] = useState(false);
   const { x, y } = useMousePosition();
   const size = isHovered ? 400 : 40;
-
-  // Navigation components - memoized to prevent unnecessary re-renders
-  const NavigationComponent = useMemo(() => {
-    // Named function for ESLint display-name rule
-    function Navigation({ currentPath }) {
-      // Only show the Home link when not on the main page
-      const isMainPage = currentPath === '/' || !currentPath;
-      
-      return (
-        <div className={styles.nav}>
-          {!isMainPage && (
-            <Link href="/" className={styles.navLink}>
-              Home
-            </Link>
-          )}
-          <a href="#about" className={`${styles.navLink} ${activeSection === 'about' ? styles.active : ''}`}>About</a>
-          <a href="#skills" className={`${styles.navLink} ${activeSection === 'skills' ? styles.active : ''}`}>Skills</a>
-          <a href="#resume" className={`${styles.navLink} ${activeSection === 'resume' ? styles.active : ''}`}>Resume</a>
-          <a href="#work" className={`${styles.navLink} ${activeSection === 'work' ? styles.active : ''}`}>Work</a>
-          <a href="#contact" className={`${styles.navLink} ${activeSection === 'contact' ? styles.active : ''}`}>Contact</a>
-          <Link href="/instagram-analyzer" className={styles.navLink}>
-            Instagram Analyzer
-          </Link>
-        </div>
-      );
-    }
-    
-    Navigation.displayName = 'Navigation';
-    return Navigation;
-  }, [activeSection]);
-
-  const MobileMenuComponent = useMemo(() => {
-    // Named function for ESLint display-name rule
-    function MobileMenu({ currentPath, setMobileMenuOpen }) {
-      const isMainPage = currentPath === '/' || !currentPath;
-      
-      return (
-        <div className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ""}`}>
-          <div className={styles.mobileMenuContent}>
-            {!isMainPage && (
-              <Link 
-                href="/" 
-                onClick={() => setMobileMenuOpen(false)}
-                className={styles.navLink}
-              >
-                Home
-              </Link>
-            )}
-            <a 
-              href="#about" 
-              onClick={() => setMobileMenuOpen(false)}
-              className={styles.navLink}
-            >
-              About
-            </a>
-            <a 
-              href="#skills" 
-              onClick={() => setMobileMenuOpen(false)}
-              className={styles.navLink}
-            >
-              Skills
-            </a>
-            <a 
-              href="#resume" 
-              onClick={() => setMobileMenuOpen(false)}
-              className={styles.navLink}
-            >
-              Resume
-            </a>
-            <a 
-              href="#work" 
-              onClick={() => setMobileMenuOpen(false)}
-              className={styles.navLink}
-            >
-              Work
-            </a>
-            <a 
-              href="#contact" 
-              onClick={() => setMobileMenuOpen(false)}
-              className={styles.navLink}
-            >
-              Contact
-            </a>
-            <Link 
-              href="/instagram-analyzer" 
-              onClick={() => setMobileMenuOpen(false)}
-              className={styles.navLink}
-            >
-              Instagram Analyzer
-            </Link>
-          </div>
-        </div>
-      );
-    }
-    
-    MobileMenu.displayName = 'MobileMenu';
-    return MobileMenu;
-  }, [mobileMenuOpen]);
 
   // Only render content if theme is loaded to avoid flashing
   if (!mounted) {
@@ -307,52 +214,10 @@ export default function Home() {
           {/* Enhanced 3D Background - always dark theme */}
           <EnhancedBackground color="#121212" />
           
-          {/* Header */}
-          <header ref={header} className={styles.header} id="home">
-            <div className={styles.headerContent}>
-              <div className={styles.logo}>
-                <p className={styles.copyright}>©</p>
-                <div className={styles.logoText}>
-                  <p className={styles.codeBy}>Code by</p>
-                  <h1 className={styles.name}>
-                    <span className={styles.firstName}>Anthony</span>
-                    <span className={styles.lastName}>Zhou</span>
-                  </h1>
-                </div>
-              </div>
+          {/* Floating Navigation */}
+          <FloatingNav activeSection={activeSection} />
 
-              {/* Desktop Navigation */}
-              <NavigationComponent currentPath="/" />
-
-              {/* Mobile Menu Button */}
-              <button
-                className={styles.menuButton}
-                onClick={toggleMobileMenu}
-                aria-label="Toggle menu"
-              >
-                <div
-                  className={`${styles.menuButtonLine} ${
-                    mobileMenuOpen ? styles.active : ""
-                  }`}
-                ></div>
-                <div
-                  className={`${styles.menuButtonLine} ${
-                    mobileMenuOpen ? styles.active : ""
-                  }`}
-                ></div>
-                <div
-                  className={`${styles.menuButtonLine} ${
-                    mobileMenuOpen ? styles.active : ""
-                  }`}
-                ></div>
-              </button>
-            </div>
-
-            {/* Mobile Menu */}
-            <MobileMenuComponent currentPath="/" setMobileMenuOpen={setMobileMenuOpen} />
-          </header>
-
-          {/* Portfolio{/* Portfolio Content */}
+          {/* Portfolio Content */}
           <div ref={portfolioContent} className={styles.portfolioContent}>
             {/* About Section with Profile */}
             <section id="about" className={styles.about}>

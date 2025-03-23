@@ -167,7 +167,7 @@ const WorkSection = () => {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
         >
-          <h2 className={styles.sectionTitle}>Featured Work</h2>
+          <h2 className={styles.sectionTitle}>Featured Projects</h2>
           <p className={styles.sectionDescription}>
             Explore my latest projects showcasing modern design and technical expertise.
           </p>

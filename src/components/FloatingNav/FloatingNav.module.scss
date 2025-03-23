@@ -1,0 +1,284 @@
+.floatingNav {
+    position: fixed;
+    top: 20px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: fit-content;
+    max-width: 90%;
+    z-index: 1000;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+    &.scrolled {
+      top: 15px;
+      backdrop-filter: blur(10px);
+      background-color: rgba(18, 18, 18, 0.8);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+  
+    .navContainer {
+      display: flex;
+      align-items: center;
+      background-color: rgba(26, 26, 26, 0.7);
+      backdrop-filter: blur(10px);
+      border-radius: 50px;
+      padding: 8px 16px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: rgba(33, 33, 33, 0.8);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+      }
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--text-primary);
+      gap: 5px;
+      margin-right: 20px;
+      padding: 4px 8px;
+      
+      .logoSymbol {
+        font-size: 16px;
+        font-weight: 400;
+      }
+      
+      .logoText {
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+    }
+  
+    .navLinks {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+  
+      @media (max-width: 768px) {
+        display: none;
+      }
+    }
+  
+    .navLink {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 16px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      overflow: hidden;
+  
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+        transform: translateX(-100%);
+        transition: transform 0.6s ease;
+      }
+  
+      &:hover {
+        color: var(--text-primary);
+        background-color: rgba(255, 255, 255, 0.05);
+        
+        &::before {
+          transform: translateX(100%);
+        }
+      }
+  
+      &.active {
+        color: var(--primary-color);
+        background-color: rgba(250, 33, 4, 0.1);
+        
+        .linkIcon {
+          transform: scale(1.2);
+        }
+      }
+  
+      .linkIcon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.3s ease;
+      }
+  
+      .linkText {
+        position: relative;
+        
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -2px;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background-color: var(--primary-color);
+          transition: width 0.3s ease;
+        }
+      }
+  
+      &:hover .linkText::after,
+      &.active .linkText::after {
+        width: 100%;
+      }
+    }
+  }
+  
+  // Mobile Navigation Toggle Button
+  .mobileNavToggle {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    border: none;
+    cursor: pointer;
+    z-index: 1001;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+  
+    &:hover {
+      transform: scale(1.1);
+    }
+  
+    &:active {
+      transform: scale(0.95);
+    }
+  
+    .bar {
+      position: absolute;
+      width: 24px;
+      height: 2px;
+      background-color: white;
+      left: 13px;
+      transition: all 0.3s ease;
+  
+      &:nth-child(1) {
+        top: 17px;
+      }
+  
+      &:nth-child(2) {
+        top: 24px;
+      }
+  
+      &:nth-child(3) {
+        top: 31px;
+      }
+    }
+  
+    &.active {
+      .bar:nth-child(1) {
+        transform: rotate(45deg);
+        top: 24px;
+      }
+  
+      .bar:nth-child(2) {
+        opacity: 0;
+      }
+  
+      .bar:nth-child(3) {
+        transform: rotate(-45deg);
+        top: 24px;
+      }
+    }
+  
+    @media (max-width: 768px) {
+      display: block;
+    }
+  }
+  
+  // Mobile Navigation Menu
+  .mobileNavMenu {
+    display: none;
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    background-color: rgba(26, 26, 26, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    z-index: 1000;
+    overflow: hidden;
+  
+    .mobileNavContainer {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .mobileNavLink {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 16px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.3s ease;
+  
+      &:hover {
+        color: var(--text-primary);
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+  
+      &.active {
+        color: var(--primary-color);
+        background-color: rgba(250, 33, 4, 0.1);
+      }
+  
+      .mobileNavIcon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  
+    @media (max-width: 768px) {
+      display: block;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .floatingNav {
+      display: none;
+    }
+  }
+  
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .floatingNav {
+      .navContainer {
+        padding: 8px 15px;
+      }
+      
+      .navLink {
+        padding: 6px 10px;
+        font-size: 13px;
+        
+        .linkIcon {
+          svg {
+            width: 14px;
+            height: 14px;
+          }
+        }
+      }
+    }
+  }
