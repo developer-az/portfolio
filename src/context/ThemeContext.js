@@ -5,47 +5,29 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState('');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setTheme(savedTheme);
-    } else {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setTheme(prefersDark ? 'dark' : 'light');
-      localStorage.setItem('theme', prefersDark ? 'dark' : 'light');
-    }
+    // Always use dark theme, no more light theme option
+    document.documentElement.classList.remove('light-theme');
+    document.documentElement.classList.add('dark-theme');
+    document.documentElement.setAttribute('data-theme', 'dark');
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (!mounted || theme === '') return;
-    document.documentElement.classList.remove('light-theme', 'dark-theme');
-    document.documentElement.classList.add(`${theme}-theme`);
-    localStorage.setItem('theme', theme);
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme, mounted]);
-
+  // These functions now do nothing since we're always using dark theme
   const toggleTheme = () => {
-    if (!mounted) return;
-    requestAnimationFrame(() => {
-      setTheme(prevTheme => (prevTheme === 'dark' ? 'light' : 'dark'));
-    });
+    // No-op function - removed theme toggling
+    return;
   };
 
-  const setThemeMode = (mode) => {
-    if (!mounted) return;
-    if (mode === 'dark' || mode === 'light') {
-      requestAnimationFrame(() => {
-        setTheme(mode);
-      });
-    }
+  const setThemeMode = () => {
+    // No-op function - removed theme setting
+    return;
   };
 
   const value = {
-    theme: mounted ? theme : 'dark',
+    theme: 'dark', // Always dark
     toggleTheme,
     setThemeMode,
     mounted

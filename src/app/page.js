@@ -30,7 +30,7 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState("home");
   
   // Use the theme context properly
-  const { theme, mounted } = useTheme();
+  const { mounted } = useTheme();
 
   // Refs for GSAP animations
   const header = useRef(null);
@@ -45,7 +45,7 @@ export default function Home() {
   const registerScrollTriggers = useCallback(() => {
     if (!header.current || !portfolioContent.current) return;
     
-    // Header animation
+    // Header animation - always using dark theme
     gsap.to(header.current, {
       scrollTrigger: {
         trigger: portfolioContent.current,
@@ -53,7 +53,7 @@ export default function Home() {
         end: "100 top",
         scrub: 1,
       },
-      backgroundColor: theme === 'dark' ? "rgba(18, 18, 18, 0.95)" : "rgba(245, 245, 245, 0.95)",
+      backgroundColor: "rgba(18, 18, 18, 0.95)",
       boxShadow: "0 3px 10px rgba(0, 0, 0, 0.3)",
     });
     
@@ -69,7 +69,7 @@ export default function Home() {
         onEnterBack: () => setActiveSection(section.id)
       });
     });
-  }, [theme]);
+  }, []);
 
   useEffect(() => {
     // Initialize GSAP plugins
@@ -304,8 +304,8 @@ export default function Home() {
       {/* Portfolio Content */}
       {showPortfolio && (
         <div className={styles.portfolioWrapper}>
-          {/* Enhanced 3D Background */}
-          <EnhancedBackground color={theme === 'dark' ? "#121212" : "#f5f5f5"} />
+          {/* Enhanced 3D Background - always dark theme */}
+          <EnhancedBackground color="#121212" />
           
           {/* Header */}
           <header ref={header} className={styles.header} id="home">
@@ -352,7 +352,7 @@ export default function Home() {
             <MobileMenuComponent currentPath="/" setMobileMenuOpen={setMobileMenuOpen} />
           </header>
 
-          {/* Portfolio Content */}
+          {/* Portfolio{/* Portfolio Content */}
           <div ref={portfolioContent} className={styles.portfolioContent}>
             {/* About Section with Profile */}
             <section id="about" className={styles.about}>

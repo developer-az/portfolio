@@ -1,7 +1,7 @@
 import './globals.css';
 import './theme-variables.scss';
 import Providers from '@/components/Providers';
-import ThemeSwitcher from '@/components/ThemeSwitcher';
+// ThemeSwitcher import removed since we don't need it anymore
 
 export const metadata = {
   title: 'Anthony Zhou - Software Engineer & Web Designer',
@@ -71,34 +71,27 @@ export default function RootLayout({ children }) {
         
         <Providers>
           {children}
-          <ThemeSwitcher />
+          {/* ThemeSwitcher component removed */}
         </Providers>
         
-        {/* Initial theme script to prevent flashing */}
+        {/* Initial theme script simplified - always dark mode */}
         <script dangerouslySetInnerHTML={{ __html: `
           (function() {
-            try {
-              const savedTheme = localStorage.getItem('theme');
-              // Default to dark theme if no preference is saved
-              const theme = savedTheme || 'dark';
-              document.documentElement.classList.add(\`\${theme}-theme\`);
-              
-              // Handle preloader
-              window.addEventListener('load', function() {
-                const preloader = document.getElementById('preload-overlay');
-                if (preloader) {
+            // Always use dark theme
+            document.documentElement.classList.add('dark-theme');
+            
+            // Handle preloader
+            window.addEventListener('load', function() {
+              const preloader = document.getElementById('preload-overlay');
+              if (preloader) {
+                setTimeout(function() {
+                  preloader.classList.add('preload-hidden');
                   setTimeout(function() {
-                    preloader.classList.add('preload-hidden');
-                    setTimeout(function() {
-                      preloader.remove();
-                    }, 500);
+                    preloader.remove();
                   }, 500);
-                }
-              });
-            } catch (e) {
-              // Fallback to dark theme if localStorage is unavailable
-              document.documentElement.classList.add('dark-theme');
-            }
+                }, 500);
+              }
+            });
           })();
         `}} />
       </body>

@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import styles from './EnhancedBackground.module.scss';
 
-const EnhancedBackground = ({ color = "#121212" }) => {
+const EnhancedBackground = () => {
   const containerRef = useRef(null);
   const rendererRef = useRef(null);
   const animationRef = useRef(null);
@@ -227,7 +227,7 @@ const EnhancedBackground = ({ color = "#121212" }) => {
     <div 
       ref={containerRef} 
       className={styles.enhancedBackground}
-      style={{ backgroundColor: color }}
+      style={{ backgroundColor: "#121212" }} // Always use dark theme background
       aria-hidden="true"
     />
   );

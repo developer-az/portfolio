@@ -56,7 +56,7 @@
   --z-tooltip: 1002;
 }
 
-/* Dark theme variables - default */
+/* Dark theme variables - now the only theme */
 :root,
 html,
 html.dark-theme {
@@ -104,54 +104,4 @@ html.dark-theme {
   --input-focus-border: rgba(250, 33, 4, 0.5);
 }
 
-/* Light theme variables */
-html.light-theme {
-  /* Background colors */
-  --bg-primary: #f8f9fa;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f0f0f0;
-  --bg-card: rgba(255, 255, 255, 0.9);
-  --bg-hover: rgba(0, 0, 0, 0.03);
-  --bg-active: rgba(0, 0, 0, 0.05);
-  
-  /* Text colors */
-  --text-primary: #333333;
-  --text-secondary: #555555;
-  --text-tertiary: #777777;
-  --text-muted: #999999;
-  
-  /* Border colors */
-  --border-light: rgba(0, 0, 0, 0.1);
-  --border-medium: rgba(0, 0, 0, 0.15);
-  --border-focused: rgba(250, 33, 4, 0.5);
-  
-  /* Component specific */
-  --header-bg: rgba(255, 255, 255, 0.9);
-  --card-bg: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  --card-highlight: rgba(0, 0, 0, 0.01);
-  --input-bg: rgba(0, 0, 0, 0.05);
-  --button-primary-bg: #fa2104;
-  --button-primary-text: #ffffff;
-  --button-primary-hover: #ff3a20;
-  --button-secondary-bg: rgba(0, 0, 0, 0.05);
-  --button-secondary-text: #333333;
-  --button-secondary-hover: rgba(0, 0, 0, 0.08);
-  
-  /* Project card specific */
-  --card-title-color: #333333;
-  --card-description-color: #555555;
-  --card-tech-badge-bg: rgba(250, 33, 4, 0.1);
-  --card-tech-badge-text: #333333;
-  
-  /* Form elements */
-  --input-text: #333333;
-  --input-placeholder: #777777;
-  --input-border: rgba(0, 0, 0, 0.1);
-  --input-focus-border: rgba(250, 33, 4, 0.5);
-  
-  /* Box shadow overrides for light theme */
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.12);
-  --shadow-xl: 0 16px 32px rgba(0, 0, 0, 0.16);
-}
+/* Light theme variables removed */
