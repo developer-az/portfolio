@@ -126,7 +126,9 @@ const WorkSection = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [filteredProjects, setFilteredProjects] = useState(projects);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [isRevealed, setIsRevealed] = useState(false);
   const sectionRef = useRef(null);
+  const titleRef = useRef(null);
   const isInView = useInView(sectionRef, { once: false, amount: 0.1 });
   
   // Filter projects when active category changes
@@ -137,6 +139,13 @@ const WorkSection = () => {
         : projects.filter(project => project.category === activeFilter)
     );
   }, [activeFilter]);
+
+  // Reveal animation effect
+  useEffect(() => {
+    if (isInView && !isRevealed) {
+      setIsRevealed(true);
+    }
+  }, [isInView, isRevealed]);
 
   // Project detail functions
   const openProjectModal = (project) => {
@@ -151,21 +160,41 @@ const WorkSection = () => {
 
   return (
     <section ref={sectionRef} className={styles.workSection} id="work">
+      <div className={styles.yslBackground}>
+        <div className={styles.goldAccent}></div>
+      </div>
+      
       <div className={styles.container}>
-        {/* Section Header */}
-        <motion.div
-          className={styles.sectionHeader}
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-        >
-          <h2 className={styles.sectionTitle}>Featured Projects</h2>
-          <p className={styles.sectionDescription}>
-            Explore my latest projects showcasing modern design and technical expertise.
-          </p>
+        {/* YSL-inspired luxury header */}
+        <div className={styles.luxuryHeader}>
+          <motion.div
+            className={styles.sectionTitleWrapper}
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
+            <h2 className={styles.sectionTitle} ref={titleRef}>
+              <span className={styles.titleLine}></span>
+              <span className={styles.titleText}>PROJETS</span>
+              <span className={styles.titleLine}></span>
+            </h2>
+            <motion.p 
+              className={styles.sectionDescription}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+            >
+              CURATED COLLECTION
+            </motion.p>
+          </motion.div>
 
-          {/* Filter Buttons */}
-          <div className={styles.projectFilters}>
+          {/* Luxury Filter Buttons */}
+          <motion.div 
+            className={styles.categoryFilters}
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
+          >
             {categories.map((category, index) => (
               <motion.button
                 key={category.id}
@@ -173,12 +202,12 @@ const WorkSection = () => {
                   activeFilter === category.id ? styles.active : ""
                 }`}
                 onClick={() => setActiveFilter(category.id)}
-                whileHover={{ scale: 1.05, y: -2 }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0 }}
                 animate={isInView ? 
-                  { opacity: 1, y: 0, transition: { delay: 0.1 + index * 0.1 } } : 
-                  { opacity: 0, y: 20 }
+                  { opacity: 1, transition: { delay: 0.1 + index * 0.1 } } : 
+                  { opacity: 0 }
                 }
               >
                 {category.name}
@@ -191,10 +220,10 @@ const WorkSection = () => {
                 )}
               </motion.button>
             ))}
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
 
-        {/* Projects Grid */}
+        {/* Project Showcase Grid */}
         <div className={styles.projectsGrid}>
           <motion.div 
             className={styles.projectsContainer}
@@ -211,6 +240,7 @@ const WorkSection = () => {
                   exit="exit"
                   initial="hidden"
                   animate="visible"
+                  className={styles.projectCardWrapper}
                 >
                   <ProjectCard
                     title={project.title}
@@ -227,33 +257,43 @@ const WorkSection = () => {
           </motion.div>
         </div>
 
-        {/* GitHub profile link */}
+        {/* Luxury Footer Element */}
         <motion.div
-          className={styles.projectSummary}
+          className={styles.collectionSummary}
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
+          transition={{ delay: 0.5, duration: 0.6 }}
         >
-          <p>
-            Showing {filteredProjects.length} of {projects.length} projects
+          <div className={styles.summaryDivider}>
+            <span className={styles.dividerLine}></span>
+            <span className={styles.dividerSymbol}>YSL</span>
+            <span className={styles.dividerLine}></span>
+          </div>
+          <motion.p className={styles.summaryText}>
+            {filteredProjects.length} {filteredProjects.length === 1 ? 'PIECE' : 'PIECES'} IN THE COLLECTION
             {activeFilter !== "all" &&
-              ` in ${categories.find((cat) => cat.id === activeFilter)?.name}`}
-          </p>
+              ` • ${categories.find((cat) => cat.id === activeFilter)?.name.toUpperCase()}`}
+          </motion.p>
           <motion.a
             href="https://github.com/developer-az"
             target="_blank"
             rel="noopener noreferrer"
-            className={styles.githubProfileLink}
-            whileHover={{ scale: 1.05, y: -3 }}
-            whileTap={{ scale: 0.95 }}
+            className={styles.viewMoreLink}
+            whileHover={{ x: 5 }}
           >
-            <span>View More Projects on GitHub</span>
+            <span>VIEW COMPLETE COLLECTION</span>
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
             </svg>
           </motion.a>
         </motion.div>
       </div>
+
+      {/* Decorative YSL Elements */}
+      <div className={styles.yslDecorativeElement1}></div>
+      <div className={styles.yslDecorativeElement2}></div>
+      <div className={styles.yslLogo}></div>
 
       {/* Project Detail Modal */}
       <AnimatePresence>
@@ -264,10 +304,6 @@ const WorkSection = () => {
           />
         )}
       </AnimatePresence>
-
-      {/* Decorative elements */}
-      <div className={styles.decorativeElement1} />
-      <div className={styles.decorativeElement2} />
     </section>
   );
 };

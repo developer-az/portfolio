@@ -1,30 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, useInView, useAnimation } from 'framer-motion';
+import React, { useState, useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
 import styles from './ContactSection.module.scss';
-
-// Animation variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.2
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: "easeOut",
-    },
-  },
-};
 
 const ContactSection = () => {
   // Form state management
@@ -38,21 +14,11 @@ const ContactSection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [activeField, setActiveField] = useState(null);
   
   // Refs for animations
   const sectionRef = useRef(null);
-  const formRef = useRef(null);
-  const controls = useAnimation();
-  
-  const isInView = useInView(sectionRef, { once: false, amount: 0.2 });
-  
-  // Start animations when section comes into view
-  useEffect(() => {
-    if (isInView) {
-      controls.start('visible');
-    }
-  }, [isInView, controls]);
+  const isInView = useInView(sectionRef, { once: false, amount: 0.1 });
   
   // Handle form input changes
   const handleChange = (e) => {
@@ -61,6 +27,15 @@ const ContactSection = () => {
       ...prev,
       [name]: value,
     }));
+  };
+  
+  // Handle form input focus/blur
+  const handleFocus = (field) => {
+    setActiveField(field);
+  };
+  
+  const handleBlur = () => {
+    setActiveField(null);
   };
   
   // Form validation
@@ -110,7 +85,6 @@ const ContactSection = () => {
       }
       
       // Handle success
-      setSuccessMessage(data.message || "Thank you for your message! I'll get back to you soon.");
       setSubmitted(true);
       
       // Reset form
@@ -120,115 +94,132 @@ const ContactSection = () => {
         subject: '',
         message: '',
       });
-      
-      // Reset submitted state after delay
-      setTimeout(() => {
-        setSubmitted(false);
-      }, 8000);
     } catch (err) {
-      console.error('Form submission error:', err);
       setError(err.message || 'An error occurred. Please try again later.');
     } finally {
       setIsSubmitting(false);
     }
   };
   
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      },
+    },
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+      },
+    },
+  };
+
   return (
     <section ref={sectionRef} className={styles.contactSection} id="contact">
+      {/* Decorative background elements */}
+      <div className={`${styles.decorativeElement} ${styles.element1}`}></div>
+      <div className={`${styles.decorativeElement} ${styles.element2}`}></div>
+      <div className={`${styles.decorativeElement} ${styles.element3}`}></div>
+      
       <div className={styles.container}>
         <motion.div 
-          className={styles.sectionHeader}
-          variants={containerVariants}
-          initial="hidden"
-          animate={controls}
+          className={styles.header}
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <motion.h2 
-            className={styles.sectionTitle}
-            variants={itemVariants}
-          >
-            Get In Touch
-          </motion.h2>
-          
-          <motion.p 
-            className={styles.sectionDescription}
-            variants={itemVariants}
-          >
-            Let's collaborate on your next project. Feel free to reach out through the form below or connect with me directly.
-          </motion.p>
+          <div className={styles.headerLine}></div>
+          <h2 className={styles.title}>CONTACT</h2>
+          <div className={styles.headerLine}></div>
         </motion.div>
         
         <div className={styles.contactWrapper}>
-          <motion.div 
+          {/* Contact Info Side */}
+          <motion.div
             className={styles.contactInfo}
             variants={containerVariants}
             initial="hidden"
-            animate={controls}
+            animate={isInView ? "visible" : "hidden"}
           >
-            <motion.div 
-              className={styles.infoItem}
+            <motion.h3 
+              className={styles.infoHeader}
               variants={itemVariants}
-              whileHover={{ y: -5, transition: { duration: 0.3 } }}
             >
-              <div className={styles.infoIcon}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                </svg>
-              </div>
-              <div className={styles.infoContent}>
-                <h3>Phone</h3>
-                <p>(240) 390-5571</p>
-              </div>
-            </motion.div>
+              GET IN TOUCH
+            </motion.h3>
             
-            <motion.div 
-              className={styles.infoItem}
-              variants={itemVariants}
-              whileHover={{ y: -5, transition: { duration: 0.3 } }}
-            >
-              <div className={styles.infoIcon}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                  <polyline points="22,6 12,13 2,6"></polyline>
-                </svg>
-              </div>
-              <div className={styles.infoContent}>
-                <h3>Email</h3>
-                <p>azhou112@umd.edu</p>
-              </div>
-            </motion.div>
+            <div className={styles.infoItems}>
+              <motion.div 
+                className={styles.infoItem}
+                variants={itemVariants}
+              >
+                <div className={styles.infoIcon}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                  </svg>
+                </div>
+                <div className={styles.infoContent}>
+                  <div className={styles.infoLabel}>TELEPHONE</div>
+                  <div className={styles.infoValue}>(240) 390-5571</div>
+                </div>
+              </motion.div>
+              
+              <motion.div 
+                className={styles.infoItem}
+                variants={itemVariants}
+              >
+                <div className={styles.infoIcon}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                  </svg>
+                </div>
+                <div className={styles.infoContent}>
+                  <div className={styles.infoLabel}>EMAIL</div>
+                  <div className={styles.infoValue}>azhou112@umd.edu</div>
+                </div>
+              </motion.div>
+              
+              <motion.div 
+                className={styles.infoItem}
+                variants={itemVariants}
+              >
+                <div className={styles.infoIcon}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                </div>
+                <div className={styles.infoContent}>
+                  <div className={styles.infoLabel}>LOCATION</div>
+                  <div className={styles.infoValue}>Columbia, MD</div>
+                </div>
+              </motion.div>
+            </div>
             
-            <motion.div 
-              className={styles.infoItem}
-              variants={itemVariants}
-              whileHover={{ y: -5, transition: { duration: 0.3 } }}
-            >
-              <div className={styles.infoIcon}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                  <circle cx="12" cy="10" r="3"></circle>
-                </svg>
-              </div>
-              <div className={styles.infoContent}>
-                <h3>Location</h3>
-                <p>Columbia, MD</p>
-              </div>
-            </motion.div>
-            
-            <motion.div 
-              className={styles.socialLinks}
-              variants={itemVariants}
-            >
-              <h3>Connect With Me</h3>
-              <div className={styles.socialIcons}>
+            <motion.div variants={itemVariants}>
+              <h3 className={styles.socialHeader}>SOCIAL MEDIA</h3>
+              <div className={styles.socialLinks}>
                 <motion.a 
                   href="https://www.linkedin.com/in/anthony--zhou" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className={styles.socialIcon}
-                  whileHover={{ y: -5, scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+                  className={styles.socialLink}
+                  whileHover={{ scale: 1.1, y: -3 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
                     <rect x="2" y="9" width="4" height="12"></rect>
                     <circle cx="4" cy="4" r="2"></circle>
@@ -239,11 +230,11 @@ const ContactSection = () => {
                   href="https://github.com/developer-az" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className={styles.socialIcon}
-                  whileHover={{ y: -5, scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+                  className={styles.socialLink}
+                  whileHover={{ scale: 1.1, y: -3 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
                   </svg>
                 </motion.a>
@@ -252,11 +243,11 @@ const ContactSection = () => {
                   href="https://www.instagram.com/anthonyyzhou" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className={styles.socialIcon}
-                  whileHover={{ y: -5, scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+                  className={styles.socialLink}
+                  whileHover={{ scale: 1.1, y: -3 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
@@ -266,137 +257,140 @@ const ContactSection = () => {
             </motion.div>
           </motion.div>
           
-          <motion.div 
-            className={styles.contactForm}
+          {/* Contact Form Side */}
+          <motion.div
+            className={styles.formContainer}
             variants={containerVariants}
             initial="hidden"
-            animate={controls}
-            ref={formRef}
+            animate={isInView ? "visible" : "hidden"}
           >
             <motion.div 
-              className={styles.formCard}
+              className={styles.formBox}
               variants={itemVariants}
-              whileHover={{ scale: 1.01, boxShadow: "0 20px 40px rgba(0, 0, 0, 0.2)" }}
-              style={{ transformStyle: "preserve-3d" }}
             >
               {submitted ? (
-                <motion.div 
-                  className={styles.successMessage}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                >
+                <div className={styles.formSuccess}>
                   <div className={styles.successIcon}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
                   </div>
-                  <h3>Message Sent!</h3>
-                  <p>{successMessage}</p>
-                </motion.div>
+                  <h3>MESSAGE SENT</h3>
+                  <p>Thank you for reaching out. I'll get back to you as soon as possible.</p>
+                </div>
               ) : (
                 <form onSubmit={handleSubmit}>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="name">Name</label>
-                    <input 
-                      type="text" 
-                      id="name" 
-                      name="name" 
+                  <div 
+                    className={`${styles.formGroup} ${
+                      activeField === 'name' || formState.name ? styles.active : ''
+                    }`}
+                  >
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      className={styles.formInput}
                       value={formState.name}
                       onChange={handleChange}
-                      required
-                      placeholder="Your Name"
+                      onFocus={() => handleFocus('name')}
+                      onBlur={handleBlur}
+                      placeholder="Name"
                     />
+                    <label htmlFor="name" className={styles.formLabel}>NAME</label>
                   </div>
                   
-                  <div className={styles.formGroup}>
-                    <label htmlFor="email">Email</label>
-                    <input 
-                      type="email" 
-                      id="email" 
-                      name="email" 
+                  <div 
+                    className={`${styles.formGroup} ${
+                      activeField === 'email' || formState.email ? styles.active : ''
+                    }`}
+                  >
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      className={styles.formInput}
                       value={formState.email}
                       onChange={handleChange}
-                      required
-                      placeholder="your.email@example.com"
+                      onFocus={() => handleFocus('email')}
+                      onBlur={handleBlur}
+                      placeholder="Email"
                     />
+                    <label htmlFor="email" className={styles.formLabel}>EMAIL</label>
                   </div>
                   
-                  <div className={styles.formGroup}>
-                    <label htmlFor="subject">Subject</label>
-                    <input 
-                      type="text" 
-                      id="subject" 
-                      name="subject" 
+                  <div 
+                    className={`${styles.formGroup} ${
+                      activeField === 'subject' || formState.subject ? styles.active : ''
+                    }`}
+                  >
+                    <input
+                      type="text"
+                      id="subject"
+                      name="subject"
+                      className={styles.formInput}
                       value={formState.subject}
                       onChange={handleChange}
-                      required
+                      onFocus={() => handleFocus('subject')}
+                      onBlur={handleBlur}
                       placeholder="Subject"
                     />
+                    <label htmlFor="subject" className={styles.formLabel}>SUBJECT</label>
                   </div>
                   
-                  <div className={styles.formGroup}>
-                    <label htmlFor="message">Message</label>
-                    <textarea 
-                      id="message" 
-                      name="message" 
-                      rows="5"
+                  <div 
+                    className={`${styles.formGroup} ${
+                      activeField === 'message' || formState.message ? styles.active : ''
+                    }`}
+                  >
+                    <textarea
+                      id="message"
+                      name="message"
+                      className={styles.formTextarea}
                       value={formState.message}
                       onChange={handleChange}
-                      required
-                      placeholder="Your message here..."
-                    ></textarea>
+                      onFocus={() => handleFocus('message')}
+                      onBlur={handleBlur}
+                      placeholder="Message"
+                    />
+                    <label htmlFor="message" className={styles.formLabel}>MESSAGE</label>
                   </div>
                   
-                  <motion.button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     className={styles.submitButton}
                     disabled={isSubmitting}
-                    whileHover={{ scale: 1.03, y: -3 }}
-                    whileTap={{ scale: 0.97 }}
                   >
                     {isSubmitting ? (
-                      <span className={styles.spinner}></span>
+                      <>
+                        <span className={styles.spinner}></span>
+                        <span className={styles.buttonText}>SENDING</span>
+                      </>
                     ) : (
                       <>
-                        Send Message
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="22" y1="2" x2="11" y2="13"></line>
-                          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                        </svg>
+                        <span className={styles.buttonText}>SEND MESSAGE</span>
+                        <span className={styles.buttonIcon}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                          </svg>
+                        </span>
                       </>
                     )}
-                  </motion.button>
+                  </button>
                   
                   {error && (
-                    <motion.p 
-                      className={styles.errorMessage}
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                    >
+                    <div className={styles.formError}>
                       {error}
-                    </motion.p>
+                    </div>
                   )}
                 </form>
               )}
-              
-              {/* 3D elements */}
-              <div className={styles.cardCorner1}></div>
-              <div className={styles.cardCorner2}></div>
-              <div className={styles.cardCorner3}></div>
-              <div className={styles.cardCorner4}></div>
             </motion.div>
           </motion.div>
         </div>
       </div>
-      
-      {/* Decorative elements */}
-      <div className={styles.decorativeCircle1}></div>
-      <div className={styles.decorativeCircle2}></div>
-      <div className={styles.decorativeGrid}></div>
     </section>
   );
 };
 
-export default React.memo(ContactSection);
+export default ContactSection;

@@ -4,7 +4,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.9);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   z-index: 1000;
@@ -15,58 +15,95 @@
 }
 
 .modalContainer {
-  background: var(--bg-card);
-  border-radius: 12px;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  background: #000;
   width: 90%;
-  max-width: 1000px;
+  max-width: 1100px;
   max-height: 90vh;
   overflow: hidden;
   position: relative;
-  border: 1px solid var(--border-light);
   display: flex;
   flex-direction: column;
+  border: 1px solid rgba(212, 175, 55, 0.1);
   
-  &::before {
-    content: '';
+  /* YSL Corner Decorations */
+  .cornerTL, .cornerTR, .cornerBL, .cornerBR {
     position: absolute;
+    width: 20px;
+    height: 20px;
+    z-index: 10;
+  }
+  
+  .cornerTL {
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.1) 0%,
-      rgba(255, 255, 255, 0.05) 25%,
-      rgba(255, 255, 255, 0) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
-    pointer-events: none;
-    z-index: 1;
+    border-top: 1px solid rgba(212, 175, 55, 0.5);
+    border-left: 1px solid rgba(212, 175, 55, 0.5);
+  }
+  
+  .cornerTR {
+    top: 0;
+    right: 0;
+    border-top: 1px solid rgba(212, 175, 55, 0.5);
+    border-right: 1px solid rgba(212, 175, 55, 0.5);
+  }
+  
+  .cornerBL {
+    bottom: 0;
+    left: 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.5);
+    border-left: 1px solid rgba(212, 175, 55, 0.5);
+  }
+  
+  .cornerBR {
+    bottom: 0;
+    right: 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.5);
+    border-right: 1px solid rgba(212, 175, 55, 0.5);
   }
 }
 
+/* YSL-styled close button */
 .closeButton {
   position: absolute;
   top: 20px;
   right: 20px;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.2);
+  background: transparent;
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-primary);
   cursor: pointer;
   z-index: 10;
-  transition: all 0.3s ease;
   
-  &:hover {
-    background: var(--primary-light);
-    color: var(--primary-color);
-    transform: rotate(90deg);
+  .closeX {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    
+    &::before, &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background-color: rgba(212, 175, 55, 0.7);
+    }
+    
+    &::before {
+      transform: rotate(45deg);
+    }
+    
+    &::after {
+      transform: rotate(-45deg);
+    }
+  }
+  
+  &:hover .closeX::before, 
+  &:hover .closeX::after {
+    background-color: rgba(212, 175, 55, 1);
   }
 }
 
@@ -80,27 +117,27 @@
   @media (max-width: 992px) {
     flex-direction: column;
     overflow-y: auto;
+    max-height: 90vh;
   }
   
   &::-webkit-scrollbar {
-    width: 8px;
+    width: 5px;
   }
   
   &::-webkit-scrollbar-track {
-    background: var(--bg-hover);
-    border-radius: 4px;
+    background: #111;
   }
   
   &::-webkit-scrollbar-thumb {
-    background: var(--border-medium);
-    border-radius: 4px;
+    background: rgba(212, 175, 55, 0.3);
     
     &:hover {
-      background: var(--primary-light);
+      background: rgba(212, 175, 55, 0.5);
     }
   }
 }
 
+/* Image section with YSL styling */
 .projectImageContainer {
   flex: 0 0 50%;
   position: relative;
@@ -112,36 +149,38 @@
   @media (max-width: 576px) {
     flex: 0 0 200px;
   }
-}
-
-.projectImage {
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  position: relative;
   
-  &::after {
-    content: "";
+  .projectImage {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    filter: grayscale(20%) contrast(1.1);
+  }
+  
+  /* YSL overlay with logo */
+  .yslOverlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background: linear-gradient(
-      to right,
-      transparent 0%,
-      transparent 80%,
-      var(--bg-card) 100%
+      to bottom,
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0.4) 50%,
+      rgba(0, 0, 0, 0.7) 100%
     );
     
-    @media (max-width: 992px) {
-      background: linear-gradient(
-        to bottom,
-        transparent 0%,
-        transparent 80%,
-        var(--bg-card) 100%
-      );
+    .yslLogo {
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      font-family: 'Times New Roman', serif;
+      font-size: 24px;
+      color: rgba(212, 175, 55, 0.7);
+      letter-spacing: 1px;
     }
   }
 }
@@ -152,180 +191,223 @@
   left: 20px;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  z-index: 2;
+  gap: 10px;
+  z-index: 3;
   
   .techBadge {
-    background: var(--card-tech-badge-bg);
-    color: var(--card-tech-badge-text);
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 500;
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 4px 12px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
   }
 }
 
+/* Project details in YSL style */
 .projectDetails {
   flex: 0 0 50%;
   padding: 40px;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   
   &::-webkit-scrollbar {
-    width: 6px;
+    width: 3px;
   }
   
   &::-webkit-scrollbar-track {
-    background: var(--bg-hover);
-    border-radius: 3px;
+    background: #111;
   }
   
   &::-webkit-scrollbar-thumb {
-    background: var(--border-medium);
-    border-radius: 3px;
+    background: rgba(212, 175, 55, 0.3);
     
     &:hover {
-      background: var(--primary-light);
+      background: rgba(212, 175, 55, 0.5);
     }
   }
   
   @media (max-width: 576px) {
-    padding: 30px 20px;
-  }
-}
-
-.projectTitle {
-  font-size: 32px;
-  font-weight: 700;
-  margin: 0 0 20px 0;
-  color: var(--text-primary);
-  position: relative;
-  display: inline-block;
-  
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 0;
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(to right, var(--primary-color), rgba(250, 33, 4, 0.5));
+    padding: 20px;
   }
   
-  @media (max-width: 576px) {
-    font-size: 24px;
-  }
-}
-
-.projectDescription {
-  margin-bottom: 30px;
-  
-  p {
-    font-size: 16px;
-    line-height: 1.7;
-    color: var(--text-secondary);
-    margin: 0 0 15px 0;
+  .detailsHeader {
+    margin-bottom: 30px;
     
-    &:last-child {
-      margin-bottom: 0;
+    .headerLine {
+      display: block;
+      width: 40px;
+      height: 1px;
+      background-color: rgba(212, 175, 55, 0.5);
+      margin-bottom: 20px;
     }
-  }
-}
-
-.projectFeatures {
-  margin-bottom: 30px;
-  
-  h3 {
-    font-size: 20px;
-    font-weight: 600;
-    margin: 0 0 15px 0;
-    color: var(--text-primary);
-  }
-  
-  ul {
-    margin: 0;
-    padding: 0 0 0 20px;
     
-    li {
+    .projectTitle {
       font-size: 16px;
+      font-weight: 400;
+      letter-spacing: 4px;
+      color: rgba(212, 175, 55, 0.9);
+      margin: 0;
+      text-transform: uppercase;
+    }
+  }
+  
+  .projectDescription {
+    margin-bottom: 30px;
+    
+    p {
+      font-size: 14px;
       line-height: 1.7;
-      color: var(--text-secondary);
-      margin-bottom: 10px;
-      position: relative;
-      
-      &::marker {
-        color: var(--primary-color);
-      }
-      
-      &:last-child {
-        margin-bottom: 0;
-      }
+      color: rgba(255, 255, 255, 0.7);
+      margin: 0 0 15px 0;
+      font-weight: 300;
+      letter-spacing: 0.5px;
     }
   }
-}
-
-.projectLinks {
-  display: flex;
-  gap: 15px;
   
-  @media (max-width: 576px) {
-    flex-direction: column;
-  }
-  
-  .projectLink {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.3s ease;
+  /* Features in YSL style */
+  .projectFeatures {
+    margin-bottom: 30px;
     
-    &.demoLink {
-      background: var(--primary-color);
-      color: white;
-      box-shadow: 0 5px 15px rgba(250, 33, 4, 0.2);
+    h3 {
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 3px;
+      color: rgba(212, 175, 55, 0.8);
+      margin: 0 0 20px 0;
+    }
+    
+    .featuresList {
+      margin: 0;
+      padding: 0;
+      list-style: none;
       
-      &:hover {
-        background: var(--button-primary-hover);
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(250, 33, 4, 0.3);
+      li {
+        font-size: 14px;
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 10px;
+        position: relative;
+        padding-left: 15px;
+        font-weight: 300;
         
-        svg {
-          transform: translateX(3px);
+        .featureBullet {
+          position: absolute;
+          left: 0;
+          top: 0;
+          color: rgba(212, 175, 55, 0.6);
         }
       }
     }
+  }
+  
+  /* YSL-style links section */
+  .projectLinks {
+    margin-top: auto;
+    padding-top: 30px;
     
-    &.codeLink {
-      background: var(--button-secondary-bg);
-      color: var(--button-secondary-text);
-      border: 1px solid var(--border-light);
+    .linksHeader {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
       
-      &:hover {
-        background: var(--button-secondary-hover);
-        border-color: var(--border-medium);
-        transform: translateY(-3px);
+      .linkHeaderLine {
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(
+          to right,
+          rgba(212, 175, 55, 0),
+          rgba(212, 175, 55, 0.3)
+        );
+        max-width: 60px;
         
-        svg {
-          transform: rotate(5deg);
+        &:last-child {
+          background: linear-gradient(
+            to left,
+            rgba(212, 175, 55, 0),
+            rgba(212, 175, 55, 0.3)
+          );
         }
+      }
+      
+      .linkHeaderText {
+        font-size: 12px;
+        letter-spacing: 3px;
+        color: rgba(212, 175, 55, 0.7);
+        margin: 0 10px;
       }
     }
     
-    svg {
-      transition: transform 0.3s ease;
+    .linksWrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .projectLink {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-decoration: none;
+      padding: 12px 20px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      transition: all 0.3s ease;
+      
+      .linkText {
+        font-size: 12px;
+        letter-spacing: 2px;
+        font-weight: 300;
+      }
+      
+      svg {
+        transition: transform 0.3s ease;
+      }
+      
+      &.demoLink {
+        color: rgba(212, 175, 55, 0.8);
+        
+        &:hover {
+          background-color: rgba(212, 175, 55, 0.05);
+          border-color: rgba(212, 175, 55, 0.5);
+          
+          svg {
+            transform: translateX(5px);
+          }
+        }
+      }
+      
+      &.codeLink {
+        color: rgba(255, 255, 255, 0.7);
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.3);
+          
+          svg {
+            transform: rotate(5deg);
+          }
+        }
+      }
+    }
+  }
+  
+  /* YSL Footer Signature */
+  .yslFooter {
+    margin-top: 40px;
+    text-align: center;
+    
+    .footerLine {
+      width: 60px;
+      height: 1px;
+      background-color: rgba(212, 175, 55, 0.3);
+      margin: 0 auto 15px;
+    }
+    
+    .yslSignature {
+      font-family: 'Times New Roman', serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: rgba(212, 175, 55, 0.6);
     }
   }
 }

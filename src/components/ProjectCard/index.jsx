@@ -19,22 +19,22 @@ const ProjectCard = ({
   const [imageError, setImageError] = useState(false);
   const cardRef = useRef(null);
   
-  // Motion values for 3D card effect
+  // Motion values for subtle hover effect
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   
   // Spring physics for smoother animation
-  const springConfig = { damping: 20, stiffness: 300 };
+  const springConfig = { damping: 25, stiffness: 200 };
   const xSpring = useSpring(x, springConfig);
   const ySpring = useSpring(y, springConfig);
   
-  // Transform mouse position into rotation values
-  const rotateX = useTransform(ySpring, [-0.5, 0.5], ["-8deg", "8deg"]);
-  const rotateY = useTransform(xSpring, [-0.5, 0.5], ["8deg", "-8deg"]);
+  // Transform mouse position into rotation values - more subtle for YSL aesthetic
+  const rotateX = useTransform(ySpring, [-0.5, 0.5], ["-3deg", "3deg"]);
+  const rotateY = useTransform(xSpring, [-0.5, 0.5], ["3deg", "-3deg"]);
   
-  // Shine effect position
-  const shineX = useTransform(xSpring, [-0.5, 0.5], ["-50%", "150%"]); 
-  const shineY = useTransform(ySpring, [-0.5, 0.5], ["-50%", "150%"]);
+  // Subtle parallax for inner elements
+  const imageY = useTransform(ySpring, [-0.5, 0.5], ["3%", "-3%"]);
+  const contentY = useTransform(ySpring, [-0.5, 0.5], ["2%", "-2%"]);
   
   // Handle mouse movements for 3D effect
   const handleMouseMove = (e) => {
@@ -94,12 +94,23 @@ const ProjectCard = ({
         transformStyle: "preserve-3d",
         cursor: (onClick || demoLink || repoLink) ? 'pointer' : 'default'
       }}
-      whileHover={{ scale: 1.02 }}
-      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      whileHover={{ boxShadow: "0 15px 35px rgba(0, 0, 0, 0.5)" }}
     >
-      <div className={styles.content} style={{ transform: "translateZ(0px)" }}>
-        {/* Project Image */}
-        <div className={styles.imageContainer}>
+      {/* YSL-inspired corner embellishments */}
+      <div className={styles.cornerTL}></div>
+      <div className={styles.cornerTR}></div>
+      <div className={styles.cornerBL}></div>
+      <div className={styles.cornerBR}></div>
+      
+      <div className={styles.content}>
+        {/* Project Image Section */}
+        <motion.div 
+          className={styles.imageContainer}
+          style={{ y: isHovered ? imageY : 0 }}
+        >
           {imageSrc && !imageError ? (
             <div 
               className={styles.projectImage}
@@ -127,149 +138,92 @@ const ProjectCard = ({
             </div>
           )}
           
-          {/* Project image overlay */}
+          {/* YSL-inspired overlay */}
           <motion.div 
-            className={styles.projectImageOverlay}
+            className={styles.projectOverlay}
             initial={{ opacity: 0 }}
             animate={{ opacity: isHovered ? 1 : 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className={styles.overlayContent}>
-              <motion.h4 
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: isHovered ? 0 : 20, opacity: isHovered ? 1 : 0 }}
-                transition={{ duration: 0.4, delay: 0.1 }}
-              >
-                {title}
-              </motion.h4>
-              <motion.p
-                initial={{ y: 30, opacity: 0 }}
-                animate={{ y: isHovered ? 0 : 30, opacity: isHovered ? 1 : 0 }}
-                transition={{ duration: 0.4, delay: 0.2 }}
-              >
-                View Details
-              </motion.p>
-            </div>
-          </motion.div>
-          
-          {/* Technology tags */}
-          <motion.div 
-            className={styles.technologies}
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: isHovered ? 0 : 30, opacity: isHovered ? 1 : 0 }}
             transition={{ duration: 0.4 }}
           >
-            {technologies.slice(0, 3).map((tech, index) => (
-              <motion.span 
-                key={index} 
-                className={styles.techTag}
-                initial={{ opacity: 0, y: 10 }}
+            <div className={styles.overlayContent}>
+              <motion.div
+                className={styles.viewDetails}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ 
                   opacity: isHovered ? 1 : 0,
-                  y: isHovered ? 0 : 10 
+                  y: isHovered ? 0 : 20
                 }}
-                transition={{ 
-                  duration: 0.3,
-                  delay: 0.1 + (index * 0.05) 
-                }}
+                transition={{ duration: 0.4, delay: 0.1 }}
               >
-                {tech}
-              </motion.span>
-            ))}
-            {technologies.length > 3 && (
-              <motion.span 
-                className={`${styles.techTag} ${styles.moreBadge}`}
-                initial={{ opacity: 0, y: 10 }}
+                <span className={styles.viewText}>VIEW DETAILS</span>
+                <div className={styles.viewLine}></div>
+              </motion.div>
+              
+              {/* Technology tags in YSL style */}
+              <motion.div 
+                className={styles.technologies}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ 
                   opacity: isHovered ? 1 : 0,
-                  y: isHovered ? 0 : 10 
+                  y: isHovered ? 0 : 20
                 }}
-                transition={{ 
-                  duration: 0.3,
-                  delay: 0.3
-                }}
+                transition={{ duration: 0.4, delay: 0.2 }}
               >
-                +{technologies.length - 3}
-              </motion.span>
-            )}
+                {technologies.slice(0, 3).map((tech, index) => (
+                  <span key={index} className={styles.techTag}>
+                    {tech}
+                  </span>
+                ))}
+                {technologies.length > 3 && (
+                  <span className={styles.moreBadge}>
+                    +{technologies.length - 3}
+                  </span>
+                )}
+              </motion.div>
+            </div>
           </motion.div>
-
-          {/* GitHub Icon for Repo Link */}
-          {repoLink && (
-            <motion.div 
-              className={styles.repoIcon} 
-              onClick={(e) => {
-                e.stopPropagation();
-                window.open(repoLink, '_blank', 'noopener,noreferrer');
-              }}
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              whileTap={{ scale: 0.9 }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isHovered ? 1 : 0.7 }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-              </svg>
-            </motion.div>
-          )}
-        </div>
+        </motion.div>
         
-        {/* Project Info */}
-        <div className={styles.projectInfo}>
+        {/* Project Info in YSL-inspired style */}
+        <motion.div 
+          className={styles.projectInfo}
+          style={{ y: isHovered ? contentY : 0 }}
+        >
           <h3 className={styles.title}>{title}</h3>
           <p className={styles.description}>{description}</p>
           
-          {/* Links */}
+          {/* Minimal YSL-inspired links */}
           <div className={styles.links}>
             {demoLink && (
               <Link 
                 href={demoLink} 
-                className={styles.link} 
+                className={styles.yslLink} 
                 onClick={(e) => e.stopPropagation()}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                  <polyline points="15 3 21 3 21 9"></polyline>
-                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                <span>EXPLORE</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
                 </svg>
-                Demo
               </Link>
             )}
             
             {repoLink && (
               <a 
                 href={repoLink}
-                className={`${styles.link} ${styles.githubLink}`}
+                className={styles.codeLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-                </svg>
-                Code
+                <span>GITHUB</span>
               </a>
             )}
           </div>
-        </div>
+        </motion.div>
         
-        {/* 3D shine effect */}
-        <motion.div 
-          className={`${styles.shine} ${isHovered ? styles.visible : ''}`} 
-          style={{ 
-            background: `radial-gradient(circle at ${shineX} ${shineY}, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0) 60%)` 
-          }}
-        />
-        
-        {/* Shadow effect */}
-        <motion.div 
-          className={styles.shadow}
-          style={{
-            transform: isHovered 
-              ? `translateX(${-x.get() * 20}px) translateY(${-y.get() * 20}px) scale(0.95)` 
-              : "translateX(0) translateY(0) scale(1)"
-          }}
-        />
+        {/* YSL-inspired luxurious gold accent */}
+        <div className={`${styles.yslAccent} ${isHovered ? styles.active : ''}`}></div>
       </div>
     </motion.div>
   );

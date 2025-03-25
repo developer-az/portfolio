@@ -32,7 +32,7 @@ const ProjectDetailModal = ({ project, onClose }) => {
       document.body.style.overflow = 'auto';
     };
   }, []);
-  
+
   return (
     <motion.div 
       className={styles.modalBackdrop}
@@ -44,29 +44,39 @@ const ProjectDetailModal = ({ project, onClose }) => {
       <motion.div
         ref={modalRef}
         className={styles.modalContainer}
-        initial={{ scale: 0.9, y: 50, opacity: 0 }}
-        animate={{ scale: 1, y: 0, opacity: 1 }}
-        exit={{ scale: 0.9, y: 50, opacity: 0 }}
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 50 }}
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
       >
+        {/* YSL Corner Decorations */}
+        <div className={styles.cornerTL}></div>
+        <div className={styles.cornerTR}></div>
+        <div className={styles.cornerBL}></div>
+        <div className={styles.cornerBR}></div>
+        
+        {/* YSL Close Button */}
         <button 
           className={styles.closeButton} 
           onClick={onClose}
           aria-label="Close modal"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
+          <span className={styles.closeX}></span>
         </button>
         
         <div className={styles.modalContent}>
+          {/* Image Section with YSL Styling */}
           <div className={styles.projectImageContainer}>
             <div 
               className={styles.projectImage}
               style={{ backgroundImage: `url(${project.gif || project.image})` }}
             />
             
+            <div className={styles.yslOverlay}>
+              <div className={styles.yslLogo}>YSL</div>
+            </div>
+            
+            {/* Tech Badges in YSL Style */}
             <div className={styles.projectTechBadges}>
               {project.technologies.map((tech, index) => (
                 <span key={index} className={styles.techBadge}>
@@ -76,54 +86,76 @@ const ProjectDetailModal = ({ project, onClose }) => {
             </div>
           </div>
           
+          {/* Project Details in YSL Style */}
           <div className={styles.projectDetails}>
-            <h2 className={styles.projectTitle}>{project.title}</h2>
+            <div className={styles.detailsHeader}>
+              <span className={styles.headerLine}></span>
+              <h2 className={styles.projectTitle}>{project.title}</h2>
+            </div>
             
             <div className={styles.projectDescription}>
               <p>{project.longDescription || project.description}</p>
             </div>
             
+            {/* Features Section */}
             {project.features && project.features.length > 0 && (
               <div className={styles.projectFeatures}>
-                <h3>Key Features</h3>
-                <ul>
+                <h3>CARACTÉRISTIQUES</h3>
+                <ul className={styles.featuresList}>
                   {project.features.map((feature, index) => (
-                    <li key={index}>{feature}</li>
+                    <li key={index}>
+                      <span className={styles.featureBullet}>•</span>
+                      {feature}
+                    </li>
                   ))}
                 </ul>
               </div>
             )}
             
+            {/* YSL-styled Links */}
             <div className={styles.projectLinks}>
-              {project.demoLink && (
-                <Link
-                  href={project.demoLink}
-                  className={`${styles.projectLink} ${styles.demoLink}`}
-                  target={project.demoLink.startsWith('/') ? '_self' : '_blank'}
-                  rel={project.demoLink.startsWith('/') ? '' : 'noopener noreferrer'}
-                >
-                  <span>View Live Demo</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                    <polyline points="15 3 21 3 21 9"></polyline>
-                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                  </svg>
-                </Link>
-              )}
+              <div className={styles.linksHeader}>
+                <span className={styles.linkHeaderLine}></span>
+                <span className={styles.linkHeaderText}>DISCOVER</span>
+                <span className={styles.linkHeaderLine}></span>
+              </div>
               
-              {project.repoLink && (
-                <a
-                  href={project.repoLink}
-                  className={`${styles.projectLink} ${styles.codeLink}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <span>View Source Code</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-                  </svg>
-                </a>
-              )}
+              <div className={styles.linksWrapper}>
+                {project.demoLink && (
+                  <Link
+                    href={project.demoLink}
+                    className={`${styles.projectLink} ${styles.demoLink}`}
+                    target={project.demoLink.startsWith('/') ? '_self' : '_blank'}
+                    rel={project.demoLink.startsWith('/') ? '' : 'noopener noreferrer'}
+                  >
+                    <span className={styles.linkText}>VIEW LIVE EXPERIENCE</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                      <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                  </Link>
+                )}
+                
+                {project.repoLink && (
+                  <a
+                    href={project.repoLink}
+                    className={`${styles.projectLink} ${styles.codeLink}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className={styles.linkText}>SOURCE CODE</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                    </svg>
+                  </a>
+                )}
+              </div>
+            </div>
+            
+            {/* YSL Footer Signature */}
+            <div className={styles.yslFooter}>
+              <div className={styles.footerLine}></div>
+              <div className={styles.yslSignature}>ANTHONY ZHOU</div>
             </div>
           </div>
         </div>
