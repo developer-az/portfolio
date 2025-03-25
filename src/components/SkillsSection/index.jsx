@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import styles from './SkillsSection.module.scss';
 
-// Skill data with hours and ranks
+// Skill data with realistic hours and ranks
 const skillsData = {
   languages: [
     { name: "Python", hours: 450, rank: "#1" },
@@ -10,7 +10,6 @@ const skillsData = {
     { name: "Java", hours: 380, rank: "#3" },
     { name: "HTML/CSS", hours: 350, rank: "#4" },
     { name: "C", hours: 200, rank: "#5" }
-    // Can easily add more items here and they will scale properly
   ],
   frameworks: [
     { name: "React", hours: 380, rank: "#1" },
@@ -18,7 +17,6 @@ const skillsData = {
     { name: "Node.js", hours: 260, rank: "#3" },
     { name: "Express", hours: 160, rank: "#4" },
     { name: "Data Science", hours: 130, rank: "#5" }
-    // Can easily add more items here and they will scale properly
   ],
   tools: [
     { name: "Git", hours: 300, rank: "#1" },
@@ -26,7 +24,6 @@ const skillsData = {
     { name: "UI/UX Design", hours: 230, rank: "#3" },
     { name: "OOP", hours: 210, rank: "#4" },
     { name: "GitHub", hours: 180, rank: "#5" }
-    // Can easily add more items here and they will scale properly
   ]
 };
 
@@ -36,7 +33,7 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: { 
-      staggerChildren: 0.05,
+      staggerChildren: 0.08,
       duration: 0.5
     }
   }
@@ -45,13 +42,13 @@ const containerVariants = {
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
-    opacity: 1,
+    opacity: 1, 
     y: 0,
     transition: { duration: 0.5 }
   }
 };
 
-// Skill bar component
+// Skill bar component with animation
 const SkillBar = ({ skill, index, maxHours, colorClass }) => {
   const percentage = Math.min(100, (skill.hours / maxHours) * 100);
   
@@ -72,8 +69,9 @@ const SkillBar = ({ skill, index, maxHours, colorClass }) => {
           <motion.div 
             className={`${styles.barFill} ${styles[colorClass]}`}
             initial={{ width: 0 }}
-            animate={{ width: `${percentage}%` }}
-            transition={{ duration: 0.8, delay: 0.1 + (index * 0.05) }}
+            whileInView={{ width: `${percentage}%` }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 + (index * 0.05) }}
           />
         </div>
         <span className={styles.skillHours}>{skill.hours} hrs</span>
@@ -84,7 +82,7 @@ const SkillBar = ({ skill, index, maxHours, colorClass }) => {
 
 // Skills category component
 const SkillsCategory = ({ title, skills, colorClass }) => {
-  // Find the maximum hours to scale the bars appropriately
+  // Find the maximum hours for scaling
   const maxHours = Math.max(...skills.map(skill => skill.hours));
   
   return (
@@ -116,6 +114,7 @@ const SkillsCategory = ({ title, skills, colorClass }) => {
 
 const SkillsSection = () => {
   const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: false, amount: 0.1 });
   
   // Calculate total hours across all skills
   const totalHours = Object.values(skillsData).flat().reduce((sum, skill) => sum + skill.hours, 0);
@@ -124,33 +123,62 @@ const SkillsSection = () => {
     <section ref={sectionRef} className={styles.skillsSection} id="skills">
       <div className={styles.container}>
         <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>
+          <motion.h2 
+            className={styles.sectionTitle}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
             <span className={styles.spotifyLogo}>
               <span className={styles.spotifyCircle}></span>
               <span className={styles.spotifyCircle}></span>
               <span className={styles.spotifyCircle}></span>
             </span>
             Anthony's Yearly Coding Wrapped
-          </h2>
-          <p className={styles.sectionSubtitle}>Skills & expertise at a glance</p>
+          </motion.h2>
+          <motion.p 
+            className={styles.sectionSubtitle}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            Skills & expertise at a glance
+          </motion.p>
         </div>
         
-        <div className={styles.statsRow}>
-          <div className={styles.statCard}>
+        <motion.div 
+          className={styles.statsRow}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <motion.div 
+            className={styles.statCard}
+            whileHover={{ y: -5, scale: 1.02 }}
+          >
             <h3 className={styles.statValue}>{totalHours.toLocaleString()}+</h3>
             <p className={styles.statLabel}>Total Hours Coded</p>
-          </div>
+          </motion.div>
           
-          <div className={styles.statCard}>
+          <motion.div 
+            className={styles.statCard}
+            whileHover={{ y: -5, scale: 1.02 }}
+          >
             <h3 className={styles.statValue}>6</h3>
             <p className={styles.statLabel}>Projects Completed</p>
-          </div>
+          </motion.div>
           
-          <div className={styles.statCard}>
+          <motion.div 
+            className={styles.statCard}
+            whileHover={{ y: -5, scale: 1.02 }}
+          >
             <h3 className={styles.statValue}>2</h3>
             <p className={styles.statLabel}>New Certifications</p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
         
         <div className={styles.skillsGrid}>
           <SkillsCategory 
@@ -181,4 +209,4 @@ const SkillsSection = () => {
   );
 };
 
-export default SkillsSection;
+export default React.memo(SkillsSection);

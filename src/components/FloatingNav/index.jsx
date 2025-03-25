@@ -1,20 +1,21 @@
-// src/components/FloatingNav/index.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './FloatingNav.module.scss';
 import Magnetic from '../../common/Magnetic';
 
+// Navigation items configuration
 const navItems = [
   { title: "About", href: "#about", icon: "user" },
   { title: "Skills", href: "#skills", icon: "code" },
   { title: "Resume", href: "#resume", icon: "file" },
   { title: "Projects", href: "#work", icon: "briefcase" },
-  { title: "Contact", href: "#contact", icon: "mail" },
+  { title: "Contact", href: "#contact", icon: "contact" },
   { title: "IG Analyzer", href: "/instagram-analyzer", icon: "instagram" }
 ];
 
-const NavIcon = ({ icon }) => {
+// Icons component with memoization for better performance
+const NavIcon = React.memo(({ icon }) => {
   switch(icon) {
     case 'user':
       return (
@@ -47,7 +48,7 @@ const NavIcon = ({ icon }) => {
           <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
         </svg>
       );
-    case 'mail':
+    case 'contact':
       return (
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
@@ -65,38 +66,72 @@ const NavIcon = ({ icon }) => {
     default:
       return null;
   }
-};
+});
 
+// Main navigation component
 const FloatingNav = ({ activeSection }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   
-  // Fix for the "about" section always being active
+  // Detect mobile devices on mount
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 100);
-      
-      // Set activeSection to about when at top of page
-      if (window.scrollY < 100) {
-        // Don't update if we're already on the right section
-        if (window.location.pathname === '/') {
-          document.querySelector('[data-section="about"]')?.classList.add(styles.active);
-        }
+    setIsMobile(window.innerWidth < 768);
+    
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth >= 768) {
+        setMobileMenuOpen(false);
       }
     };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
+  // Handle scroll effects
+  useEffect(() => {
+    // Throttled scroll handler for better performance
+    let lastScrollTime = 0;
+    const scrollThreshold = 100;
+    
+    const handleScroll = () => {
+      const now = Date.now();
+      if (now - lastScrollTime < 100) return; // Throttle to 10 updates per second
+      lastScrollTime = now;
+      
+      setScrolled(window.scrollY > scrollThreshold);
+    };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Animation variants for menu items
+  const menuItemVariants = useMemo(() => ({
+    hidden: { 
+      opacity: 0, 
+      y: 20 
+    },
+    visible: (i) => ({ 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        delay: 0.05 * i,
+        duration: 0.4,
+        ease: "easeOut"
+      }
+    })
+  }), []);
+
   return (
     <>
-      {/* Desktop Navigation */}
+      {/* Desktop Navigation Bar */}
       <motion.nav 
         className={`${styles.floatingNav} ${scrolled ? styles.scrolled : ''}`}
-        initial={{ y: -100, opacity: 0 }}
+        initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 120, damping: 20, delay: 0.2 }}
+        transition={{ type: 'spring', stiffness: 120, damping: 20, delay: 0.3 }}
       >
         <div className={styles.navContainer}>
           <Link href="/" className={styles.logo}>
@@ -106,57 +141,64 @@ const FloatingNav = ({ activeSection }) => {
           
           <div className={styles.navLinks}>
             {navItems.map((item, index) => (
-              <Magnetic key={index}>
-                <a 
+              <Magnetic key={item.href}>
+                <Link 
                   href={item.href}
                   className={`${styles.navLink} ${activeSection === item.href.replace('#', '') ? styles.active : ''}`}
                   data-section={item.href.replace('#', '')}
                 >
-                  <div className={styles.linkIcon}>
+                  <span className={styles.linkIcon}>
                     <NavIcon icon={item.icon} />
-                  </div>
+                  </span>
                   <span className={styles.linkText}>{item.title}</span>
-                </a>
+                </Link>
               </Magnetic>
             ))}
           </div>
         </div>
       </motion.nav>
 
-      {/* Mobile Menu Button */}
-      <motion.button
-        className={`${styles.mobileNavToggle} ${mobileMenuOpen ? styles.active : ''}`}
-        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.3 }}
-        aria-label="Toggle navigation menu"
-      >
-        <span className={styles.bar}></span>
-        <span className={styles.bar}></span>
-        <span className={styles.bar}></span>
-      </motion.button>
+      {/* Mobile Menu Toggle Button */}
+      {isMobile && (
+        <motion.button
+          className={`${styles.mobileNavToggle} ${mobileMenuOpen ? styles.active : ''}`}
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.3 }}
+          aria-label="Toggle navigation menu"
+        >
+          <span className={styles.bar}></span>
+          <span className={styles.bar}></span>
+          <span className={styles.bar}></span>
+        </motion.button>
+      )}
 
       {/* Mobile Navigation Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div 
             className={styles.mobileNavMenu}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ 
+              type: 'spring', 
+              stiffness: 300, 
+              damping: 25 
+            }}
           >
             <div className={styles.mobileNavContainer}>
               {navItems.map((item, index) => (
                 <motion.a
-                  key={index}
+                  key={item.href}
                   href={item.href}
                   className={`${styles.mobileNavLink} ${activeSection === item.href.replace('#', '') ? styles.active : ''}`}
                   onClick={() => setMobileMenuOpen(false)}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 * index }}
+                  custom={index}
+                  variants={menuItemVariants}
+                  initial="hidden"
+                  animate="visible"
                 >
                   <div className={styles.mobileNavIcon}>
                     <NavIcon icon={item.icon} />
@@ -172,4 +214,4 @@ const FloatingNav = ({ activeSection }) => {
   );
 };
 
-export default FloatingNav;
+export default React.memo(FloatingNav);

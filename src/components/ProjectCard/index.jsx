@@ -14,24 +14,29 @@ const ProjectCard = ({
   iconLabel = "",
   onClick = null
 }) => {
+  // State for hover effects and error handling
   const [isHovered, setIsHovered] = useState(false);
   const [imageError, setImageError] = useState(false);
   const cardRef = useRef(null);
   
-  // Mouse position values
+  // Motion values for 3D card effect
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   
-  // Smooth spring physics for more natural movement
+  // Spring physics for smoother animation
   const springConfig = { damping: 20, stiffness: 300 };
   const xSpring = useSpring(x, springConfig);
   const ySpring = useSpring(y, springConfig);
   
   // Transform mouse position into rotation values
-  const rotateX = useTransform(ySpring, [-0.5, 0.5], ["-10deg", "10deg"]);
-  const rotateY = useTransform(xSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
+  const rotateX = useTransform(ySpring, [-0.5, 0.5], ["-8deg", "8deg"]);
+  const rotateY = useTransform(xSpring, [-0.5, 0.5], ["8deg", "-8deg"]);
   
-  // Handle mouse move on the card
+  // Shine effect position
+  const shineX = useTransform(xSpring, [-0.5, 0.5], ["-50%", "150%"]); 
+  const shineY = useTransform(ySpring, [-0.5, 0.5], ["-50%", "150%"]);
+  
+  // Handle mouse movements for 3D effect
   const handleMouseMove = (e) => {
     if (!cardRef.current) return;
     
@@ -39,7 +44,7 @@ const ProjectCard = ({
     const width = rect.width;
     const height = rect.height;
     
-    // Calculate position of mouse relative to card center (values between -0.5 and 0.5)
+    // Calculate position of mouse relative to card center
     const xValue = (e.clientX - rect.left) / width - 0.5;
     const yValue = (e.clientY - rect.top) / height - 0.5;
     
@@ -47,27 +52,29 @@ const ProjectCard = ({
     y.set(yValue);
   };
   
-  // Reset card position on mouse leave
+  // Reset card position when mouse leaves
   const handleMouseLeave = () => {
     setIsHovered(false);
     x.set(0);
     y.set(0);
   };
 
-  // Handle image loading error
+  // Handle image loading errors
   const handleImageError = () => {
     setImageError(true);
   };
 
   // Handle card click
   const handleCardClick = (e) => {
-    // Don't navigate if user clicked on the demo or repo button
+    // Don't navigate if user clicked on a link
     if (e.target.closest('a')) {
       return;
     }
     
     if (onClick) {
       onClick();
+    } else if (demoLink) {
+      window.open(demoLink, '_blank', 'noopener,noreferrer');
     } else if (repoLink) {
       window.open(repoLink, '_blank', 'noopener,noreferrer');
     }
@@ -85,7 +92,7 @@ const ProjectCard = ({
         rotateX: isHovered ? rotateX : 0,
         rotateY: isHovered ? rotateY : 0,
         transformStyle: "preserve-3d",
-        cursor: (onClick || repoLink) ? 'pointer' : 'default'
+        cursor: (onClick || demoLink || repoLink) ? 'pointer' : 'default'
       }}
       whileHover={{ scale: 1.02 }}
       transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -120,7 +127,7 @@ const ProjectCard = ({
             </div>
           )}
           
-          {/* Show overlay with "View Details" on hover */}
+          {/* Project image overlay */}
           <motion.div 
             className={styles.projectImageOverlay}
             initial={{ opacity: 0 }}
@@ -128,32 +135,82 @@ const ProjectCard = ({
             transition={{ duration: 0.3 }}
           >
             <div className={styles.overlayContent}>
-              <h4>{title}</h4>
-              <p>View Details</p>
+              <motion.h4 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: isHovered ? 0 : 20, opacity: isHovered ? 1 : 0 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+              >
+                {title}
+              </motion.h4>
+              <motion.p
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: isHovered ? 0 : 30, opacity: isHovered ? 1 : 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+              >
+                View Details
+              </motion.p>
             </div>
           </motion.div>
           
-          {/* Floating technology tags */}
-          {technologies.length > 0 && (
-            <div className={styles.technologies}>
-              {technologies.map((tech, index) => (
-                <span key={index} className={styles.techTag}>
-                  {tech}
-                </span>
-              ))}
-            </div>
-          )}
+          {/* Technology tags */}
+          <motion.div 
+            className={styles.technologies}
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: isHovered ? 0 : 30, opacity: isHovered ? 1 : 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            {technologies.slice(0, 3).map((tech, index) => (
+              <motion.span 
+                key={index} 
+                className={styles.techTag}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ 
+                  opacity: isHovered ? 1 : 0,
+                  y: isHovered ? 0 : 10 
+                }}
+                transition={{ 
+                  duration: 0.3,
+                  delay: 0.1 + (index * 0.05) 
+                }}
+              >
+                {tech}
+              </motion.span>
+            ))}
+            {technologies.length > 3 && (
+              <motion.span 
+                className={`${styles.techTag} ${styles.moreBadge}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ 
+                  opacity: isHovered ? 1 : 0,
+                  y: isHovered ? 0 : 10 
+                }}
+                transition={{ 
+                  duration: 0.3,
+                  delay: 0.3
+                }}
+              >
+                +{technologies.length - 3}
+              </motion.span>
+            )}
+          </motion.div>
 
           {/* GitHub Icon for Repo Link */}
           {repoLink && (
-            <div className={styles.repoIcon} onClick={(e) => {
-              e.stopPropagation();
-              window.open(repoLink, '_blank', 'noopener,noreferrer');
-            }}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <motion.div 
+              className={styles.repoIcon} 
+              onClick={(e) => {
+                e.stopPropagation();
+                window.open(repoLink, '_blank', 'noopener,noreferrer');
+              }}
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileTap={{ scale: 0.9 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isHovered ? 1 : 0.7 }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
               </svg>
-            </div>
+            </motion.div>
           )}
         </div>
         
@@ -168,9 +225,9 @@ const ProjectCard = ({
               <Link 
                 href={demoLink} 
                 className={styles.link} 
-                onClick={(e) => e.stopPropagation()} // Prevent card click when clicking demo link
+                onClick={(e) => e.stopPropagation()}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                   <polyline points="15 3 21 3 21 9"></polyline>
                   <line x1="10" y1="14" x2="21" y2="3"></line>
@@ -187,7 +244,7 @@ const ProjectCard = ({
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
                 </svg>
                 Code
@@ -196,17 +253,16 @@ const ProjectCard = ({
           </div>
         </div>
         
-        {/* 3D elements */}
-        <div 
+        {/* 3D shine effect */}
+        <motion.div 
           className={`${styles.shine} ${isHovered ? styles.visible : ''}`} 
           style={{ 
-            transform: isHovered 
-              ? `translateX(${x.get() * 100}px) translateY(${y.get() * 100}px)` 
-              : "translateX(0) translateY(0)" 
+            background: `radial-gradient(circle at ${shineX} ${shineY}, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0) 60%)` 
           }}
         />
         
-        <div 
+        {/* Shadow effect */}
+        <motion.div 
           className={styles.shadow}
           style={{
             transform: isHovered 
@@ -219,4 +275,4 @@ const ProjectCard = ({
   );
 };
 
-export default ProjectCard;
+export default React.memo(ProjectCard);

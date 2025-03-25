@@ -28,7 +28,7 @@ const navItems = [
 
 export default function index() {
 
- 
+  const [selectedIndicator, setSelectedIndicator] = useState("/");
 
   return (
     <motion.div 

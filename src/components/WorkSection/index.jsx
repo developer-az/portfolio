@@ -1,26 +1,25 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
-import Image from 'next/image';
-import Link from 'next/link';
-import styles from './WorkSection.module.scss';
+import ProjectCard from '../ProjectCard';
 import ProjectDetailModal from './ProjectDetailModal';
+import styles from './WorkSection.module.scss';
 
-// Real project data with complete details
+// Project data with complete details
 const projects = [
   {
     id: 1,
     title: "Instagram Analyzer",
-    description: "A privacy-focused tool that helps users identify who isn't following them back on Instagram without uploading any data to external servers.",
+    description: "A privacy-focused tool that helps users identify who isn't following them back on Instagram without uploading any data to servers.",
     longDescription: "This client-side application was built with privacy as the top priority. It processes Instagram data entirely in the browser to identify users who don't follow you back. The tool never uploads user data to any server, ensuring complete data privacy and security while providing valuable social media analytics.",
     technologies: ["Next.js", "React", "JavaScript", "Client-side Processing"],
     image: "/images/projects/instagram-analyzer.jpg",
     gif: "/images/projects/1.gif",
     demoLink: "/instagram-analyzer",
-    repoLink: "https://github.com/developer-az/pyFollowerVsFollowing",
+    repoLink: "https://github.com/developer-az/instagram-analyzer",
     category: "web",
     features: [
       "Complete client-side processing for ultimate privacy",
-      "Clean, intuitive UI with dark/light mode support",
+      "Clean, intuitive UI with dark mode support",
       "Detailed analytics with user counts and statistics",
       "Interactive user list with profile links"
     ]
@@ -120,14 +119,6 @@ const cardVariants = {
       duration: 0.3,
       ease: "easeOut"
     }
-  },
-  hover: {
-    y: -10,
-    transition: {
-      type: "spring",
-      stiffness: 400,
-      damping: 20
-    }
   }
 };
 
@@ -147,14 +138,15 @@ const WorkSection = () => {
     );
   }, [activeFilter]);
 
-  // Open project detail modal
+  // Project detail functions
   const openProjectModal = (project) => {
     setSelectedProject(project);
+    document.body.classList.add('modal-open');
   };
 
-  // Close project detail modal
   const closeProjectModal = () => {
     setSelectedProject(null);
+    document.body.classList.remove('modal-open');
   };
 
   return (
@@ -214,95 +206,21 @@ const WorkSection = () => {
               {filteredProjects.map((project) => (
                 <motion.div
                   key={project.id}
-                  className={styles.projectCard}
-                  variants={cardVariants}
                   layout
+                  variants={cardVariants}
                   exit="exit"
-                  whileHover="hover"
                   initial="hidden"
                   animate="visible"
-                  onClick={() => openProjectModal(project)}
                 >
-                  <div className={styles.projectImageContainer}>
-                    {project.image ? (
-                      <>
-                        <div
-                          className={styles.projectImage}
-                          style={{
-                            backgroundImage: `url(${project.gif || project.image})`,
-                          }}
-                        />
-                        <motion.div 
-                          className={styles.projectImageOverlay}
-                          initial={{ opacity: 0 }}
-                          whileHover={{ opacity: 1 }}
-                        >
-                          <div className={styles.overlayContent}>
-                            <h4>{project.title}</h4>
-                            <p>View Details</p>
-                          </div>
-                        </motion.div>
-                      </>
-                    ) : (
-                      <div className={styles.projectImagePlaceholder}>
-                        {project.id.toString().padStart(2, "0")}
-                      </div>
-                    )}
-                    <div className={styles.projectOverlay}>
-                      <div className={styles.projectTech}>
-                        {project.technologies.slice(0, 3).map((tech, index) => (
-                          <span key={index} className={styles.techBadge}>
-                            {tech}
-                          </span>
-                        ))}
-                        {project.technologies.length > 3 && (
-                          <span className={`${styles.techBadge} ${styles.moreBadge}`}>
-                            +{project.technologies.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={styles.projectContent}>
-                    <h3 className={styles.projectTitle}>{project.title}</h3>
-                    <p className={styles.projectDescription}>{project.description}</p>
-
-                    <div className={styles.projectLinks}>
-                      {project.demoLink && (
-                        <Link
-                          href={project.demoLink}
-                          className={styles.projectLink}
-                          onClick={(e) => e.stopPropagation()} // Prevent card click event
-                        >
-                          <span>Demo</span>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                            <polyline points="15 3 21 3 21 9"></polyline>
-                            <line x1="10" y1="14" x2="21" y2="3"></line>
-                          </svg>
-                        </Link>
-                      )}
-
-                      {project.repoLink && (
-                        <a
-                          href={project.repoLink}
-                          className={`${styles.projectLink} ${styles.githubLink}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()} // Prevent card click event
-                        >
-                          <span>Code</span>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-                          </svg>
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {/* Project card shine effect */}
-                  <div className={styles.cardShine} />
+                  <ProjectCard
+                    title={project.title}
+                    description={project.description}
+                    imageSrc={project.image || project.gif}
+                    demoLink={project.demoLink}
+                    repoLink={project.repoLink}
+                    technologies={project.technologies}
+                    onClick={() => openProjectModal(project)}
+                  />
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -354,4 +272,4 @@ const WorkSection = () => {
   );
 };
 
-export default WorkSection;
+export default React.memo(WorkSection);

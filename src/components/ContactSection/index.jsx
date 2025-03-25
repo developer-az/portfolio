@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, useAnimation } from 'framer-motion';
 import styles from './ContactSection.module.scss';
 
 // Animation variants
@@ -8,7 +8,8 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.2,
+      staggerChildren: 0.15,
+      delayChildren: 0.2
     },
   },
 };
@@ -26,6 +27,7 @@ const itemVariants = {
 };
 
 const ContactSection = () => {
+  // Form state management
   const [formState, setFormState] = useState({
     name: '',
     email: '',
@@ -38,8 +40,19 @@ const ContactSection = () => {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
   
+  // Refs for animations
   const sectionRef = useRef(null);
+  const formRef = useRef(null);
+  const controls = useAnimation();
+  
   const isInView = useInView(sectionRef, { once: false, amount: 0.2 });
+  
+  // Start animations when section comes into view
+  useEffect(() => {
+    if (isInView) {
+      controls.start('visible');
+    }
+  }, [isInView, controls]);
   
   // Handle form input changes
   const handleChange = (e) => {
@@ -50,14 +63,38 @@ const ContactSection = () => {
     }));
   };
   
+  // Form validation
+  const validateForm = () => {
+    const { name, email, subject, message } = formState;
+    
+    if (!name.trim() || !email.trim() || !subject.trim() || !message.trim()) {
+      setError('All fields are required');
+      return false;
+    }
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address');
+      return false;
+    }
+    
+    return true;
+  };
+  
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     setIsSubmitting(true);
     setError(null);
     
     try {
-      // Send form data to your API endpoint
+      // Send form data to API endpoint
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
@@ -84,7 +121,7 @@ const ContactSection = () => {
         message: '',
       });
       
-      // Reset submitted state after 8 seconds
+      // Reset submitted state after delay
       setTimeout(() => {
         setSubmitted(false);
       }, 8000);
@@ -103,7 +140,7 @@ const ContactSection = () => {
           className={styles.sectionHeader}
           variants={containerVariants}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          animate={controls}
         >
           <motion.h2 
             className={styles.sectionTitle}
@@ -125,7 +162,7 @@ const ContactSection = () => {
             className={styles.contactInfo}
             variants={containerVariants}
             initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
+            animate={controls}
           >
             <motion.div 
               className={styles.infoItem}
@@ -233,8 +270,8 @@ const ContactSection = () => {
             className={styles.contactForm}
             variants={containerVariants}
             initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-            viewport={{ once: true }}
+            animate={controls}
+            ref={formRef}
           >
             <motion.div 
               className={styles.formCard}
@@ -243,7 +280,12 @@ const ContactSection = () => {
               style={{ transformStyle: "preserve-3d" }}
             >
               {submitted ? (
-                <div className={styles.successMessage}>
+                <motion.div 
+                  className={styles.successMessage}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                >
                   <div className={styles.successIcon}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
@@ -251,8 +293,8 @@ const ContactSection = () => {
                     </svg>
                   </div>
                   <h3>Message Sent!</h3>
-                  <p>{successMessage || "Thank you for reaching out. I'll get back to you soon."}</p>
-                </div>
+                  <p>{successMessage}</p>
+                </motion.div>
               ) : (
                 <form onSubmit={handleSubmit}>
                   <div className={styles.formGroup}>
@@ -327,7 +369,15 @@ const ContactSection = () => {
                     )}
                   </motion.button>
                   
-                  {error && <p className={styles.errorMessage}>{error}</p>}
+                  {error && (
+                    <motion.p 
+                      className={styles.errorMessage}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      {error}
+                    </motion.p>
+                  )}
                 </form>
               )}
               
@@ -349,4 +399,4 @@ const ContactSection = () => {
   );
 };
 
-export default ContactSection;
+export default React.memo(ContactSection);

@@ -6,13 +6,13 @@ import styles from './ProfileSection.module.scss';
 const ProfileSection = () => {
   const sectionRef = useRef(null);
   
-  // Create parallax scroll effect
+  // Parallax scroll effect
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"]
   });
 
-  // Parallax effects
+  // Parallax values
   const imageY = useTransform(scrollYProgress, [0, 1], ['-5%', '5%']);
   const contentY = useTransform(scrollYProgress, [0, 1], ['5%', '-5%']);
   
@@ -21,7 +21,10 @@ const ProfileSection = () => {
     hidden: { opacity: 0 },
     visible: { 
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
+      transition: { 
+        staggerChildren: 0.1,
+        duration: 0.6
+      }
     }
   };
 
@@ -50,7 +53,6 @@ const ProfileSection = () => {
           
           {/* Card content */}
           <div className={styles.cardContent}>
-            {/* Chrome Hearts style header */}
             <div className={styles.cardHeader}>
               <div className={styles.headerLine}></div>
               <h2 className={styles.headerText}>HELLO!</h2>
@@ -73,7 +75,7 @@ const ProfileSection = () => {
                     src="/images/1.png"
                     alt="Anthony Zhou"
                     width={400}
-                    height={400}
+                    height={480}
                     className={styles.profileImage}
                     priority
                   />
@@ -131,7 +133,7 @@ const ProfileSection = () => {
                   <motion.div 
                     className={styles.stat}
                     variants={itemVariants}
-                    whileHover={{ y: -8, scale: 1.05 }}
+                    whileHover={{ y: -8, boxShadow: "0 8px 0 var(--primary-color)" }}
                   >
                     <span className={styles.statNumber}>3+</span>
                     <span className={styles.statLabel}>Years Experience</span>
@@ -140,7 +142,7 @@ const ProfileSection = () => {
                   <motion.div 
                     className={styles.stat}
                     variants={itemVariants}
-                    whileHover={{ y: -8, scale: 1.05 }}
+                    whileHover={{ y: -8, boxShadow: "0 8px 0 var(--primary-color)" }}
                   >
                     <span className={styles.statNumber}>15+</span>
                     <span className={styles.statLabel}>Projects</span>
@@ -149,7 +151,7 @@ const ProfileSection = () => {
                   <motion.div 
                     className={styles.stat}
                     variants={itemVariants}
-                    whileHover={{ y: -8, scale: 1.05 }}
+                    whileHover={{ y: -8, boxShadow: "0 8px 0 var(--primary-color)" }}
                   >
                     <span className={styles.statNumber}>5+</span>
                     <span className={styles.statLabel}>Tech Stack</span>
@@ -184,7 +186,7 @@ const ProfileSection = () => {
             </div>
           </div>
           
-          {/* Card footer with Chrome Hearts style */}
+          {/* Card footer */}
           <div className={styles.cardFooter}>
             <div className={styles.footerLine}></div>
             <div className={styles.footerLogo}>
@@ -201,7 +203,7 @@ const ProfileSection = () => {
       <div className={styles.decorativeSplash}></div>
       <div className={`${styles.decorativeSplash} ${styles.splash2}`}></div>
       
-      {/* Chrome Hearts style crosses in background */}
+      {/* Background crosses */}
       <div className={`${styles.bgCross} ${styles.bgCross1}`}></div>
       <div className={`${styles.bgCross} ${styles.bgCross2}`}></div>
       <div className={`${styles.bgCross} ${styles.bgCross3}`}></div>
@@ -210,4 +212,4 @@ const ProfileSection = () => {
   );
 };
 
-export default ProfileSection;
+export default React.memo(ProfileSection);

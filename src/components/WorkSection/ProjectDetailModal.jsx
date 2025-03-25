@@ -99,6 +99,8 @@ const ProjectDetailModal = ({ project, onClose }) => {
                 <Link
                   href={project.demoLink}
                   className={`${styles.projectLink} ${styles.demoLink}`}
+                  target={project.demoLink.startsWith('/') ? '_self' : '_blank'}
+                  rel={project.demoLink.startsWith('/') ? '' : 'noopener noreferrer'}
                 >
                   <span>View Live Demo</span>
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

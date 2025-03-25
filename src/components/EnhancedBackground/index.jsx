@@ -6,70 +6,84 @@ const EnhancedBackground = () => {
   const containerRef = useRef(null);
   const rendererRef = useRef(null);
   const animationRef = useRef(null);
+  const sceneRef = useRef(null);
+  const mouseRef = useRef({ x: 0, y: 0 });
+  const scrollRef = useRef(0);
+  const particlesMeshRef = useRef(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Scene setup
+    // Setup scene
     const scene = new THREE.Scene();
+    sceneRef.current = scene;
     
-    // Camera setup
+    // Camera setup with better position
     const camera = new THREE.PerspectiveCamera(
-      75, 
+      60, 
       window.innerWidth / window.innerHeight, 
       0.1, 
       1000
     );
     camera.position.z = 30;
 
-    // Renderer setup with better performance options
+    // Renderer with performance optimizations
     const renderer = new THREE.WebGLRenderer({ 
-      antialias: true,
+      antialias: window.devicePixelRatio < 2, // Only use antialias for higher-end devices
       alpha: true,
       powerPreference: 'high-performance',
-      precision: 'mediump'  // Use medium precision for better performance
+      precision: 'mediump'
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit pixel ratio for performance
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
     
-    // Store reference to container for cleanup
     const currentContainer = containerRef.current;
-    
-    // Store for use in cleanup function
     currentContainer.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Create particles - reduce count for better performance
-    const particlesCount = window.innerWidth < 768 ? 200 : 350; // Reduce particles on mobile
+    // Responsive particle count based on device
+    const isMobile = window.innerWidth < 768;
+    const particlesCount = isMobile ? 150 : 300;
+    
+    // Optimize buffer geometry creation
     const particlesGeometry = new THREE.BufferGeometry();
     const posArray = new Float32Array(particlesCount * 3);
     
-    // Fill positions with random values
-    for (let i = 0; i < particlesCount * 3; i++) {
-      posArray[i] = (Math.random() - 0.5) * 50;
+    // Fill positions with more interesting distribution
+    for (let i = 0; i < particlesCount * 3; i += 3) {
+      // Create a more artistic distribution with more particles in the center
+      const radius = Math.random() * 40;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.random() * Math.PI;
+      
+      posArray[i] = radius * Math.sin(phi) * Math.cos(theta);
+      posArray[i+1] = radius * Math.sin(phi) * Math.sin(theta);
+      posArray[i+2] = radius * Math.cos(phi);
     }
     
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
     
-    // Use simpler material for better performance
+    // Optimized material
     const particlesMaterial = new THREE.PointsMaterial({
       size: 0.05,
       color: 0xffffff,
       transparent: true,
       opacity: 0.6,
-      blending: THREE.AdditiveBlending
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true
     });
     
-    // Create the particle system
+    // Create particle system
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
+    particlesMeshRef.current = particlesMesh;
 
-    // Add minimal lighting
+    // Minimal ambient light
     const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
     scene.add(ambientLight);
 
-    // Simplified lines for better performance
+    // Optimized connections with reduced updates
     const lineMaterial = new THREE.LineBasicMaterial({ 
       color: 0xffffff,
       transparent: true,
@@ -82,24 +96,13 @@ const EnhancedBackground = () => {
     );
     scene.add(linesMesh);
 
-    // Animation variables
-    let mouseX = 0;
-    let mouseY = 0;
-    
-    // Throttled mouse move handler for performance
-    let lastMoveTime = 0;
+    // Throttled event handlers
     const handleMouseMove = (event) => {
-      const now = performance.now();
-      if (now - lastMoveTime < 50) return; // Throttle to 20 updates per second
-      lastMoveTime = now;
-      
-      mouseX = (event.clientX / window.innerWidth - 0.5) * 2;
-      mouseY = (event.clientY / window.innerHeight - 0.5) * 2;
+      mouseRef.current.x = (event.clientX / window.innerWidth - 0.5) * 2;
+      mouseRef.current.y = (event.clientY / window.innerHeight - 0.5) * 2;
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-
-    // Efficient window resize handler
+    // Debounced resize handler
     let resizeTimeout;
     const handleResize = () => {
       clearTimeout(resizeTimeout);
@@ -107,70 +110,41 @@ const EnhancedBackground = () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-      }, 150);
+      }, 200);
     };
 
-    window.addEventListener('resize', handleResize);
-
-    // Optimize scroll handling
-    let scrollY = 0;
-    let lastScrollTime = 0;
+    // Throttled scroll handler
     const handleScroll = () => {
-      const now = performance.now();
-      if (now - lastScrollTime < 100) return; // Throttle scroll updates
-      lastScrollTime = now;
-      
-      scrollY = window.scrollY;
+      scrollRef.current = window.scrollY;
     };
 
-    window.addEventListener('scroll', handleScroll);
+    // Event listeners with passive option for better performance
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('resize', handleResize, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
-    // Optimized connection update interval
+    // Connection update manager
     let lastUpdateTime = 0;
     
-    // Animation loop with performance optimizations
-    const animate = () => {
-      animationRef.current = requestAnimationFrame(animate);
-      
-      // Reduce rotation speed for better performance
-      particlesMesh.rotation.x += 0.0002;
-      particlesMesh.rotation.y += 0.0001;
-      
-      // Add very subtle mouse interaction
-      particlesMesh.rotation.x += mouseY * 0.0001;
-      particlesMesh.rotation.y += mouseX * 0.0001;
-      
-      // Very subtle parallax effect on scroll
-      particlesMesh.position.y = scrollY * 0.0002;
-
-      // Update line connections periodically and less frequently for performance
-      const now = performance.now();
-      if (now - lastUpdateTime > 2000) { // Only update every 2 seconds
-        updateConnections(particlesGeometry, linesMesh);
-        lastUpdateTime = now;
-      }
-
-      renderer.render(scene, camera);
-    };
-
-    // Optimized function to update line connections between particles
-    const updateConnections = (particlesGeometry, linesMesh) => {
+    // Optimized connections generator
+    const updateConnections = () => {
       const positions = particlesGeometry.attributes.position.array;
       const vertices = [];
       const maxDistance = 5;
-      // Limit connections to improve performance
-      const maxConnectionsPerParticle = 2;
+      const maxConnections = 1; // Reduce for better performance
       
-      // Use a more efficient algorithm to find connections
-      for (let i = 0; i < positions.length; i += 3) {
+      // Optimize connection finding algorithm - only check every nth particle
+      const step = isMobile ? 4 : 2; // Check fewer particles on mobile
+      
+      for (let i = 0; i < positions.length; i += 3 * step) {
         const x1 = positions[i];
         const y1 = positions[i + 1];
         const z1 = positions[i + 2];
         
         let connectionCount = 0;
         
-        // Check only a subset of particles for connections, and limit the number of connections
-        for (let j = i + 3; j < positions.length && connectionCount < maxConnectionsPerParticle; j += 9) {
+        // Only check a subset of particles
+        for (let j = i + 3 * step; j < positions.length && connectionCount < maxConnections; j += 3 * step) {
           const x2 = positions[j];
           const y2 = positions[j + 1];
           const z2 = positions[j + 2];
@@ -181,7 +155,6 @@ const EnhancedBackground = () => {
             (y2 - y1) * (y2 - y1) + 
             (z2 - z1) * (z2 - z1);
           
-          // Connect if close enough
           if (distanceSquared < maxDistance * maxDistance) {
             vertices.push(x1, y1, z1, x2, y2, z2);
             connectionCount++;
@@ -189,16 +162,45 @@ const EnhancedBackground = () => {
         }
       }
       
-      // Update line geometry
+      // Update line geometry efficiently
       const lineGeometry = new THREE.BufferGeometry();
       lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
       linesMesh.geometry.dispose();
       linesMesh.geometry = lineGeometry;
     };
 
+    // More efficient animation loop
+    const animate = () => {
+      animationRef.current = requestAnimationFrame(animate);
+      
+      // Apply subtle rotation
+      if (particlesMeshRef.current) {
+        particlesMeshRef.current.rotation.x += 0.0002;
+        particlesMeshRef.current.rotation.y += 0.0001;
+        
+        // Add minimal mouse interaction
+        particlesMeshRef.current.rotation.x += mouseRef.current.y * 0.0001;
+        particlesMeshRef.current.rotation.y += mouseRef.current.x * 0.0001;
+        
+        // Subtle scroll effect
+        particlesMeshRef.current.position.y = scrollRef.current * 0.0001;
+      }
+
+      // Update connections only every 2 seconds for performance
+      const now = performance.now();
+      if (now - lastUpdateTime > 2000) {
+        updateConnections();
+        lastUpdateTime = now;
+      }
+
+      renderer.render(scene, camera);
+    };
+
+    // Start animation
+    updateConnections();
     animate();
 
-    // Cleanup function
+    // Cleanup
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
@@ -208,10 +210,15 @@ const EnhancedBackground = () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('scroll', handleScroll);
       
-      scene.remove(particlesMesh);
+      // Dispose resources
+      if (particlesMeshRef.current) {
+        scene.remove(particlesMeshRef.current);
+        particlesMeshRef.current.geometry.dispose();
+        particlesMeshRef.current.material.dispose();
+      }
+      
       scene.remove(linesMesh);
-      particlesGeometry.dispose();
-      particlesMaterial.dispose();
+      linesMesh.geometry.dispose();
       lineMaterial.dispose();
       
       if (rendererRef.current) {
@@ -227,10 +234,9 @@ const EnhancedBackground = () => {
     <div 
       ref={containerRef} 
       className={styles.enhancedBackground}
-      style={{ backgroundColor: "#121212" }} // Always use dark theme background
       aria-hidden="true"
     />
   );
 };
 
-export default EnhancedBackground;
+export default React.memo(EnhancedBackground);
