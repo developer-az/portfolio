@@ -232,6 +232,7 @@
           transition: all 0.3s ease;
           color: rgba(255, 255, 255, 0.6);
           font-weight: 300;
+          transform: translateY(-70%);
         }
         
         .formInput, .formTextarea {
@@ -241,7 +242,8 @@
           border-bottom: 1px solid rgba(255, 255, 255, 0.2);
           color: #ffffff;
           font-size: 15px;
-          padding: 15px 0;
+          padding: 15px 10px;
+          border: 1px solid rgba(255, 255, 255, 0.2);
           outline: none;
           font-family: inherit;
           resize: none;
@@ -253,9 +255,10 @@
           
           &:focus, &:not(:placeholder-shown) {
             border-bottom-color: #ffffff;
+            border-color: #ffffff;
             
             & + .formLabel {
-              transform: translateY(-100%);
+              transform: translateY(-70%);
               font-size: 12px;
               opacity: 0.8;
             }
@@ -268,7 +271,7 @@
         
         &.active {
           .formLabel {
-            transform: translateY(-100%);
+            transform: translateY(-50%);
             font-size: 12px;
             opacity: 0.8;
           }

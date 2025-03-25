@@ -541,14 +541,14 @@
       }
       
       &:hover {
-        background: darken(#fa2104, 10%);
+        background: darken(#2504fa, 10%);
         transform: translateY(-3px);
-        box-shadow: 0 6px 0 darken(#fa2104, 20%);
+        box-shadow: 0 6px 0 darken(#2504fa, 20%);
       }
       
       &:active {
         transform: translateY(0);
-        box-shadow: 0 2px 0 darken(#fa2104, 20%);
+        box-shadow: 0 2px 0 darken(#2504fa, 20%);
       }
     }
     

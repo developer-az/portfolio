@@ -3,6 +3,12 @@
   position: relative;
   width: 100%;
   overflow-x: hidden;
+  :global {
+    :root {
+      --primary-color: #446bff; // Power blue
+      --text-primary: #ffffff; // White
+    }
+  }
 }
 
 .introduction {
@@ -13,19 +19,19 @@
   justify-content: center;
   position: fixed;
   z-index: 99;
-  background-color: black;
+  background-color: var(--primary-color);
   svg {
     position: absolute;
     top: 0;
     width: 100%;
     height: calc(100% + 300px);
     path {
-      fill: black;
+      fill: var(--primary-color);
     }
   }
   p {
     display: flex;
-    color: white;
+    color: var(--text-primary);
     font-size: 42px;
     align-items: center;
     position: absolute;
@@ -34,7 +40,7 @@
       display: block;
       width: 10px;
       height: 10px;
-      background-color: white;
+      background-color: var(--text-primary);
       border-radius: 50%;
       margin-right: 10px;
     }
@@ -45,6 +51,7 @@
   height: 100vh;
   opacity: 1;
   transition: opacity 1s ease;
+  color: var(--text-primary);
   
   &.fadeOut {
     opacity: 0;
@@ -71,7 +78,7 @@
       }
     }
     span {
-      color: #fa2104;
+      color: #0473fa;
       font-style: italic;
     }
   }
@@ -80,12 +87,12 @@
     mask-image: url('../../public/mask.svg');
     mask-repeat: no-repeat;
     mask-size: 40px;
-    background: #fa2104;
+    background: var(--primary-color);
     position: absolute;
     color: black;
     font-weight: 500;
     span {
-      color: black;
+      color: var(--primary-color);
       font-size: 69px;
     }
   }
@@ -372,7 +379,7 @@
       transform: translateX(-50%);
       width: 60px;
       height: 3px;
-      background: linear-gradient(to right, var(--primary-color), rgba(250, 33, 4, 0.5));
+      background: linear-gradient(to right, var(--primary-color), rgba(45, 4, 250, 0.5));
     }
   }
   
@@ -443,7 +450,7 @@
       &.active {
         background: rgba(250, 33, 4, 0.1);
         color: var(--primary-color);
-        border-color: rgba(250, 33, 4, 0.3);
+        border-color: rgba(4, 90, 250, 0.3);
       }
     }
   }
@@ -546,7 +553,7 @@
           gap: 8px;
           
           .techBadge {
-            background: rgba(250, 33, 4, 0.2);
+            background: rgba(68, 107, 255, 0.2);
             color: rgba(255, 255, 255, 0.9);
             padding: 4px 10px;
             border-radius: 20px;
@@ -576,7 +583,7 @@
           left: 0;
           width: 40px;
           height: 2px;
-          background: linear-gradient(to right, var(--primary-color), rgba(250, 33, 4, 0));
+          background: linear-gradient(to right, var(--primary-color), rgba(68, 107, 255, 0));
         }
       }
       
@@ -695,8 +702,8 @@
     height: 300px;
     background: radial-gradient(
       circle at center,
-      rgba(250, 33, 4, 0.1) 0%,
-      rgba(250, 33, 4, 0) 70%
+      rgba(68, 107, 255, 0.1) 0%,
+      rgba(68, 107, 255, 0) 70%
     );
     border-radius: 50%;
     filter: blur(60px);
@@ -769,7 +776,7 @@
         transition: all 0.3s ease;
         
         &:hover {
-          background: rgba(250, 33, 4, 0.1);
+          background: rgba(68, 107, 255, 0.1);
           color: var(--primary-color);
           transform: translateY(-5px);
         }
