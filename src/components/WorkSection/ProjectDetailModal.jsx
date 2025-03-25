@@ -73,7 +73,7 @@ const ProjectDetailModal = ({ project, onClose }) => {
             />
             
             <div className={styles.yslOverlay}>
-              <div className={styles.yslLogo}>YSL</div>
+              <div className={styles.yslLogo}>~</div>
             </div>
             
             {/* Tech Badges in YSL Style */}

@@ -175,7 +175,7 @@ const WorkSection = () => {
           >
             <h2 className={styles.sectionTitle} ref={titleRef}>
               <span className={styles.titleLine}></span>
-              <span className={styles.titleText}>PROJETS</span>
+              <span className={styles.titleText}>MY PROJECTS</span>
               <span className={styles.titleLine}></span>
             </h2>
             <motion.p 
@@ -245,7 +245,7 @@ const WorkSection = () => {
                   <ProjectCard
                     title={project.title}
                     description={project.description}
-                    imageSrc={project.image || project.gif}
+                    imageSrc={project.gif || project.image}
                     demoLink={project.demoLink}
                     repoLink={project.repoLink}
                     technologies={project.technologies}
@@ -266,7 +266,7 @@ const WorkSection = () => {
         >
           <div className={styles.summaryDivider}>
             <span className={styles.dividerLine}></span>
-            <span className={styles.dividerSymbol}>YSL</span>
+            <span className={styles.dividerSymbol}>GITHUB</span>
             <span className={styles.dividerLine}></span>
           </div>
           <motion.p className={styles.summaryText}>

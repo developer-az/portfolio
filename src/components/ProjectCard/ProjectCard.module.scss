@@ -8,7 +8,7 @@
   height: 100%;
   transform-style: preserve-3d;
   will-change: transform;
-  border: 1px solid rgba(212, 175, 55, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   
   /* YSL-inspired corner embellishments */
   .cornerTL, .cornerTR, .cornerBL, .cornerBR {
@@ -23,33 +23,33 @@
   .cornerTL {
     top: 10px;
     left: 10px;
-    border-top: 1px solid rgba(212, 175, 55, 0.5);
-    border-left: 1px solid rgba(212, 175, 55, 0.5);
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    border-left: 1px solid rgba(255, 255, 255, 0.5);
   }
   
   .cornerTR {
     top: 10px;
     right: 10px;
-    border-top: 1px solid rgba(212, 175, 55, 0.5);
-    border-right: 1px solid rgba(212, 175, 55, 0.5);
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    border-right: 1px solid rgba(255, 255, 255, 0.5);
   }
   
   .cornerBL {
     bottom: 10px;
     left: 10px;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.5);
-    border-left: 1px solid rgba(212, 175, 55, 0.5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    border-left: 1px solid rgba(255, 255, 255, 0.5);
   }
   
   .cornerBR {
     bottom: 10px;
     right: 10px;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.5);
-    border-right: 1px solid rgba(212, 175, 55, 0.5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    border-right: 1px solid rgba(255, 255, 255, 0.5);
   }
   
   &:hover {
-    border-color: rgba(212, 175, 55, 0.15);
+    border-color: rgba(255, 255, 255, 0.15);
     
     .cornerTL, .cornerTR, .cornerBL, .cornerBR {
       opacity: 1;
@@ -96,7 +96,7 @@
         font-family: 'Times New Roman', serif;
         font-size: 80px;
         font-weight: 300;
-        color: rgba(212, 175, 55, 0.3);
+        color: rgba(255, 255, 255, 0.3);
       }
     }
     
@@ -133,14 +133,14 @@
         .viewText {
           font-size: 12px;
           letter-spacing: 3px;
-          color: rgba(212, 175, 55, 0.9);
+          color: rgba(255, 255, 255, 0.9);
           font-weight: 300;
         }
         
         .viewLine {
           height: 1px;
           width: 100%;
-          background-color: rgba(212, 175, 55, 0.3);
+          background-color: rgba(255, 255, 255, 0.3);
           margin-top: 5px;
         }
       }
@@ -157,15 +157,15 @@
         padding: 4px 10px;
         font-size: 10px;
         letter-spacing: 1px;
-        border: 1px solid rgba(212, 175, 55, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.3);
       }
       
       .moreBadge {
-        color: rgba(212, 175, 55, 0.7);
+        color: rgba(255, 255, 255, 0.7);
         font-size: 10px;
         letter-spacing: 1px;
         padding: 4px 10px;
-        border: 1px solid rgba(212, 175, 55, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.3);
       }
     }
   }
@@ -180,7 +180,7 @@
       margin: 0 0 12px 0;
       font-size: 14px;
       font-weight: 400;
-      color: rgba(212, 175, 55, 0.9);
+      color: rgba(255, 255, 255, 0.9);
       letter-spacing: 3px;
       text-transform: uppercase;
       position: relative;
@@ -192,7 +192,7 @@
         left: 0;
         width: 40px;
         height: 1px;
-        background-color: rgba(212, 175, 55, 0.2);
+        background-color: rgba(255, 255, 255, 0.2);
       }
     }
     
@@ -219,7 +219,7 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        color: rgba(212, 175, 55, 0.7);
+        color: rgba(255, 255, 255, 0.7);
         text-decoration: none;
         font-size: 10px;
         letter-spacing: 2px;
@@ -233,12 +233,12 @@
           left: 0;
           width: 0;
           height: 1px;
-          background-color: rgba(212, 175, 55, 0.5);
+          background-color: rgba(255, 255, 255, 0.5);
           transition: width 0.3s ease;
         }
         
         &:hover {
-          color: rgba(212, 175, 55, 1);
+          color: rgba(255, 255, 255, 0.9);
           
           &::after {
             width: 100%;
@@ -275,7 +275,7 @@
     right: 0;
     width: 0;
     height: 1px;
-    background-color: rgba(212, 175, 55, 0.5);
+    background-color: rgba(255, 255, 255, 0.5);
     transition: width 0.5s ease;
     
     &.active {
