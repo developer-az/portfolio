@@ -3,85 +3,117 @@ import styles from './style.module.scss';
 
 const AnimatedBackground = () => {
   const canvasRef = useRef(null);
+  const animationFrameId = useRef(null);
   
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     
     const ctx = canvas.getContext('2d');
-    let animationFrameId;
     
-    // Set canvas size to match window
+    // Set canvas size with device pixel ratio consideration
     function setCanvasSize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      
+      ctx.scale(dpr, dpr);
+      canvas.style.width = `${rect.width}px`;
+      canvas.style.height = `${rect.height}px`;
     }
     
-    window.addEventListener('resize', setCanvasSize);
+    // Initial setup
     setCanvasSize();
     
-    // Draw flowing curves similar to the reference
+    // Resize listener with debounce
+    let resizeTimeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(setCanvasSize, 200);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Create flowing curves
     function drawBackground() {
-      // Clear canvas with base color
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const time = performance.now() * 0.0001; // Slow down animation for better performance
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
       
-      const time = performance.now() * 0.0001; // Slower movement
+      // Clear with transparent background
+      ctx.clearRect(0, 0, width, height);
       
-      ctx.save();
+      // Draw fewer curves for better performance
+      const numCurves = window.innerWidth < 768 ? 2 : 3;
       
-      // Draw a few large flowing curves in white/light gray
-      for (let i = 0; i < 3; i++) {
-        const yOffset = canvas.height * 0.3 * (i + 1);
+      for (let i = 0; i < numCurves; i++) {
+        // Calculate curve parameters
+        const yOffset = height * 0.3 * (i + 1);
         const amplitude = 80 + i * 20;
+        
+        // Draw more efficiently with fewer points
+        const segments = window.innerWidth < 768 ? 3 : 4;
+        const segmentWidth = width / segments;
         
         ctx.beginPath();
         ctx.moveTo(0, yOffset + Math.sin(time) * amplitude);
         
-        // Use quadratic curves for better performance
-        for (let x = 0; x <= canvas.width; x += canvas.width / 4) {
+        for (let x = 0; x <= width; x += segmentWidth) {
           const y = yOffset + Math.sin(time + x * 0.001) * amplitude;
           ctx.lineTo(x, y);
         }
         
-        ctx.lineWidth = 120 + i * 40;
-        ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 - i * 0.02})`; // Very subtle curves
+        // Optimize styling
+        ctx.strokeStyle = `rgba(255, 255, 255, ${0.08 - i * 0.02})`;
+        ctx.lineWidth = 100 + i * 30;
         ctx.stroke();
       }
       
-      // Draw some darker curves for contrast
-      for (let i = 0; i < 2; i++) {
-        const yOffset = canvas.height * 0.4 * (i + 1);
+      // Draw fewer darker curves
+      const darkCurves = window.innerWidth < 768 ? 1 : 2;
+      
+      for (let i = 0; i < darkCurves; i++) {
+        const yOffset = height * 0.4 * (i + 1);
         const amplitude = 60 + i * 20;
         
         ctx.beginPath();
         ctx.moveTo(0, yOffset + Math.cos(time) * amplitude);
         
-        for (let x = 0; x <= canvas.width; x += canvas.width / 4) {
+        for (let x = 0; x <= width; x += width / 3) {
           const y = yOffset + Math.cos(time + x * 0.002) * amplitude;
           ctx.lineTo(x, y);
         }
         
-        ctx.lineWidth = 100 + i * 30;
-        ctx.strokeStyle = `rgba(0, 0, 0, ${0.05 - i * 0.01})`; // Very subtle dark curves
+        ctx.strokeStyle = `rgba(0, 0, 0, ${0.04 - i * 0.01})`;
+        ctx.lineWidth = 80 + i * 20;
         ctx.stroke();
       }
+    }
+    
+    // Animation loop with framerate limiting
+    let lastFrameTime = 0;
+    const targetFPS = 30;
+    const frameInterval = 1000 / targetFPS;
+    
+    function animate(currentTime) {
+      animationFrameId.current = requestAnimationFrame(animate);
       
-      ctx.restore();
-    }
-    
-    function animate() {
+      // Skip frames to maintain target FPS
+      if (currentTime - lastFrameTime < frameInterval) return;
+      
+      lastFrameTime = currentTime;
       drawBackground();
-      animationFrameId = requestAnimationFrame(animate);
     }
     
-    // Start animation
-    animate();
+    animate(0);
     
-    // Cleanup function
+    // Cleanup
     return () => {
-      window.removeEventListener('resize', setCanvasSize);
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', handleResize);
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
       }
     };
   }, []);
@@ -95,4 +127,4 @@ const AnimatedBackground = () => {
   );
 };
 
-export default AnimatedBackground;
+export default React.memo(AnimatedBackground);

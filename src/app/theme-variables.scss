@@ -61,18 +61,18 @@
 html,
 html.dark-theme {
   /* Background colors */
-  --bg-primary: #121212;
-  --bg-secondary: #1a1a1a;
-  --bg-tertiary: #222222;
-  --bg-card: rgba(26, 26, 26, 0.8);
+  --bg-primary: #000000; /* Black */
+  --bg-secondary: #0a0a0a; /* Slightly lighter black */
+  --bg-tertiary: #141414; /* Even lighter black */
+  --bg-card: rgba(10, 10, 10, 0.8); /* Black with transparency */
   --bg-hover: rgba(255, 255, 255, 0.05);
   --bg-active: rgba(255, 255, 255, 0.1);
   
   /* Text colors */
-  --text-primary: #f5f5dc; /* Beige */
-  --text-secondary: #e0e0d1; /* Slightly darker beige */
-  --text-tertiary: #ccccb3; /* Even darker beige */
-  --text-muted: #b3b3a1; /* Muted beige */
+  --text-primary: #ffffff; /* White */
+  --text-secondary: #e0e0e0; /* Slightly darker white */
+  --text-tertiary: #cccccc; /* Even darker white */
+  --text-muted: #b3b3b3; /* Muted white */
   
   /* Border colors */
   --border-light: rgba(255, 255, 255, 0.1);

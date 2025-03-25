@@ -1,6 +1,6 @@
 {
-  "name": "cursor-hover-mask",
-  "version": "0.1.0",
+  "name": "anthony-zhou-portfolio",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -10,23 +10,25 @@
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
-    "cursor-hover-mask": "file:",
-    "eslint": "8.45.0",
-    "eslint-config-next": "13.4.12",
+    "anthony-zhou-portfolio": "file:",
+    "emailjs-com": "^3.2.0",
     "framer-motion": "^10.18.0",
     "gsap": "^3.12.5",
-    "install": "^0.13.0",
-    "lenis": "^0.0.2",
-    "locomotive-scroll": "^5.0.0-beta.11",
     "next": "^14.2.25",
-    "npm": "^10.5.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "sass": "^1.72.0",
     "sharp": "^0.33.5",
     "three": "^0.174.0"
   },
   "devDependencies": {
-    "critters": "^0.0.25"
+    "eslint": "^8.56.0",
+    "eslint-config-next": "^14.2.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.2.5"
+  },
+  "engines": {
+    "node": ">=18.17.0"
   }
 }
