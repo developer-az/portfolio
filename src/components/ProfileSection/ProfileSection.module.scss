@@ -34,7 +34,7 @@
     transform-style: preserve-3d;
     border: 2px solid var(--text-primary);
     box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.8);
-    transition: all 0.3s;
+    transition: transform 0.8s ease-in-out, box-shadow 0.8s ease-in-out;
     
     // Chrome Hearts cross decorations on card
     .crossDecoration {
@@ -541,9 +541,9 @@
       }
       
       &:hover {
-        background: darken(#2504fa, 10%);
+        background: darken(#2d2d2d, 10%);
         transform: translateY(-3px);
-        box-shadow: 0 6px 0 darken(#2504fa, 20%);
+        box-shadow: 0 6px 0 darken(#606060, 20%);
       }
       
       &:active {
