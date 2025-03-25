@@ -54,7 +54,7 @@ export default function RootLayout({ children }) {
             width: 40px;
             height: 40px;
             border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top-color: #fa2104;
+            border-top-color:rgb(0, 0, 0);
             border-radius: 50%;
             animation: spinner 1s linear infinite;
           }
