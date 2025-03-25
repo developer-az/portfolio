@@ -14,6 +14,26 @@ const navItems = [
   { title: "IG Analyzer", href: "/instagram-analyzer", icon: "instagram" }
 ];
 
+// Menu slide animation variants
+const menuSlide = {
+  initial: { x: "calc(100% + 100px)" },
+  enter: { x: "0", transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } },
+  exit: { x: "calc(100% + 100px)", transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } }
+};
+
+// Link animation variants
+const linkVariants = {
+  initial: { x: 80 },
+  enter: i => ({ x: 0, transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.05 * i } }),
+  exit: i => ({ x: 80, transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.05 * i } })
+};
+
+// Scale animation for indicators
+const scale = {
+  open: { scale: 1, transition: { duration: 0.3 } },
+  closed: { scale: 0, transition: { duration: 0.4 } }
+};
+
 // Icons component with memoization for better performance
 const NavIcon = React.memo(({ icon }) => {
   switch(icon) {
@@ -68,11 +88,48 @@ const NavIcon = React.memo(({ icon }) => {
   }
 });
 
-// Main navigation component
-const FloatingNav = ({ activeSection }) => {
+// Social links for nav panel
+const socialLinks = [
+  { name: "GitHub", url: "https://github.com/developer-az", icon: "github" },
+  { name: "LinkedIn", url: "https://www.linkedin.com/in/anthony--zhou", icon: "linkedin" },
+  { name: "Instagram", url: "https://instagram.com/anthonyyzhou", icon: "instagram" }
+];
+
+// Social icon component
+const SocialIcon = ({ icon }) => {
+  switch(icon) {
+    case 'github':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+        </svg>
+      );
+    case 'linkedin':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+          <rect x="2" y="9" width="4" height="12"></rect>
+          <circle cx="4" cy="4" r="2"></circle>
+        </svg>
+      );
+    case 'instagram':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+        </svg>
+      );
+    default:
+      return null;
+  }
+};
+
+const FloatingNav = ({ activeSection = "" }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [selectedIndicator, setSelectedIndicator] = useState(activeSection ? `#${activeSection}` : "#about");
   
   // Detect mobile devices on mount
   useEffect(() => {
@@ -88,6 +145,13 @@ const FloatingNav = ({ activeSection }) => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+  
+  // Update selected indicator when active section changes
+  useEffect(() => {
+    if (activeSection) {
+      setSelectedIndicator(`#${activeSection}`);
+    }
+  }, [activeSection]);
   
   // Handle scroll effects
   useEffect(() => {
@@ -107,22 +171,12 @@ const FloatingNav = ({ activeSection }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Animation variants for menu items
-  const menuItemVariants = useMemo(() => ({
-    hidden: { 
-      opacity: 0, 
-      y: 20 
-    },
-    visible: (i) => ({ 
-      opacity: 1, 
-      y: 0,
-      transition: { 
-        delay: 0.05 * i,
-        duration: 0.4,
-        ease: "easeOut"
-      }
-    })
-  }), []);
+  // Handle navigation link click
+  const handleLinkClick = (href) => {
+    setSelectedIndicator(href);
+    // Close the menu on mobile after link click with a slight delay
+    setTimeout(() => setMobileMenuOpen(false), 300);
+  };
 
   return (
     <>
@@ -146,6 +200,7 @@ const FloatingNav = ({ activeSection }) => {
                   href={item.href}
                   className={`${styles.navLink} ${activeSection === item.href.replace('#', '') ? styles.active : ''}`}
                   data-section={item.href.replace('#', '')}
+                  onClick={() => handleLinkClick(item.href)}
                 >
                   <span className={styles.linkIcon}>
                     <NavIcon icon={item.icon} />
@@ -166,7 +221,8 @@ const FloatingNav = ({ activeSection }) => {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.3 }}
-          aria-label="Toggle navigation menu"
+          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={mobileMenuOpen}
         >
           <span className={styles.bar}></span>
           <span className={styles.bar}></span>
@@ -174,40 +230,124 @@ const FloatingNav = ({ activeSection }) => {
         </motion.button>
       )}
 
-      {/* Mobile Navigation Menu */}
+      {/* Animated Side Navigation Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div 
-            className={styles.mobileNavMenu}
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ 
-              type: 'spring', 
-              stiffness: 300, 
-              damping: 25 
-            }}
-          >
-            <div className={styles.mobileNavContainer}>
-              {navItems.map((item, index) => (
-                <motion.a
-                  key={item.href}
-                  href={item.href}
-                  className={`${styles.mobileNavLink} ${activeSection === item.href.replace('#', '') ? styles.active : ''}`}
-                  onClick={() => setMobileMenuOpen(false)}
-                  custom={index}
-                  variants={menuItemVariants}
-                  initial="hidden"
-                  animate="visible"
+          <>
+            {/* Backdrop for mobile */}
+            <motion.div 
+              className={styles.backdrop}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+            />
+            
+            {/* Slide-in menu panel */}
+            <motion.div 
+              className={styles.navPanel}
+              variants={menuSlide}
+              initial="initial"
+              animate="enter"
+              exit="exit"
+            >
+              <div className={styles.navPanelHeader}>
+                <motion.div 
+                  className={styles.headerLogo}
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
                 >
-                  <div className={styles.mobileNavIcon}>
-                    <NavIcon icon={item.icon} />
+                  <span className={styles.headerLogoSymbol}>©</span>
+                  <div className={styles.headerLogoText}>
+                    <span className={styles.headerName}>ANTHONY ZHOU</span>
+                    <span className={styles.headerDesc}>Developer & Designer</span>
                   </div>
-                  {item.title}
-                </motion.a>
-              ))}
-            </div>
-          </motion.div>
+                </motion.div>
+                <motion.h2 
+                  className={styles.navigationTitle}
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  Navigation
+                </motion.h2>
+              </div>
+              
+              <div className={styles.navPanelLinks} 
+                onMouseLeave={() => setSelectedIndicator(`#${activeSection}`)}
+              >
+                {navItems.map((item, index) => (
+                  <motion.div 
+                    key={item.title}
+                    custom={index}
+                    variants={linkVariants}
+                    initial="initial"
+                    animate="enter"
+                    exit="exit"
+                    className={styles.navPanelLink}
+                  >
+                    <Link 
+                      href={item.href}
+                      className={`${styles.panelNavLink} ${selectedIndicator === item.href ? styles.active : ''}`}
+                      onClick={() => handleLinkClick(item.href)}
+                      onMouseEnter={() => setSelectedIndicator(item.href)}
+                    >
+                      <motion.div 
+                        variants={scale}
+                        animate={selectedIndicator === item.href ? "open" : "closed"}
+                        className={styles.indicator}
+                      />
+                      <span className={styles.panelLinkIcon}>
+                        <NavIcon icon={item.icon} />
+                      </span>
+                      {item.title}
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+              
+              <motion.div 
+                className={styles.navPanelFooter}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+              >
+                <div className={styles.socialIcons}>
+                  {socialLinks.map((link) => (
+                    <a 
+                      key={link.name} 
+                      href={link.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className={styles.socialIcon}
+                      aria-label={link.name}
+                    >
+                      <SocialIcon icon={link.icon} />
+                    </a>
+                  ))}
+                </div>
+                <div className={styles.footerText}>
+                  © 2025 Anthony Zhou
+                </div>
+              </motion.div>
+              
+              {/* Curve decoration */}
+              <div className={styles.navCurve}>
+                <svg className={styles.curveSvg} width="100" height="100%" viewBox="0 0 100 100" fill="none" preserveAspectRatio="none">
+                  <motion.path 
+                    d="M100 0 L100 100 Q100 50 100 0"
+                    initial={{ d: "M100 0 L100 100 Q-100 50 100 0" }}
+                    animate={{ d: "M100 0 L100 100 Q100 50 100 0" }}
+                    exit={{ d: "M100 0 L100 100 Q-100 50 100 0" }}
+                    transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
+                    stroke="rgba(255, 255, 255, 0.1)"
+                    strokeWidth="1"
+                  />
+                </svg>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>
