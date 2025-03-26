@@ -126,7 +126,7 @@ const ProfileSection = () => {
                       <div className={styles.bullet}></div>
                       <h3>Education</h3>
                     </div>
-                    <p>UMD '27 Computer Science, Data Science Track</p>
+                    <p>University of Maryland, College Park '27 Computer Science, Data Science Track</p>
                   </div>
                   <div className={styles.qualificationItem}>
                     <div className={styles.qualHeading}>

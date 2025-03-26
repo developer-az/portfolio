@@ -26,6 +26,44 @@ const projects = [
   },
   {
     id: 2,
+    title: "Movie Counter Project",
+    description: "A Python & PostgreSQL-based text interface for managing movie tickets with comprehensive database operations.",
+    longDescription: "A robust command-line application that provides a complete solution for movie ticket management. Built with Python and PostgreSQL, it offers features for creating movies, updating ticket counts, booking tickets, and listing movies. The project demonstrates strong database management skills and efficient data handling.",
+    technologies: ["Python", "PostgreSQL", "Database Management", "CLI", "Docker"],
+    image: "/images/projects/movie-counter.jpg",
+    gif: "/images/projects/5.gif",
+    demoLink: "https://github.com/developer-az/movie_counter_project",
+    repoLink: "https://github.com/developer-az/movie_counter_project",
+    category: "data",
+    features: [
+      "Complete movie database management system",
+      "Ticket booking and inventory tracking",
+      "Efficient PostgreSQL database operations",
+      "User-friendly text interface",
+      "Comprehensive data validation"
+    ]
+  },
+  {
+    id: 3,
+    title: "Sale Tracker",
+    description: "A Flask application that tracks product prices and sends email notifications when products go on sale.",
+    longDescription: "Developed in collaboration with Siqi Ding, this Flask application provides automated price tracking for products across various websites. It features email notifications for price changes, scheduled price checks, and comprehensive error handling. The project demonstrates strong backend development skills and practical web scraping capabilities.",
+    technologies: ["Python", "Flask", "Web Scraping", "Email Notifications", "Docker"],
+    image: "/images/projects/sale-tracker.jpg",
+    gif: "/images/projects/6.gif",
+    demoLink: "https://github.com/developer-az/sale-tracker",
+    repoLink: "https://github.com/developer-az/sale-tracker",
+    category: "web",
+    features: [
+      "Automated price tracking from any website",
+      "Email notifications for price changes",
+      "Scheduled price checks with rate limiting",
+      "Health check endpoint for monitoring",
+      "Comprehensive error handling and logging"
+    ]
+  },
+  {
+    id: 4,
     title: "Portfolio Website",
     description: "Modern portfolio featuring fluid animations, responsive design, and theme toggling capabilities.",
     longDescription: "A performance-optimized Next.js-based portfolio showcasing my projects and skills. Features include smooth animations with Framer Motion, responsive design for all devices, theme switching capabilities, and dynamic content sections. Built with accessibility and SEO best practices in mind.",
@@ -44,7 +82,7 @@ const projects = [
     ]
   },
   {
-    id: 3,
+    id: 5,
     title: "Financial Dashboard",
     description: "Interactive dashboard for visualizing and analyzing financial market data with customizable chart components.",
     longDescription: "A comprehensive financial data visualization platform featuring real-time market data, customizable charts, and technical indicators. Users can track stocks, cryptocurrencies, and other assets with personalized watchlists and receive market alerts based on custom parameters.",
@@ -63,7 +101,7 @@ const projects = [
     ]
   },
   {
-    id: 4,
+    id: 6,
     title: "ML Text Classifier",
     description: "Natural language processing application that classifies text using machine learning algorithms with high accuracy.",
     longDescription: "An advanced NLP application that leverages machine learning to classify text into predefined categories. The system uses a combination of TensorFlow models and pre-trained language models to achieve high accuracy. Features include multi-language support, sentiment analysis, and custom category training.",

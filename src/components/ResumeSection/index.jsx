@@ -65,7 +65,7 @@ const ResumeSection = () => {
       }
     ],
     skills: {
-      technical: ["Python", "JavaScript", "React", "Next.js", "Java", "C", "HTML/CSS", "Data Science", "Git", "SQL"],
+      technical: ["Python", "JavaScript", "React", "Next.js", "Java", "C", "HTML/CSS", "Data Analysis", "Git", "SQL", "Docker", "Flutter"],
       soft: ["Problem Solving", "Team Leadership", "Project Management", "Scrum", "Agile Development", "Public Speaking"]
     },
     certifications: [

@@ -169,16 +169,11 @@ const ProjectCard = ({
                 }}
                 transition={{ duration: 0.4, delay: 0.2 }}
               >
-                {technologies.slice(0, 3).map((tech, index) => (
+                {technologies.map((tech, index) => (
                   <span key={index} className={styles.techTag}>
                     {tech}
                   </span>
                 ))}
-                {technologies.length > 3 && (
-                  <span className={styles.moreBadge}>
-                    +{technologies.length - 3}
-                  </span>
-                )}
               </motion.div>
             </div>
           </motion.div>
