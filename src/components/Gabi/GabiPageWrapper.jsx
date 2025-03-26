@@ -78,12 +78,6 @@ const GabiPageWrapper = () => {
 
   // Authentication check
   useEffect(() => {
-    // Skip password for development
-    if (process.env.NODE_ENV === 'development') {
-      setIsAuthorized(true);
-      return;
-    }
-    
     // Get last visit from localStorage
     const lastVisit = localStorage.getItem('gabiLastVisit');
     const currentTime = new Date().getTime();

@@ -41,7 +41,7 @@ const MissYouScreen = () => {
           fontFamily: 'Avant Garde Book BT, sans-serif',
         }}
       >
-        love you.
+        I will always love you.
       </motion.p>
     </div>
   );

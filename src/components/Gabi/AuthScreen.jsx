@@ -1,243 +1,322 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// Memoized star component
+const Star = memo(({ index }) => {
+  const randomValues = useMemo(() => ({
+    top: `${Math.random() * 100}%`,
+    left: `${Math.random() * 100}%`,
+    size: Math.random() * 2 + 1,
+    duration: Math.random() * 3 + 2,
+    delay: Math.random() * 2
+  }), []);
+
+  return (
+    <motion.div
+      style={{
+        position: 'absolute',
+        width: `${randomValues.size}px`,
+        height: `${randomValues.size}px`,
+        backgroundColor: '#ffffff',
+        borderRadius: '50%',
+        top: randomValues.top,
+        left: randomValues.left,
+        filter: 'blur(0.5px)',
+        boxShadow: '0 0 10px rgba(255, 255, 255, 0.8)',
+        willChange: 'transform, opacity'
+      }}
+      animate={{
+        opacity: [0.2, 1, 0.2],
+        scale: [1, 1.5, 1]
+      }}
+      transition={{
+        duration: randomValues.duration,
+        repeat: Infinity,
+        ease: "easeInOut",
+        delay: randomValues.delay
+      }}
+    />
+  );
+});
+
+// Memoized nebula component
+const Nebula = memo(() => {
+  return (
+    <div style={{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      background: `
+        radial-gradient(circle at 20% 20%, rgba(147, 51, 234, 0.15), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.15), transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.1), transparent 60%)
+      `,
+      filter: 'blur(50px)',
+      opacity: 0.5,
+      zIndex: 1
+    }} />
+  );
+});
 
 const AuthScreen = ({ setIsAuthorized }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isHovered, setIsHovered] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
   
-  // Handle login form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // Memoized handlers
+  const handlePasswordChange = useCallback((e) => {
+    const value = e.target.value;
+    setPassword(value);
     
-    if (password.toLowerCase() === 'tiktok' || password.toLowerCase() === 'tik tok') {
-      setIsAuthorized(true);
-      localStorage.setItem('gabiLastVisit', new Date().getTime().toString());
-    } else {
-      setError('?');
+    if (value.toLowerCase() === 'tiktok' || value.toLowerCase() === 'tik tok') {
+      setIsAuthenticating(true);
+      setTimeout(() => {
+        setIsAuthorized(true);
+        localStorage.setItem('gabiLastVisit', new Date().getTime().toString());
+      }, 1000);
     }
-  };
+  }, [setIsAuthorized]);
+
+  const handleFocus = useCallback(() => setIsFocused(true), []);
+  const handleBlur = useCallback(() => setIsFocused(false), []);
+
+  // Memoized styles
+  const containerStyle = useMemo(() => ({
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: '100vh',
+    backgroundColor: '#1a1a24',
+    color: 'white',
+    fontFamily: 'Avant Garde Book BT, sans-serif',
+    overflow: 'hidden',
+    perspective: '1000px'
+  }), []);
+
+  const cardStyle = useMemo(() => ({
+    position: 'relative',
+    zIndex: 1,
+    textAlign: 'center',
+    padding: '50px',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    backdropFilter: 'blur(15px)',
+    borderRadius: '30px',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    boxShadow: '0 25px 60px rgba(0, 0, 0, 0.4)',
+    maxWidth: '450px',
+    width: '90%',
+    willChange: 'transform'
+  }), []);
+
+  const inputStyle = useMemo(() => ({
+    width: '100%',
+    padding: '18px',
+    fontSize: '16px',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    border: '2px solid rgba(255, 255, 255, 0.15)',
+    borderRadius: '15px',
+    color: 'white',
+    outline: 'none',
+    transition: 'all 0.3s ease',
+    boxShadow: isFocused ? '0 0 25px rgba(255, 255, 255, 0.2)' : 'none',
+    backdropFilter: 'blur(5px)',
+    willChange: 'transform, box-shadow'
+  }), [isFocused]);
 
   return (
     <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: '100vh',
-      backgroundColor: '#0f0f0f',
-      color: 'white',
-      fontFamily: 'Avant Garde Book BT, sans-serif',
-      backgroundImage: 'radial-gradient(circle at 50% 50%, #1a1a24, #0f0f0f)',
+      position: 'relative',
+      width: '100%',
+      height: '100vh',
       overflow: 'hidden',
+      background: 'linear-gradient(180deg, #000000 0%, #0a0a0a 50%, #000000 100%)',
       perspective: '1000px'
     }}>
-      {/* Moving stars background */}
+      {/* Space background effects */}
       <div style={{
         position: 'absolute',
+        top: 0,
+        left: 0,
         width: '100%',
         height: '100%',
-        overflow: 'hidden',
-        pointerEvents: 'none'
-      }}>
-        {[...Array(50)].map((_, i) => {
-          const size = Math.random() * 2 + 1;
-          const opacity = Math.random() * 0.7 + 0.3;
-          return (
-            <div 
-              key={i} 
-              style={{
-                position: 'absolute',
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                width: `${size}px`,
-                height: `${size}px`,
-                borderRadius: '50%',
-                backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                opacity: opacity,
-                boxShadow: `0 0 ${size * 2}px rgba(255, 255, 255, 0.8)`,
-                animation: `authTwinkle ${(Math.random() * 5) + 3}s infinite ease-in-out ${Math.random() * 5}s`
-              }}
-            />
-          );
-        })}
-      </div>
+        background: `
+          radial-gradient(circle at 20% 20%, rgba(147, 51, 234, 0.08), transparent 40%),
+          radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.08), transparent 40%),
+          radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.05), transparent 60%)
+        `,
+        filter: 'blur(50px)',
+        opacity: 0.3,
+        zIndex: 1
+      }} />
       
-      {/* 3D Login Card */}
-      <motion.div 
-        initial={{ opacity: 0, rotateX: -10, y: 20 }}
-        animate={{ opacity: 1, rotateX: 0, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
-        style={{
-          backgroundColor: 'rgba(25, 25, 25, 0.8)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.05)',
-          borderRadius: '16px',
-          padding: '40px',
-          width: '90%',
-          maxWidth: '400px',
-          textAlign: 'center',
-          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05) inset',
-          transformStyle: 'preserve-3d',
-          transform: isHovered ? 'rotateX(5deg) scale(1.02)' : 'rotateX(0) scale(1)',
-          transition: 'transform 0.3s ease'
-        }}
-      >
-        {/* Title with 3D effect */}
-        <motion.h2 
-          animate={{ 
-            y: [0, -5, 0],
-            textShadow: [
-              '0 0 8px rgba(255, 255, 255, 0)',
-              '0 0 12px rgba(255, 255, 255, 0.3)',
-              '0 0 8px rgba(255, 255, 255, 0)'
-            ]
+      {/* Stars */}
+      {[...Array(100)].map((_, i) => (
+        <motion.div
+          key={i}
+          style={{
+            position: 'absolute',
+            width: `${Math.random() * 2 + 1}px`,
+            height: `${Math.random() * 2 + 1}px`,
+            backgroundColor: '#ffffff',
+            borderRadius: '50%',
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+            filter: 'blur(0.5px)',
+            boxShadow: '0 0 10px rgba(255, 255, 255, 0.8)',
+            willChange: 'transform, opacity'
           }}
-          transition={{ 
-            duration: 5,
+          animate={{
+            opacity: [0.2, 1, 0.2],
+            scale: [1, 1.5, 1]
+          }}
+          transition={{
+            duration: Math.random() * 3 + 2,
             repeat: Infinity,
-            ease: "easeInOut" 
+            ease: "easeInOut",
+            delay: Math.random() * 2
           }}
-          style={{ 
-            margin: '0 0 10px 0', 
-            fontWeight: '300',
-            letterSpacing: '1px',
-            color: 'rgba(255, 255, 255, 0.9)',
-            transform: 'translateZ(30px)'
+        />
+      ))}
+
+      {/* Content container */}
+      <div style={{
+        position: 'relative',
+        zIndex: 2,
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        {/* Title */}
+        <motion.div
+          style={{
+            textAlign: 'center',
+            marginBottom: '40px',
+            color: '#ffffff',
+            textShadow: '0 0 20px rgba(255, 255, 255, 0.5)'
           }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
         >
-        </motion.h2>
-        
-        <motion.p 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          style={{ 
-            marginBottom: '30px', 
-            color: 'rgba(255, 255, 255, 0.6)',
-            fontWeight: '300',
-            fontSize: '15px',
-            transform: 'translateZ(20px)'
-          }}
-        >
-        </motion.p>
-        
-        <form onSubmit={handleSubmit} style={{ transformStyle: 'preserve-3d' }}>
-          {/* Password input with 3D effect */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-            style={{ transformStyle: 'preserve-3d' }}
+          <motion.h1
+            style={{
+              fontSize: '2.5rem',
+              fontWeight: '700',
+              marginBottom: '10px',
+              letterSpacing: '2px',
+              background: 'linear-gradient(45deg, #fff, #a5b4fc)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}
           >
-            <motion.input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              whileFocus={{ scale: 1.02 }}
+            Welcome to
+          </motion.h1>
+          <motion.h2
+            style={{
+              fontSize: '3.5rem',
+              fontWeight: '800',
+              letterSpacing: '3px',
+              background: 'linear-gradient(45deg, #fff, #c4b5fd)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}
+          >
+            Anthony's Garden of Rose
+          </motion.h2>
+        </motion.div>
+
+        {/* Input field */}
+        <motion.div
+          style={{
+            position: 'relative',
+            width: '300px'
+          }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+        >
+          <input
+            type="password"
+            value={password}
+            onChange={handlePasswordChange}
+            placeholder="Enter magic word"
+            style={{
+              width: '100%',
+              padding: '15px 20px',
+              fontSize: '16px',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '25px',
+              color: '#ffffff',
+              outline: 'none',
+              transition: 'all 0.3s ease',
+              backdropFilter: 'blur(10px)',
+              boxShadow: isFocused ? '0 0 30px rgba(255, 255, 255, 0.2)' : 'none'
+            }}
+            onFocus={(e) => e.target.style.boxShadow = '0 0 30px rgba(255, 255, 255, 0.2)'}
+            onBlur={(e) => e.target.style.boxShadow = 'none'}
+          />
+        </motion.div>
+
+        {/* Success message */}
+        <AnimatePresence>
+          {isAuthenticating && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
               style={{
-                width: '100%',
-                padding: '14px',
-                marginBottom: '15px',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '8px',
-                color: 'white',
-                fontSize: '16px',
-                outline: 'none',
-                fontWeight: '300',
-                transform: 'translateZ(25px)',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-              }}
-            />
-          </motion.div>
-          
-          {error && (
-            <motion.p 
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              style={{ 
-                color: '#ff6b6b', 
-                margin: '10px 0 20px 0', 
-                fontSize: '14px',
-                transform: 'translateZ(20px)'
+                marginTop: '20px',
+                color: '#4ade80',
+                fontSize: '18px',
+                fontWeight: '600',
+                textShadow: '0 0 20px rgba(74, 222, 128, 0.5)'
               }}
             >
-              {error}
-            </motion.p>
+              Welcome back, Gabi! 🌹
+            </motion.div>
           )}
-          
-          {/* Submit button with 3D effect */}
-          <motion.button 
-            type="submit" 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.7, duration: 0.6 }}
-            whileHover={{ 
-              scale: 1.05,
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)'
-            }}
-            whileTap={{ scale: 0.95 }}
-            style={{
-              padding: '14px 30px',
-              backgroundColor: 'transparent',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: '8px',
-              color: 'white',
-              fontSize: '16px',
-              cursor: 'pointer',
-              fontWeight: '300',
-              transform: 'translateZ(35px)',
-              boxShadow: '0 5px 15px rgba(0, 0, 0, 0.1)'
-            }}
-          >
-            Enter
-          </motion.button>
-        </form>
-        
-        {/* Decorative elements to enhance 3D look */}
-        <div style={{
-          position: 'absolute',
-          top: '-15px',
-          left: '-15px',
-          width: '30px',
-          height: '30px',
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent)',
-          boxShadow: '0 0 20px rgba(255, 255, 255, 0.05)',
-          transform: 'translateZ(5px)'
-        }} />
-        
-        <div style={{
-          position: 'absolute',
-          bottom: '-10px',
-          right: '-10px',
-          width: '20px',
-          height: '20px',
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.05))',
-          boxShadow: '0 0 20px rgba(255, 255, 255, 0.03)',
-          transform: 'translateZ(5px)'
-        }} />
-      </motion.div>
-      
-      <style jsx global>{`
-        @keyframes authTwinkle {
-          0%, 100% {
-            opacity: 0.3;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 0.8;
-            transform: scale(1.2);
-          }
-        }
-      `}</style>
+        </AnimatePresence>
+      </div>
+
+      {/* Cosmic particles */}
+      {[...Array(20)].map((_, i) => (
+        <motion.div
+          key={i}
+          style={{
+            position: 'absolute',
+            width: '3px',
+            height: '3px',
+            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            borderRadius: '50%',
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+            filter: 'blur(1px)',
+            willChange: 'transform',
+            transform: 'translateZ(0)',
+            boxShadow: '0 0 15px rgba(255, 255, 255, 0.5)'
+          }}
+          animate={{
+            y: [0, -100, 0],
+            opacity: [0.1, 0.8, 0.1],
+            scale: [1, 1.5, 1]
+          }}
+          transition={{
+            duration: 5 + Math.random() * 3,
+            repeat: Infinity,
+            ease: "linear",
+            delay: Math.random() * 5
+          }}
+        />
+      ))}
     </div>
   );
 };
 
-export default AuthScreen;
+export default memo(AuthScreen);

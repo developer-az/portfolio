@@ -80,9 +80,8 @@
 .canvas {
   position: relative;
   width: 100%;
-  height: 100%; /* Take full height */
-  cursor: pointer;
-  perspective: 1000px;
+  height: 100%;
+  overflow: hidden;
 }
 
 /* Improved calm background */
@@ -146,42 +145,27 @@
 /* Memory roses - more compact */
 .memoryBox {
   position: absolute;
-  width: 40px;
-  height: 40px;
-  transform: translate(-50%, -50%);
-  z-index: 5;
-  cursor: pointer;
+  transform-style: preserve-3d;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  perspective: 400px;
-  transform-style: preserve-3d;
+  gap: 10px;
+  transform: translate(-50%, -50%);
 }
 
 .tapHere {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 10px; /* Smaller font */
-  margin-bottom: 6px; /* Less margin */
-  font-weight: 300;
-  letter-spacing: 0.5px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(5px);
-  padding: 2px 6px;
-  border-radius: 4px; /* Smaller radius */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  transform: translateZ(10px);
+  font-family: 'Avant Garde Book BT', sans-serif;
+  font-size: 14px;
+  color: white;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  letter-spacing: 2px;
   cursor: pointer;
 }
 
 .rose {
-  position: relative;
-  font-size: 24px; /* Slightly smaller */
-  filter: drop-shadow(0 0 8px rgba(255, 150, 150, 0.3));
-  text-shadow: 0 0 10px rgba(255, 50, 50, 0.3);
-  animation: float 3s ease-in-out infinite;
-  transform: translateZ(20px) rotateX(10deg);
+  font-size: 24px;
   transform-style: preserve-3d;
+  position: relative;
   cursor: pointer;
 }
 
@@ -189,83 +173,76 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 100, 100, 0.3) 0%, rgba(255, 100, 100, 0) 70%);
-  transform: translate(-50%, -50%) translateZ(-5px);
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
   filter: blur(5px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.rose:hover .roseGlow {
+  opacity: 1;
 }
 
 /* Player (Gabi) */
 .player {
   position: absolute;
   transform: translate(-50%, -50%);
-  z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
-  transform-style: preserve-3d;
+  gap: 5px;
 }
 
 .playerName {
+  font-family: 'Avant Garde Book BT', sans-serif;
+  font-size: 14px;
   color: white;
-  font-size: 12px; /* Smaller font */
-  font-weight: 300;
-  letter-spacing: 1px;
-  margin-bottom: 5px;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-  transform: translateZ(20px);
+  letter-spacing: 2px;
 }
 
 /* New White Heart styles (replacing playerDot) */
 .playerHeart {
+  font-size: 20px;
   position: relative;
-  font-size: 18px;
-  text-shadow: 0 0 10px white, 0 0 20px white;
-  animation: pulse 2s infinite ease-in-out;
-  filter: brightness(1.5); /* Make the heart extra bright */
-  transform: translateZ(25px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .heartGlow {
   position: absolute;
   top: 50%;
   left: 50%;
+  transform: translate(-50%, -50%);
   width: 30px;
   height: 30px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 70%);
-  transform: translate(-50%, -50%) translateZ(-5px);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
   filter: blur(5px);
-  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.playerHeart:hover .heartGlow {
+  opacity: 1;
 }
 
 /* Instructions - smaller and at bottom */
 .instructionsContainer {
   position: absolute;
-  bottom: 16px; /* Moved up slightly */
-  left: 0;
-  width: 100%;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   text-align: center;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 14px;
-  z-index: 2;
-  pointer-events: none;
-  font-weight: 300;
 }
 
 .instructions {
+  font-family: 'Avant Garde Book BT', sans-serif;
+  font-size: 14px;
+  color: white;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  letter-spacing: 2px;
   margin: 0;
-  padding: 8px 14px; /* Smaller padding */
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(5px);
-  border-radius: 8px; /* Smaller radius */
-  display: inline-block;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(255, 255, 255, 0.05);
 }
 
 /* Animations */

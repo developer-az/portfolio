@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Caption options in order
+// Memoized constants
 const memoryCaptions = [
   "Coming into your life..",
   "I hope we...",
@@ -18,6 +18,104 @@ const STATES = {
   TRANSITION: "transition"
 };
 
+// Memoized image component
+const MemoryImage = memo(({ memory, developmentStage, index, isActive }) => {
+  const imageStyle = useMemo(() => ({
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    filter: `brightness(${0.7 + (developmentStage / 333)})`,
+    transition: 'filter 0.3s ease',
+    willChange: 'filter'
+  }), [developmentStage]);
+
+  const containerStyle = useMemo(() => ({
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    opacity: isActive ? 1 : 0,
+    transition: 'opacity 0.5s ease-in-out',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+    willChange: 'opacity'
+  }), [isActive]);
+
+  const developmentCoverStyle = useMemo(() => ({
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    background: `linear-gradient(to bottom, 
+      rgba(30, 30, 30, ${1 - developmentStage/100}) 0%, 
+      rgba(20, 20, 20, ${1 - developmentStage/100}) 50%, 
+      rgba(10, 10, 10, ${1 - developmentStage/100}) 100%)`,
+    transition: 'background 0.2s ease',
+    willChange: 'background'
+  }), [developmentStage]);
+
+  return (
+    <div style={containerStyle}>
+      <div style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden'
+      }}>
+        <img
+          src={memory.image}
+          alt={memory.title || `Memory ${index + 1}`}
+          style={imageStyle}
+          loading="eager"
+          onError={(e) => {
+            console.error(`Error loading image: ${memory.image}`);
+            e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280'%3E%3Crect width='280' height='280' fill='%23333'/%3E%3Ctext x='140' y='140' font-family='Arial' font-size='20' fill='white' text-anchor='middle' dominant-baseline='middle'%3EImage not found%3C/text%3E%3C/svg%3E";
+          }}
+        />
+        <div style={developmentCoverStyle} />
+      </div>
+    </div>
+  );
+});
+
+// Memoized progress indicator component
+const ProgressIndicator = memo(({ total, current, completed }) => {
+  const indicators = useMemo(() => 
+    [...Array(total)].map((_, i) => ({
+      key: i,
+      isCompleted: i < completed,
+      isCurrent: i === current,
+      style: {
+        width: '8px',
+        height: '8px',
+        borderRadius: '50%',
+        backgroundColor: i < completed ? 
+          'rgba(255, 255, 255, 0.8)' : 
+          i === current ? 
+            'rgba(255, 255, 255, 0.5)' :
+            'rgba(255, 255, 255, 0.2)',
+        transition: 'background-color 0.3s ease',
+        willChange: 'background-color'
+      }
+    })), [total, current, completed]);
+
+  return (
+    <div style={{ 
+      display: 'flex', 
+      marginTop: '15px', 
+      gap: '8px' 
+    }}>
+      {indicators.map(({ key, style }) => (
+        <div key={key} style={style} />
+      ))}
+    </div>
+  );
+});
+
 const PolaroidLoadingScreen = ({ memories, onComplete }) => {
   // Core state management
   const [currentState, setCurrentState] = useState(STATES.DEVELOPING);
@@ -31,27 +129,16 @@ const PolaroidLoadingScreen = ({ memories, onComplete }) => {
   const timeoutRef = useRef(null);
   
   // Use default fallback memories if none provided
-  const actualMemories = memories && memories.length > 0 ? memories : [
-    {
-      id: 1,
-      title: "Fallback Memory",
-      date: "January 2025",
-      image: "/memories/image1.jpg",
-      description: "Fallback memory - if you see this, no memories were passed!"
-    }
-  ];
+  const actualMemories = memories && memories.length > 0 ? memories : [{
+    id: 1,
+    title: "Fallback Memory",
+    date: "January 2025",
+    image: "/memories/image1.jpg",
+    description: "Fallback memory - if you see this, no memories were passed!"
+  }];
   
   // Limit to first 3 images
   const limitedMemories = actualMemories.slice(0, 3);
-
-  // Clean up timeouts on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
 
   // Development phase handler
   useEffect(() => {
@@ -95,17 +182,13 @@ const PolaroidLoadingScreen = ({ memories, onComplete }) => {
     const newTotalShown = totalCaptionsShown + 1;
     setTotalCaptionsShown(newTotalShown);
     
-    console.log(`Caption ${currentCaptionIndex + 1} shown, total captions shown: ${newTotalShown}`);
-    
-    // Check if we've shown all captions (memoryCaptions.length)
+    // Check if we've shown all captions
     if (newTotalShown >= memoryCaptions.length) {
-      console.log("All captions have been shown, completing sequence");
       setSequenceCompleted(true);
       
       // Call onComplete after a small delay
       timeoutRef.current = setTimeout(() => {
         if (onComplete) {
-          console.log("Calling onComplete to move to next phase");
           onComplete();
         }
       }, 1000);
@@ -113,49 +196,61 @@ const PolaroidLoadingScreen = ({ memories, onComplete }) => {
     }
     
     // Otherwise, prepare for the next caption/image
-    const nextCaptionIndex = (currentCaptionIndex + 1) % memoryCaptions.length;
-    const nextImageIndex = (currentImageIndex + 1) % limitedMemories.length;
-    
-    console.log(`Moving to next caption: ${nextCaptionIndex + 1} and image: ${nextImageIndex + 1}`);
-    
-    setCurrentCaptionIndex(nextCaptionIndex);
-    setCurrentImageIndex(nextImageIndex);
+    setCurrentCaptionIndex(prev => (prev + 1) % memoryCaptions.length);
+    setCurrentImageIndex(prev => (prev + 1) % limitedMemories.length);
     setDevelopmentStage(0);
     setCurrentState(STATES.DEVELOPING);
     
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [
-    currentState, 
-    currentCaptionIndex, 
-    currentImageIndex, 
-    totalCaptionsShown, 
-    limitedMemories.length, 
-    onComplete,
-    sequenceCompleted
-  ]);
+  }, [currentState, totalCaptionsShown, limitedMemories.length, onComplete, sequenceCompleted]);
 
-  // Debug output to console
+  // Cleanup on unmount
   useEffect(() => {
-    console.log(`Polaroid state: ${currentState}, Caption: ${currentCaptionIndex + 1}/${memoryCaptions.length}, Image: ${currentImageIndex + 1}/${limitedMemories.length}, Total shown: ${totalCaptionsShown}, Development: ${developmentStage}%, Completed: ${sequenceCompleted}`);
-  }, [currentState, currentCaptionIndex, currentImageIndex, totalCaptionsShown, developmentStage, limitedMemories.length, sequenceCompleted]);
-  
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Memoized styles
+  const containerStyle = useMemo(() => ({
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100vh',
+    backgroundColor: '#0f0f0f',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
+    perspective: '1200px'
+  }), []);
+
+  const polaroidStyle = useMemo(() => ({
+    position: 'relative',
+    width: '320px',
+    height: '380px',
+    backgroundColor: 'white',
+    borderRadius: '4px',
+    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.05) inset',
+    padding: '16px 16px 50px 16px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: '30px',
+    transformStyle: 'preserve-3d',
+    transform: 'rotateX(5deg)',
+    willChange: 'transform'
+  }), []);
+
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100vh',
-      backgroundColor: '#0f0f0f',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 9999,
-      perspective: '1200px'
-    }}>
+    <div style={containerStyle}>
       <motion.div
         key="polaroid-content"
         initial={{ opacity: 0 }}
@@ -181,22 +276,7 @@ const PolaroidLoadingScreen = ({ memories, onComplete }) => {
             ease: "easeInOut",
             times: [0, 0.3, 0.6, 1]
           }}
-          style={{
-            position: 'relative',
-            width: '320px',
-            height: '380px',
-            backgroundColor: 'white',
-            borderRadius: '4px',
-            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.05) inset',
-            padding: '16px 16px 50px 16px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '30px',
-            transformStyle: 'preserve-3d',
-            transform: 'rotateX(5deg)'
-          }}
+          style={polaroidStyle}
         >
           {/* Photo area with development effect */}
           <div style={{
@@ -207,63 +287,15 @@ const PolaroidLoadingScreen = ({ memories, onComplete }) => {
             overflow: 'hidden',
             transformStyle: 'preserve-3d'
           }}>
-            {limitedMemories.map((memory, index) => {
-              return (
-                <div 
-                  key={index}
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    opacity: index === currentImageIndex ? 1 : 0,
-                    transition: 'opacity 0.5s ease-in-out',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    overflow: 'hidden'
-                  }}
-                >
-                  <div style={{
-                    position: 'relative',
-                    width: '100%',
-                    height: '100%',
-                    overflow: 'hidden'
-                  }}>
-                    <img
-                      src={memory.image}
-                      alt={memory.title || `Memory ${index + 1}`}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        filter: `brightness(${0.7 + (developmentStage / 333)})`,
-                        transition: 'filter 0.3s ease'
-                      }}
-                      onError={(e) => {
-                        console.error(`Error loading image: ${memory.image}`);
-                        e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280'%3E%3Crect width='280' height='280' fill='%23333'/%3E%3Ctext x='140' y='140' font-family='Arial' font-size='20' fill='white' text-anchor='middle' dominant-baseline='middle'%3EImage not found%3C/text%3E%3C/svg%3E";
-                      }}
-                    />
-                    
-                    {/* Development cover that gradually disappears */}
-                    <div style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: '100%',
-                      background: `linear-gradient(to bottom, 
-                        rgba(30, 30, 30, ${1 - developmentStage/100}) 0%, 
-                        rgba(20, 20, 20, ${1 - developmentStage/100}) 50%, 
-                        rgba(10, 10, 10, ${1 - developmentStage/100}) 100%)`,
-                      transition: 'background 0.2s ease'
-                    }} />
-                  </div>
-                </div>
-              );
-            })}
+            {limitedMemories.map((memory, index) => (
+              <MemoryImage
+                key={index}
+                memory={memory}
+                developmentStage={developmentStage}
+                index={index}
+                isActive={index === currentImageIndex}
+              />
+            ))}
           </div>
           
           {/* Polaroid bottom section with date */}
@@ -334,37 +366,21 @@ const PolaroidLoadingScreen = ({ memories, onComplete }) => {
               height: '100%',
               backgroundColor: 'rgba(255, 255, 255, 0.5)',
               width: `${developmentStage}%`,
-              transition: 'width 0.1s linear'
+              transition: 'width 0.1s linear',
+              willChange: 'width'
             }}
           />
         </motion.div>
         
         {/* Progress indicators */}
-        <div style={{ 
-          display: 'flex', 
-          marginTop: '15px', 
-          gap: '8px' 
-        }}>
-          {[...Array(memoryCaptions.length)].map((_, i) => (
-            <div
-              key={i}
-              style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                backgroundColor: i < totalCaptionsShown ? 
-                  'rgba(255, 255, 255, 0.8)' : 
-                  i === currentCaptionIndex ? 
-                    'rgba(255, 255, 255, 0.5)' :
-                    'rgba(255, 255, 255, 0.2)',
-                transition: 'background-color 0.3s ease'
-              }}
-            />
-          ))}
-        </div>
+        <ProgressIndicator
+          total={memoryCaptions.length}
+          current={currentCaptionIndex}
+          completed={totalCaptionsShown}
+        />
       </motion.div>
     </div>
   );
 };
 
-export default PolaroidLoadingScreen;
+export default memo(PolaroidLoadingScreen);
