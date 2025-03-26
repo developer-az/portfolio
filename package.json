@@ -10,19 +10,20 @@
   },
   "dependencies": {
     "anthony-zhou-portfolio": "file:",
+    "critters": "^0.0.25",
     "framer-motion": "^10.18.0",
-    "gsap": "^3.12.5",
-    "next": "^14.2.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "sass": "^1.72.0",
+    "gsap": "^3.12.7",
+    "next": "^14.2.26",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sass": "^1.86.0",
     "sharp": "^0.33.5",
     "three": "^0.156.1"
   },
   "devDependencies": {
-    "eslint": "^8.56.0",
-    "eslint-config-next": "^14.2.0",
-    "prettier": "^3.2.5"
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.26",
+    "prettier": "^3.5.3"
   },
   "engines": {
     "node": ">=18.17.0"
