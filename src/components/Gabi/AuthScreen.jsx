@@ -134,7 +134,6 @@ const AuthScreen = ({ setIsAuthorized }) => {
               WebkitTextFillColor: 'transparent'
             }}
           >
-            Welcome to
           </motion.h1>
           <motion.h2
             style={{
