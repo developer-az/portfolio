@@ -189,7 +189,7 @@ const Instructions = memo(() => (
         opacity: 0.8
       }}
     >
-      Click anywhere to move Gabi. Click on roses 🌹
+      Click anywhere to move Gabi |||||| Click on roses 🌹 to see memories.
     </motion.p>
   </motion.div>
 ));
