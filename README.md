@@ -13,8 +13,8 @@ This repository contains the source code for my personal portfolio website, show
 
 This portfolio's landing page design and interactions were inspired by:
 
-- **Original Portfolio**: [Dennis Snellenberg](https://dennissnellenberg.com/) - Award-winning designer whose portfolio concept served as inspiration
-- [Awwwards Landing Page](https://blog.olivierlarose.com/tutorials/awwwards-landing-page) by Olivier Larose (July 23, 2023) - The implementation approach for the interactive text reveal effect was adapted from this tutorial
+- **Original**: [Dennis Snellenberg](https://dennissnellenberg.com/) - Award-winning designer whose portfolio concept served as inspiration
+- **Adaptation**: [Awwwards Landing Page](https://blog.olivierlarose.com/tutorials/awwwards-landing-page) by Olivier Larose (July 23, 2023) - The implementation approach for the interactive text reveal effect was adapted from this tutorial
 
 ## Features
 
@@ -68,46 +68,20 @@ This portfolio's landing page design and interactions were inspired by:
 - **ContactSection**: Contact form with validation
 - **Instagram Analyzer**: A specialized tool for Instagram analytics
 
-## Getting Started
+## Development
 
-### Prerequisites
+This portfolio is built with modern web technologies and follows best practices for performance, accessibility, and user experience. The development environment requires Node.js 18.17.0+ and uses npm for package management.
 
-- Node.js 18.17.0 or higher
-- npm or yarn
+The build process is optimized for production deployment with features such as:
 
-### Installation
+- Code splitting for optimal loading performance
+- Image optimization with Sharp
+- Critical CSS extraction
+- Comprehensive ESLint configuration
 
-1. Clone the repository:
-```bash
-git clone https://github.com/developer-az/portfolio.git
-cd portfolio
-```
+## Deployment
 
-2. Install dependencies:
-```bash
-npm install
-# or
-yarn install
-```
-
-3. Run the development server:
-```bash
-npm run dev
-# or
-yarn dev
-```
-
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-### Building for Production
-
-```bash
-npm run build
-npm run start
-# or
-yarn build
-yarn start
-```
+This project is configured for deployment on Vercel for optimal performance with Next.js. Automatic deployments are set up on the production branch.
 
 ## Deployment
 
