@@ -109,13 +109,14 @@ const AuthScreen = ({ setIsAuthorized }) => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'flex-end',
+        textAlign: 'center'
       }}>
         {/* Title */}
         <motion.div
           style={{
             textAlign: 'center',
-            marginBottom: '40px',
+            marginBottom: '20px',
             color: '#ffffff',
             textShadow: '0 0 20px rgba(255, 255, 255, 0.5)'
           }}
