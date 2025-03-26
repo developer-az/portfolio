@@ -85,7 +85,7 @@ const ResumeSection = () => {
   };
 
   // State for active tab
-  const [activeTab, setActiveTab] = useState("experience");
+  const [activeTab, setActiveTab] = useState("skills");
   
   // Refs for animations
   const sectionRef = useRef(null);
@@ -107,7 +107,7 @@ const ResumeSection = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <div className={styles.headerLine}></div>
-          <h2 className={styles.title}>RÉSUMÉ</h2>
+          <h2 className={styles.title}>MY RESUME</h2>
           <div className={styles.headerLine}></div>
         </motion.div>
         
@@ -137,6 +137,14 @@ const ResumeSection = () => {
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
                 <button
+                  className={`${styles.tabButton} ${activeTab === "skills" ? styles.active : ""}`}
+                  onClick={() => setActiveTab("skills")}
+                >
+                  <span className={styles.tabLine}></span>
+                  <span className={styles.tabText}>SKILLS</span>
+                </button>
+
+                <button
                   className={`${styles.tabButton} ${activeTab === "experience" ? styles.active : ""}`}
                   onClick={() => setActiveTab("experience")}
                 >
@@ -150,14 +158,6 @@ const ResumeSection = () => {
                 >
                   <span className={styles.tabLine}></span>
                   <span className={styles.tabText}>EDUCATION</span>
-                </button>
-                
-                <button
-                  className={`${styles.tabButton} ${activeTab === "skills" ? styles.active : ""}`}
-                  onClick={() => setActiveTab("skills")}
-                >
-                  <span className={styles.tabLine}></span>
-                  <span className={styles.tabText}>SKILLS</span>
                 </button>
                 
                 <button
@@ -179,7 +179,7 @@ const ResumeSection = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <span className={styles.downloadText}>DOWNLOAD CV</span>
+                <span className={styles.downloadText}>DOWNLOAD RESUME</span>
                 <span className={styles.downloadIcon}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>

@@ -71,6 +71,17 @@ const ProfileSection = () => {
                   className={styles.imageContainer}
                   whileHover={{ scale: 1.03 }}
                 >
+                  {/* Decorative circles */}
+                  <div className={`${styles.decorativeCircle} ${styles.circle1}`}></div>
+                  <div className={`${styles.decorativeCircle} ${styles.circle2}`}></div>
+                  <div className={`${styles.decorativeCircle} ${styles.circle3}`}></div>
+                  
+                  {/* Decorative crosses */}
+                  <div className={`${styles.decorativeCross} ${styles.cross1}`}></div>
+                  <div className={`${styles.decorativeCross} ${styles.cross2}`}></div>
+                  <div className={`${styles.decorativeCross} ${styles.cross3}`}></div>
+                  <div className={`${styles.decorativeCross} ${styles.cross4}`}></div>
+                  
                   <Image
                     src="/images/1.png"
                     alt="Anthony Zhou"

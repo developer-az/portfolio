@@ -8,6 +8,7 @@
   max-width: 90%;
   z-index: 1000;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
   
   &.scrolled {
     top: 15px;
@@ -26,6 +27,7 @@
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.05);
     transition: all 0.3s ease;
+    pointer-events: auto;
     
     &:hover {
       background-color: rgba(33, 33, 33, 0.8);
@@ -41,6 +43,8 @@
     gap: 5px;
     margin-right: 20px;
     padding: 4px 8px;
+    position: relative;
+    z-index: 1001;
     
     .logoSymbol {
       font-size: 16px;

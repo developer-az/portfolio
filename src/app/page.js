@@ -30,7 +30,7 @@ export default function Home() {
   // Mouse tracking for intro effect
   const [isHovered, setIsHovered] = useState(false);
   const { x, y } = useMousePosition();
-  const size = isHovered ? 400 : 40;
+  const size = isHovered ? 600 : 40;
 
   // Handle loading sequence
   useEffect(() => {
@@ -56,13 +56,13 @@ export default function Home() {
             document.body.style.height = 'auto';
             document.body.style.visibility = 'visible';
           }, 100);
-        }, 600);
+        }, 800);
         
         return () => clearTimeout(showTimer);
-      }, 1000);
+      }, 1500);
       
       return () => clearTimeout(fadeTimer);
-    }, 1200);
+    }, 2000);
   
     return () => clearTimeout(loadTimer);
   }, []);

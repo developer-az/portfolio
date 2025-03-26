@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useTheme } from '@/context/ThemeContext';
-import FloatingNav from '@/components/FloatingNav';
 
 export default function InstagramAnalyzer() {
   const [followersFile, setFollowersFile] = useState(null);
@@ -212,8 +211,6 @@ export default function InstagramAnalyzer() {
 
   return (
     <div className={styles.mainWrapper}>
-      <FloatingNav activeSection="instagram-analyzer" />
-
       <div className={styles.analyzer}>
         {/* Background elements */}
         <div className={styles.backgroundElements}>

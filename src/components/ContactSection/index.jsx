@@ -233,7 +233,9 @@ const ContactSection = () => {
                 </div>
                 <div className={styles.infoContent}>
                   <div className={styles.infoLabel}>TELEPHONE</div>
-                  <div className={styles.infoValue}>(240) 390-5571</div>
+                  <div className={styles.infoValue}>
+                    <a href="tel:+12403905571" className={styles.contactLink}>(240) 390-5571</a>
+                  </div>
                 </div>
               </motion.div>
               
@@ -249,7 +251,9 @@ const ContactSection = () => {
                 </div>
                 <div className={styles.infoContent}>
                   <div className={styles.infoLabel}>EMAIL</div>
-                  <div className={styles.infoValue}>azhou112@umd.edu</div>
+                  <div className={styles.infoValue}>
+                    <a href="mailto:azhou112@umd.edu" className={styles.contactLink}>azhou112@umd.edu</a>
+                  </div>
                 </div>
               </motion.div>
               
@@ -265,7 +269,12 @@ const ContactSection = () => {
                 </div>
                 <div className={styles.infoContent}>
                   <div className={styles.infoLabel}>LOCATION</div>
-                  <div className={styles.infoValue}>Columbia, MD</div>
+                  <div className={styles.infoValue}>
+                    <span className={styles.locationText}>
+                      <span className={styles.locationMarker}>📍</span>
+                      Columbia, MD
+                    </span>
+                  </div>
                 </div>
               </motion.div>
             </div>

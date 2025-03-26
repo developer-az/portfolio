@@ -1,16 +1,16 @@
 // src/app/instagram-analyzer/layout.jsx
 'use client';
+import React from 'react';
+import { usePathname } from 'next/navigation';
+import InstagramAnalyzerNav from '@/components/InstagramAnalyzerNav';
 
+export default function InstagramAnalyzerLayout({ children }) {
+  const pathname = usePathname();
+  const activeSection = pathname.split('/')[1] || '';
 
-import FloatingNav from '@/components/FloatingNav';
-import { useState, useEffect } from 'react';
-
-export default function AnalyzerLayout({ children }) {
-  const [activeSection, setActiveSection] = useState("");
-  
   return (
     <>
-      <FloatingNav activeSection={activeSection} />
+      <InstagramAnalyzerNav />
       {children}
     </>
   );

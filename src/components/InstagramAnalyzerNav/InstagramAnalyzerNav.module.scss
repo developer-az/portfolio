@@ -1,0 +1,48 @@
+.nav {
+  position: fixed;
+  top: 20px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: fit-content;
+  max-width: 90%;
+  z-index: 1000;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  .navContainer {
+    display: flex;
+    align-items: center;
+    background-color: rgba(26, 26, 26, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    padding: 8px 16px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: rgba(33, 33, 33, 0.8);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+    }
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    gap: 5px;
+    padding: 4px 8px;
+    
+    .logoSymbol {
+      font-size: 16px;
+      font-weight: 400;
+    }
+    
+    .logoText {
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+  }
+} 

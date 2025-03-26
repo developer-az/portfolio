@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './FloatingNav.module.scss';
+import { useRouter } from 'next/navigation';
 
 // Navigation items configuration
 const navItems = [
@@ -69,9 +70,13 @@ const NavIcon = React.memo(({ icon }) => {
 });
 
 const FloatingNav = ({ activeSection = "" }) => {
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  
+  // Check if we're in the Instagram Analyzer page
+  const isInstagramAnalyzer = typeof window !== 'undefined' && window.location.pathname === '/instagram-analyzer';
   
   // Detect mobile devices on mount
   useEffect(() => {
@@ -103,7 +108,11 @@ const FloatingNav = ({ activeSection = "" }) => {
   }, []);
 
   // Handle navigation link click
-  const handleLinkClick = () => {
+  const handleLinkClick = (href) => {
+    // If we're in the Instagram Analyzer, all links go to home page
+    if (isInstagramAnalyzer) {
+      router.push('/');
+    }
     // Close the menu on mobile after link click
     setTimeout(() => setMobileMenuOpen(false), 300);
   };
@@ -118,7 +127,10 @@ const FloatingNav = ({ activeSection = "" }) => {
         transition={{ type: 'spring', stiffness: 120, damping: 20, delay: 0.3 }}
       >
         <div className={styles.navContainer}>
-          <Link href="/" className={styles.logo}>
+          <Link href="/" className={styles.logo} onClick={(e) => {
+            e.preventDefault();
+            router.push('/');
+          }}>
             <span className={styles.logoSymbol}>©</span>
             <span className={styles.logoText}>anthony-zhou.com</span>
           </Link>
@@ -129,7 +141,13 @@ const FloatingNav = ({ activeSection = "" }) => {
                 key={item.href}
                 href={item.href}
                 className={`${styles.navLink} ${activeSection === item.href.replace('#', '') ? styles.active : ''}`}
-                onClick={handleLinkClick}
+                onClick={(e) => {
+                  if (isInstagramAnalyzer) {
+                    e.preventDefault();
+                    router.push('/');
+                  }
+                  handleLinkClick(item.href);
+                }}
               >
                 <span className={styles.linkIcon}>
                   <NavIcon icon={item.icon} />
@@ -182,7 +200,13 @@ const FloatingNav = ({ activeSection = "" }) => {
                     key={item.href}
                     href={item.href}
                     className={`${styles.panelNavLink} ${activeSection === item.href.replace('#', '') ? styles.active : ''}`}
-                    onClick={handleLinkClick}
+                    onClick={(e) => {
+                      if (isInstagramAnalyzer) {
+                        e.preventDefault();
+                        router.push('/');
+                      }
+                      handleLinkClick(item.href);
+                    }}
                   >
                     <span className={styles.panelLinkIcon}>
                       <NavIcon icon={item.icon} />

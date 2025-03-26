@@ -24,9 +24,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-image: 
-        linear-gradient(to right, rgba(0, 0, 0, 0.9) 70%, rgba(0, 0, 0, 0.6) 100%),
-        url('/images/subtle-texture.png');
+      background: linear-gradient(to right, rgba(0, 0, 0, 0.9) 70%, rgba(0, 0, 0, 0.6) 100%);
       background-blend-mode: overlay;
       opacity: 0.3;
     }
