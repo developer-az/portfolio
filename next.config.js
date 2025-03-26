@@ -1,28 +1,53 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // Disable strict mode in production to avoid double rerenders
-    reactStrictMode: process.env.NODE_ENV !== 'production',
-    // Reduce image optimization in dev to improve performance
-    images: {
-      domains: [],
-      unoptimized: process.env.NODE_ENV !== 'production',
-    },
-    // Add experimental settings for performance
-    experimental: {
-      // Enable optimizations
-      optimizeCss: true,
-      // Reduce JS bundle size
-      optimizePackageImports: ['framer-motion', 'gsap', 'three'],
-    },
-    // Handle ESLint and type checking during build
-    eslint: {
-      // Don't fail the build for warnings
-      ignoreDuringBuilds: true,
-    },
-    typescript: {
-      // Don't fail the build for type errors
-      ignoreBuildErrors: true,
-    },
-  };
+  // Enable React strict mode for development
+  reactStrictMode: true,
   
-  module.exports = nextConfig;
+  // Image optimization settings
+
+  
+  // Add experimental settings for performance
+  experimental: {
+    // Optimize CSS for production
+    optimizeCss: true,
+    // Add optimizations for package imports
+    optimizePackageImports: ['framer-motion', 'gsap', 'three']
+  },
+  
+  // Handle ESLint settings
+  eslint: {
+    // Display warnings but don't fail the build
+    ignoreDuringBuilds: true,
+  },
+  
+  // Add build optimizations
+  compiler: {
+    // Remove console logs in production
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  
+  // Set headers for better security
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+        ],
+      },
+    ];
+  },
+};
+
+module.exports = nextConfig;

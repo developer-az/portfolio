@@ -1,19 +1,18 @@
 "use client";
-import styles from "./page.module.scss";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import useMousePosition from "./utils/useMousePosition";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useTheme } from '@/context/ThemeContext';
+import styles from "./page.module.scss";
 import dynamic from 'next/dynamic';
 
-// Static imports for critical components
+// Direct imports for critical components
 import Preloader from "../components/Preloader";
 import FloatingNav from '../components/FloatingNav';
-import EnhancedBackground from '../components/EnhancedBackground';
 
-// Dynamic imports with code splitting for non-critical components
+// Dynamic imports for non-critical components
+const EnhancedBackground = dynamic(() => import('../components/EnhancedBackground'), { 
+  ssr: false 
+});
 const ProfileSection = dynamic(() => import('../components/ProfileSection'), { ssr: true });
 const WorkSection = dynamic(() => import('../components/WorkSection'), { ssr: true });
 const ContactSection = dynamic(() => import('../components/ContactSection'), { ssr: true });
@@ -26,7 +25,6 @@ export default function Home() {
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [activeSection, setActiveSection] = useState("about");
   
-  const { mounted } = useTheme();
   const portfolioContent = useRef(null);
   
   // Mouse tracking for intro effect
@@ -34,40 +32,13 @@ export default function Home() {
   const { x, y } = useMousePosition();
   const size = isHovered ? 400 : 40;
 
-  // Setup scroll triggers
-  const registerScrollTriggers = useCallback(() => {
-    if (!portfolioContent.current) return;
-    
-    // Use GSAP ScrollTrigger for smoother section tracking
-    const sections = document.querySelectorAll('section[id]');
-    
-    sections.forEach(section => {
-      ScrollTrigger.create({
-        trigger: section,
-        start: "top center",
-        end: "bottom center",
-        onEnter: () => setActiveSection(section.id),
-        onEnterBack: () => setActiveSection(section.id),
-        onLeaveBack: () => {
-          if (section.id === "about") {
-            setActiveSection("about");
-          }
-        }
-      });
-    });
-  }, []);
-
-  // Initialize GSAP and handle loading sequence
+  // Handle loading sequence
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      gsap.registerPlugin(ScrollTrigger);
-    }
-  
     window.scrollTo(0, 0);
     document.body.style.overflow = 'hidden';
     document.body.style.height = '100vh';
   
-    // Optimize loading sequence with shorter times
+    // Loading sequence
     const loadTimer = setTimeout(() => {
       setIsLoading(false);
       document.body.style.cursor = "default";
@@ -84,7 +55,6 @@ export default function Home() {
             document.body.style.overflow = "auto";
             document.body.style.height = 'auto';
             document.body.style.visibility = 'visible';
-            registerScrollTriggers();
           }, 100);
         }, 600);
         
@@ -94,27 +64,14 @@ export default function Home() {
       return () => clearTimeout(fadeTimer);
     }, 1200);
   
-    return () => {
-      clearTimeout(loadTimer);
-      
-      if (typeof window !== "undefined") {
-        ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-      }
-    };
-  }, [registerScrollTriggers]);
+    return () => clearTimeout(loadTimer);
+  }, []);
 
-  // Optimize scroll handling with throttling
+  // Simplified scroll handler
   useEffect(() => {
     if (!showPortfolio) return;
     
-    let lastScrollTime = 0;
-    const throttleTime = 100;
-    
     const handleScroll = () => {
-      const now = Date.now();
-      if (now - lastScrollTime < throttleTime) return;
-      lastScrollTime = now;
-      
       const scrollPosition = window.scrollY;
       
       if (scrollPosition < 100) {
@@ -123,7 +80,6 @@ export default function Home() {
       }
       
       const sections = document.querySelectorAll('section[id]');
-      let found = false;
       
       sections.forEach(section => {
         const sectionTop = section.offsetTop - 200;
@@ -131,7 +87,6 @@ export default function Home() {
         
         if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
           setActiveSection(section.id);
-          found = true;
         }
       });
     };
@@ -141,11 +96,6 @@ export default function Home() {
     
     return () => window.removeEventListener('scroll', handleScroll);
   }, [showPortfolio]);
-
-  // Show loading indicator while theme is mounting
-  if (!mounted) {
-    return <div className="loading-container">Loading...</div>;
-  }
 
   return (
     <div className={styles.mainWrapper}>
@@ -188,15 +138,11 @@ export default function Home() {
       {/* Portfolio Content */}
       {showPortfolio && (
         <div className={styles.portfolioWrapper}>
-          {/* Enhanced 3D Background - optimized with better performance settings */}
           <EnhancedBackground />
           
-          {/* Floating Navigation */}
           <FloatingNav activeSection={activeSection} />
 
-          {/* Portfolio Content */}
           <div ref={portfolioContent} className={styles.portfolioContent}>
-            {/* Main Sections - simplified structure for better performance */}
             <section id="about" className={styles.about}>
               <ProfileSection />
             </section>
@@ -211,7 +157,6 @@ export default function Home() {
             
             <ContactSection />
             
-            {/* Simplified Footer */}
             <footer className={styles.footer}>
               <div className={styles.footerContent}>
                 <div className={styles.copyright}>

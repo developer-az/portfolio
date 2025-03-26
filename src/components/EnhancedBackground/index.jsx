@@ -1,231 +1,132 @@
+'use client';
 import React, { useEffect, useRef } from 'react';
-import * as THREE from 'three';
 import styles from './EnhancedBackground.module.scss';
 
 const EnhancedBackground = () => {
   const containerRef = useRef(null);
-  const rendererRef = useRef(null);
   const animationRef = useRef(null);
-  const sceneRef = useRef(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const scrollRef = useRef(0);
-  const particlesMeshRef = useRef(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Setup scene
-    const scene = new THREE.Scene();
-    sceneRef.current = scene;
+    let canvas, ctx, width, height;
+    let stars = [];
     
-    // Camera setup with better position
-    const camera = new THREE.PerspectiveCamera(
-      60, 
-      window.innerWidth / window.innerHeight, 
-      0.1, 
-      1000
-    );
-    camera.position.z = 30;
-
-    // Renderer with performance optimizations
-    const renderer = new THREE.WebGLRenderer({ 
-      antialias: window.devicePixelRatio < 2, // Only use antialias for higher-end devices
-      alpha: true,
-      powerPreference: 'high-performance',
-      precision: 'mediump'
-    });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
+    // Create canvas element
+    canvas = document.createElement('canvas');
+    ctx = canvas.getContext('2d');
+    containerRef.current.appendChild(canvas);
     
-    const currentContainer = containerRef.current;
-    currentContainer.appendChild(renderer.domElement);
-    rendererRef.current = renderer;
-
-    // Responsive particle count based on device
-    const isMobile = window.innerWidth < 768;
-    const particlesCount = isMobile ? 150 : 300;
+    // Set canvas size
+    const setCanvasSize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    };
     
-    // Optimize buffer geometry creation
-    const particlesGeometry = new THREE.BufferGeometry();
-    const posArray = new Float32Array(particlesCount * 3);
+    setCanvasSize();
     
-    // Fill positions with more interesting distribution
-    for (let i = 0; i < particlesCount * 3; i += 3) {
-      // Create a more artistic distribution with more particles in the center
-      const radius = Math.random() * 40;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.random() * Math.PI;
+    // Initialize stars
+    const initStars = () => {
+      const count = Math.min(width, height) / 3;
+      stars = [];
       
-      posArray[i] = radius * Math.sin(phi) * Math.cos(theta);
-      posArray[i+1] = radius * Math.sin(phi) * Math.sin(theta);
-      posArray[i+2] = radius * Math.cos(phi);
-    }
-    
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    
-    // Optimized material
-    const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.05,
-      color: 0xffffff,
-      transparent: true,
-      opacity: 0.6,
-      blending: THREE.AdditiveBlending,
-      sizeAttenuation: true
-    });
-    
-    // Create particle system
-    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-    scene.add(particlesMesh);
-    particlesMeshRef.current = particlesMesh;
-
-    // Minimal ambient light
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
-    scene.add(ambientLight);
-
-    // Optimized connections with reduced updates
-    const lineMaterial = new THREE.LineBasicMaterial({ 
-      color: 0xffffff,
-      transparent: true,
-      opacity: 0.03
-    });
-    
-    const linesMesh = new THREE.LineSegments(
-      new THREE.BufferGeometry(),
-      lineMaterial
-    );
-    scene.add(linesMesh);
-
-    // Throttled event handlers
-    const handleMouseMove = (event) => {
-      mouseRef.current.x = (event.clientX / window.innerWidth - 0.5) * 2;
-      mouseRef.current.y = (event.clientY / window.innerHeight - 0.5) * 2;
+      for (let i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          size: Math.random() * 1.5,
+          speed: Math.random() * 0.5
+        });
+      }
     };
-
-    // Debounced resize handler
-    let resizeTimeout;
-    const handleResize = () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      }, 200);
+    
+    initStars();
+    
+    // Handle mouse movement
+    const handleMouseMove = (e) => {
+      mouseRef.current.x = e.clientX;
+      mouseRef.current.y = e.clientY;
     };
-
-    // Throttled scroll handler
+    
+    // Handle scroll
     const handleScroll = () => {
       scrollRef.current = window.scrollY;
     };
-
-    // Event listeners with passive option for better performance
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    window.addEventListener('resize', handleResize, { passive: true });
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
-    // Connection update manager
-    let lastUpdateTime = 0;
     
-    // Optimized connections generator
-    const updateConnections = () => {
-      const positions = particlesGeometry.attributes.position.array;
-      const vertices = [];
-      const maxDistance = 5;
-      const maxConnections = 1; // Reduce for better performance
+    // Handle resize
+    const handleResize = () => {
+      setCanvasSize();
+      initStars();
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleResize);
+    
+    // Animation frame
+    const animate = () => {
+      ctx.clearRect(0, 0, width, height);
       
-      // Optimize connection finding algorithm - only check every nth particle
-      const step = isMobile ? 4 : 2; // Check fewer particles on mobile
+      // Draw stars
+      for (let i = 0; i < stars.length; i++) {
+        const star = stars[i];
+        
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.size / 3})`;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Move stars
+        star.x += (mouseRef.current.x - width / 2) * 0.00005 * star.size;
+        star.y += star.speed + (mouseRef.current.y - height / 2) * 0.00005 * star.size;
+        
+        // Reset if star is out of bounds
+        if (star.x < 0) star.x = width;
+        if (star.x > width) star.x = 0;
+        if (star.y < 0) star.y = height;
+        if (star.y > height) star.y = 0;
+      }
       
-      for (let i = 0; i < positions.length; i += 3 * step) {
-        const x1 = positions[i];
-        const y1 = positions[i + 1];
-        const z1 = positions[i + 2];
+      // Add subtle connections between stars
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.lineWidth = 0.5;
+      
+      for (let i = 0; i < stars.length; i += 30) {
+        const star1 = stars[i];
         
-        let connectionCount = 0;
-        
-        // Only check a subset of particles
-        for (let j = i + 3 * step; j < positions.length && connectionCount < maxConnections; j += 3 * step) {
-          const x2 = positions[j];
-          const y2 = positions[j + 1];
-          const z2 = positions[j + 2];
+        for (let j = i + 1; j < stars.length; j += 30) {
+          const star2 = stars[j];
+          const distance = Math.sqrt((star1.x - star2.x) ** 2 + (star1.y - star2.y) ** 2);
           
-          // Calculate squared distance (faster than using Math.sqrt)
-          const distanceSquared = 
-            (x2 - x1) * (x2 - x1) + 
-            (y2 - y1) * (y2 - y1) + 
-            (z2 - z1) * (z2 - z1);
-          
-          if (distanceSquared < maxDistance * maxDistance) {
-            vertices.push(x1, y1, z1, x2, y2, z2);
-            connectionCount++;
+          if (distance < 150) {
+            ctx.beginPath();
+            ctx.moveTo(star1.x, star1.y);
+            ctx.lineTo(star2.x, star2.y);
+            ctx.stroke();
           }
         }
       }
       
-      // Update line geometry efficiently
-      const lineGeometry = new THREE.BufferGeometry();
-      lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-      linesMesh.geometry.dispose();
-      linesMesh.geometry = lineGeometry;
-    };
-
-    // More efficient animation loop
-    const animate = () => {
       animationRef.current = requestAnimationFrame(animate);
-      
-      // Apply subtle rotation
-      if (particlesMeshRef.current) {
-        particlesMeshRef.current.rotation.x += 0.0002;
-        particlesMeshRef.current.rotation.y += 0.0001;
-        
-        // Add minimal mouse interaction
-        particlesMeshRef.current.rotation.x += mouseRef.current.y * 0.0001;
-        particlesMeshRef.current.rotation.y += mouseRef.current.x * 0.0001;
-        
-        // Subtle scroll effect
-        particlesMeshRef.current.position.y = scrollRef.current * 0.0001;
-      }
-
-      // Update connections only every 2 seconds for performance
-      const now = performance.now();
-      if (now - lastUpdateTime > 2000) {
-        updateConnections();
-        lastUpdateTime = now;
-      }
-
-      renderer.render(scene, camera);
     };
-
-    // Start animation
-    updateConnections();
+    
     animate();
-
-    // Cleanup
+    
     return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+      
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
       
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('scroll', handleScroll);
-      
-      // Dispose resources
-      if (particlesMeshRef.current) {
-        scene.remove(particlesMeshRef.current);
-        particlesMeshRef.current.geometry.dispose();
-        particlesMeshRef.current.material.dispose();
-      }
-      
-      scene.remove(linesMesh);
-      linesMesh.geometry.dispose();
-      lineMaterial.dispose();
-      
-      if (rendererRef.current) {
-        rendererRef.current.dispose();
-        if (currentContainer && currentContainer.contains(rendererRef.current.domElement)) {
-          currentContainer.removeChild(rendererRef.current.domElement);
-        }
+      if (canvas && containerRef.current) {
+        containerRef.current.removeChild(canvas);
       }
     };
   }, []);

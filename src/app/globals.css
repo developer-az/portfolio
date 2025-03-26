@@ -2,25 +2,25 @@
     font-family: 'Avant Garde Book BT';
     font-style: normal;
     font-weight: normal;
-    src: url('../../public/fonts/AVGARDD_2.woff') format('woff');
+    src: url('/fonts/AVGARDD_2.woff') format('woff');
     font-display: swap; /* Improve loading performance */
-}
-
-* {
+  }
+  
+  * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-}
-
-html {
+  }
+  
+  html {
     scroll-behavior: smooth;
     overflow-x: hidden; /* Prevent horizontal scrollbar */
     width: 100%;
-}
-
-body {
+  }
+  
+  body {
     margin: 0;
     padding: 0;
     font-family: 'Avant Garde Book BT', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -33,124 +33,104 @@ body {
     /* Use will-change for smoother background color transitions */
     will-change: background-color, color;
     transition: background-color 0.5s ease, color 0.5s ease;
-}
-
-/* Loading state styling */
-body.loading {
+  }
+  
+  /* Loading state styling */
+  body.loading {
     opacity: 0;
-}
-
-.loading-container {
+  }
+  
+  .loading-container {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100vw;
     height: 100vh;
     background-color: var(--bg-primary);
-}
-
-/* More optimized transitions - only transition properties that need it */
-header, 
-button, 
-a, 
-input, 
-textarea {
+  }
+  
+  /* More optimized transitions - only transition properties that need it */
+  header, 
+  button, 
+  a, 
+  input, 
+  textarea {
     transition: 
         background-color 0.3s ease,
         color 0.3s ease,
         border-color 0.3s ease,
         transform 0.3s ease,
         opacity 0.3s ease;
-}
-
-/* Separate transition for elements that don't need background/color transitions */
-.card,
-.container,
-.projectCard,
-.header,
-.button,
-.themeSwitcher {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Remove transitions from elements that don't need them */
-p, h1, h2, h3, h4, h5, h6, div:not(.animated) {
+  }
+  
+  /* Remove transitions from elements that don't need them */
+  p, h1, h2, h3, h4, h5, h6, div:not(.animated) {
     transition: none !important;
-}
-
-/* Interactive elements get more precise transitions */
-button:hover,
-a:hover,
-.projectCard:hover,
-.button:hover,
-.filterButton:hover,
-.themeSwitcher:hover {
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-}
-
-/* Basic link styling */
-a {
+  }
+  
+  /* Basic link styling */
+  a {
     text-decoration: none;
     color: inherit;
     outline: none;
-}
-
-img {
+  }
+  
+  img {
     max-width: 100%;
     height: auto;
     display: block; /* Prevents unwanted space below images */
-}
-
-/* Selection styling */
-::selection {
+  }
+  
+  /* Selection styling */
+  ::selection {
     background: var(--primary-light);
     color: var(--primary-color);
-}
-
-/* Focus state styling */
-:focus {
+  }
+  
+  /* Focus state styling */
+  :focus {
     outline: 2px solid var(--border-focused);
     outline-offset: 2px;
-}
-
-:focus:not(:focus-visible) {
+  }
+  
+  :focus:not(:focus-visible) {
     outline: none;
-}
-
-:focus-visible {
+  }
+  
+  :focus-visible {
     outline: 2px solid var(--border-focused);
     outline-offset: 2px;
-}
-
-/* More efficient scrollbar styling */
-::-webkit-scrollbar {
+  }
+  
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
     width: 8px;
-}
-
-::-webkit-scrollbar-track {
+  }
+  
+  ::-webkit-scrollbar-track {
     background: var(--bg-secondary);
-}
-
-::-webkit-scrollbar-thumb {
+  }
+  
+  ::-webkit-scrollbar-thumb {
     background: var(--border-light);
     border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
     background: var(--border-medium);
-}
-
-/* Container helper class */
-.container {
+  }
+  
+  /* Container helper class */
+  .container {
     width: 90%;
     max-width: 1400px;
     margin: 0 auto;
     position: relative;
     z-index: 2;
-}
-
-/* Visually hidden elements for accessibility */
-.sr-only {
+  }
+  
+  /* Visually hidden elements for accessibility */
+  .sr-only {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -160,88 +140,63 @@ img {
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border-width: 0;
-}
-
-/* Utility classes */
-.text-center { text-align: center; }
-.text-primary { color: var(--primary-color); }
-.bg-primary { background-color: var(--primary-color); }
-
-/* Margin utilities */
-.mt-1 { margin-top: 0.25rem; }
-.mt-2 { margin-top: 0.5rem; }
-.mt-3 { margin-top: 1rem; }
-.mt-4 { margin-top: 1.5rem; }
-.mt-5 { margin-top: 2rem; }
-
-.mb-1 { margin-bottom: 0.25rem; }
-.mb-2 { margin-bottom: 0.5rem; }
-.mb-3 { margin-bottom: 1rem; }
-.mb-4 { margin-bottom: 1.5rem; }
-.mb-5 { margin-bottom: 2rem; }
-
-/* Responsive helper classes */
-@media (max-width: 768px) {
-    .hide-mobile { display: none !important; }
-}
-
-@media (min-width: 769px) {
-    .hide-desktop { display: none !important; }
-}
-
-/* Animation keyframes - optimized to use transform and opacity */
-@keyframes fadeIn {
+  }
+  
+  /* Utility classes */
+  .text-center { text-align: center; }
+  .text-primary { color: var(--primary-color); }
+  .bg-primary { background-color: var(--primary-color); }
+  
+  /* Animation keyframes */
+  @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
-}
-
-@keyframes slideUp {
+  }
+  
+  @keyframes slideUp {
     from { transform: translateY(20px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes pulse {
+  }
+  
+  @keyframes pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
-}
-
-/* Animation classes with will-change for better performance */
-.animate-fadeIn {
-    will-change: opacity;
+  }
+  
+  /* Animation classes */
+  .animate-fadeIn {
     animation: fadeIn 0.5s ease forwards;
-}
-
-.animate-slideUp {
-    will-change: transform, opacity;
+  }
+  
+  .animate-slideUp {
     animation: slideUp 0.5s ease forwards;
-}
-
-.animate-pulse {
-    will-change: transform;
+  }
+  
+  .animate-pulse {
     animation: pulse 2s infinite ease-in-out;
-}
-
-/* Modal states - improved for performance */
-body.modal-open {
+  }
+  
+  /* Modal states */
+  body.modal-open {
     overflow: hidden; /* Prevent scrolling when modal is open */
-}
-
-/* Hide the header when modal is open */
-body.modal-open .header {
+  }
+  
+  /* Hide the header when modal is open */
+  body.modal-open .header {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
-}
-
-/* Hide the theme switcher when modal is open */
-body.modal-open .themeSwitcher {
+  }
+  
+  /* Hide the theme switcher when modal is open */
+  body.modal-open .themeSwitcher {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
-}
-
-/* Ensure higher z-index for modal backdrop */
-.modalBackdrop {
+  }
+  
+  /* Ensure higher z-index for modal backdrop */
+  .modalBackdrop {
     z-index: 1100 !important;
-}
+  }

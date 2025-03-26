@@ -1,7 +1,6 @@
 import './globals.css';
 import './theme-variables.scss';
 import Providers from '@/components/Providers';
-// ThemeSwitcher import removed since we don't need it anymore
 
 export const metadata = {
   title: 'Anthony Zhou - Software Engineer & Web Designer',
@@ -13,7 +12,7 @@ export const metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#fa2104'
+  themeColor: '#2d04fa'
 }
 
 export default function RootLayout({ children }) {
@@ -54,7 +53,7 @@ export default function RootLayout({ children }) {
             width: 40px;
             height: 40px;
             border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top-color:rgb(34, 34, 34);
+            border-top-color: #2d04fa;
             border-radius: 50%;
             animation: spinner 1s linear infinite;
           }
@@ -71,10 +70,8 @@ export default function RootLayout({ children }) {
         
         <Providers>
           {children}
-          {/* ThemeSwitcher component removed */}
         </Providers>
         
-        {/* Initial theme script simplified - always dark mode */}
         <script dangerouslySetInnerHTML={{ __html: `
           (function() {
             // Always use dark theme

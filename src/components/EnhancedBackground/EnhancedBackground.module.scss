@@ -7,22 +7,17 @@
   z-index: -1;
   pointer-events: none;
   will-change: opacity;
-  opacity: 0.8; /* Reduced opacity for better performance */
+  opacity: 0.8;
   
   canvas {
     display: block;
     width: 100%;
     height: 100%;
-    /* Canvas optimization */
     transform: translateZ(0);
     backface-visibility: hidden;
     perspective: 1000;
-    -webkit-transform: translateZ(0);
-    -webkit-backface-visibility: hidden;
-    -webkit-perspective: 1000;
   }
 
-  /* Apply transform to avoid layout thrashing */
   &:before {
     content: '';
     position: absolute;

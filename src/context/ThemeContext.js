@@ -27,7 +27,7 @@ export const ThemeProvider = ({ children }) => {
   };
 
   const value = {
-    theme: 'dark', // Always dark
+    theme: 'dark',
     toggleTheme,
     setThemeMode,
     mounted
