@@ -9,6 +9,13 @@
 
 This repository contains the source code for my personal portfolio website, showcasing my work, skills, and experience as a software engineer and web designer. The website features a modern, responsive design with smooth animations and interactive elements.
 
+## Credits & Inspiration
+
+This portfolio's landing page design and interactions were inspired by:
+
+- **Original Portfolio**: [Dennis Snellenberg](https://dennissnellenberg.com/) - Award-winning designer whose portfolio concept served as inspiration
+- [Awwwards Landing Page](https://blog.olivierlarose.com/tutorials/awwwards-landing-page) by Olivier Larose (July 23, 2023) - The implementation approach for the interactive text reveal effect was adapted from this tutorial
+
 ## Features
 
 - **Modern Design**: Clean, minimalist interface with a focus on content
