@@ -4,113 +4,212 @@ import MemoryViewer from './MemoryViewer';
 import styles from './MemoryIsland.module.scss';
 import FlipCardTimer from './FlipCardTimer';
 
-const WindEffect = memo(() => {
-  return (
-    <motion.div
+// Memoized background component
+const Background = memo(() => (
+  <div style={{
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    background: `
+      radial-gradient(circle at 20% 20%, rgba(147, 51, 234, 0.08), transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.08), transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.05), transparent 60%)
+    `,
+    filter: 'blur(50px)',
+    opacity: 0.3,
+    zIndex: 1
+  }} />
+));
+
+// Memoized star component with reduced animation complexity
+const Star = memo(({ top, left, size }) => (
+  <motion.div
+    style={{
+      position: 'absolute',
+      width: size,
+      height: size,
+      backgroundColor: '#ffffff',
+      borderRadius: '50%',
+      top,
+      left,
+      filter: 'blur(0.5px)',
+      boxShadow: '0 0 10px rgba(255, 255, 255, 0.8)',
+      opacity: 0.3
+    }}
+    animate={{
+      opacity: [0.3, 0.4, 0.3]
+    }}
+    transition={{
+      duration: 10,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }}
+  />
+));
+
+// Memoized memory box component
+const MemoryBox = memo(({ box, onMemoryBoxClick, onTapHereClick }) => (
+  <motion.div
+    className={styles.memoryBox}
+    style={{
+      left: `${box.x}%`,
+      top: `${box.y}%`,
+      cursor: 'pointer',
+      zIndex: 2
+    }}
+    initial={{ scale: 0, opacity: 0 }}
+    animate={{ 
+      scale: 1, 
+      opacity: 1,
+      y: [0, -8, 0]
+    }}
+    transition={{
+      scale: { delay: box.id * 0.2, duration: 0.5 },
+      opacity: { delay: box.id * 0.2, duration: 0.5 },
+      y: { repeat: Infinity, duration: 4, ease: "easeInOut" }
+    }}
+    whileHover={{
+      scale: 1.2,
+      transition: { duration: 0.3 }
+    }}
+    onClick={(e) => onMemoryBoxClick(box, e)}
+  >
+    <motion.div 
+      className={styles.tapHere}
       style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent)',
-        transform: 'translateX(-100%)',
-        willChange: 'transform',
-        opacity: 0.5
+        color: '#ffffff',
+        textShadow: '0 0 20px rgba(255, 255, 255, 0.5)',
+        fontWeight: '600',
+        fontSize: '14px',
+        letterSpacing: '1px'
       }}
-      animate={{
-        x: ['-100%', '200%']
+      whileHover={{ 
+        y: -5, 
+        scale: 1.1
       }}
-      transition={{
-        duration: 15,
-        repeat: Infinity,
-        ease: "linear"
+      onClick={(e) => onTapHereClick(box, e)}
+    >
+      TAP HERE
+    </motion.div>
+    
+    <motion.div 
+      className={styles.rose}
+      whileHover={{
+        scale: 1.2,
+        rotateY: 180
       }}
-    />
-  );
-});
+    >
+      🌹
+      <div className={styles.roseGlow}></div>
+    </motion.div>
+  </motion.div>
+));
 
-const Particle = memo(({ index }) => {
-  const randomValues = useMemo(() => ({
-    size: Math.random() * 3 + 1,
-    duration: Math.random() * 3 + 2,
-    delay: Math.random() * 2,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    opacity: Math.random() * 0.1 + 0.05
-  }), []);
-
-  return (
+// Memoized player component
+const Player = memo(({ position }) => (
+  <motion.div
+    className={styles.player}
+    style={{
+      left: `${position.x}%`,
+      top: `${position.y}%`,
+      zIndex: 2
+    }}
+    animate={{
+      left: `${position.x}%`, 
+      top: `${position.y}%` 
+    }}
+    transition={{
+      type: "spring", 
+      stiffness: 100, 
+      damping: 15 
+    }}
+  >
     <motion.div
+      className={styles.playerName}
       style={{
-        position: 'absolute',
-        width: `${randomValues.size}px`,
-        height: `${randomValues.size}px`,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-        borderRadius: '50%',
-        left: `${randomValues.x}%`,
-        top: `${randomValues.y}%`,
-        filter: 'blur(1px)',
-        willChange: 'transform, opacity',
-        opacity: randomValues.opacity
+        color: '#ffffff',
+        textShadow: '0 0 20px rgba(255, 255, 255, 0.5)',
+        fontWeight: '700',
+        fontSize: '18px',
+        letterSpacing: '1px'
       }}
-      animate={{
-        y: [0, -20, 0],
-        opacity: [randomValues.opacity, randomValues.opacity * 1.5, randomValues.opacity]
+      animate={{ y: [0, -3, 0] }}
+      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+    >
+      GABI
+    </motion.div>
+    
+    <motion.div 
+      className={styles.playerHeart}
+      animate={{ 
+        boxShadow: [
+          '0 0 10px 2px rgba(255, 255, 255, 0.3)',
+          '0 0 15px 4px rgba(255, 255, 255, 0.5)',
+          '0 0 10px 2px rgba(255, 255, 255, 0.3)'
+        ]
       }}
-      transition={{
-        duration: randomValues.duration,
-        repeat: Infinity,
-        ease: "easeInOut",
-        delay: randomValues.delay
-      }}
-    />
-  );
-});
+      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+    >
+      ❤️
+      <div className={styles.heartGlow}></div>
+    </motion.div>
+  </motion.div>
+));
 
-const LightBeam = memo(({ index }) => {
-  const randomValues = useMemo(() => ({
-    angle: Math.random() * 360,
-    duration: Math.random() * 4 + 3,
-    delay: Math.random() * 2,
-    opacity: Math.random() * 0.05 + 0.02
-  }), []);
-
-  return (
-    <motion.div
+// Instructions component
+const Instructions = memo(() => (
+  <motion.div
+    className={styles.instructionsContainer}
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ delay: 0.5, duration: 0.8 }}
+    style={{ 
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      width: '100%',
+      textAlign: 'center',
+      padding: '30px 20px',
+      background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)',
+      pointerEvents: 'none'
+    }}
+  >
+    <motion.p 
+      className={styles.instructions}
       style={{
-        position: 'absolute',
-        width: '2px',
-        height: '100%',
-        background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent)',
-        left: `${(index / 7) * 100}%`,
-        transform: `rotate(${randomValues.angle}deg)`,
-        transformOrigin: 'top',
-        willChange: 'transform, opacity',
-        opacity: randomValues.opacity
+        color: '#ffffff',
+        textShadow: '0 0 10px rgba(255, 255, 255, 0.3)',
+        fontWeight: '500',
+        fontSize: '14px',
+        letterSpacing: '0.5px',
+        margin: '0 auto',
+        opacity: 0.8
       }}
-      animate={{
-        opacity: [randomValues.opacity, randomValues.opacity * 1.5, randomValues.opacity],
-        scale: [1, 1.2, 1]
-      }}
-      transition={{
-        duration: randomValues.duration,
-        repeat: Infinity,
-        ease: "easeInOut",
-        delay: randomValues.delay
-      }}
-    />
-  );
-});
+    >
+      Click anywhere to move Gabi. Click on roses 🌹
+    </motion.p>
+  </motion.div>
+));
 
 const MemoryIsland = ({ memoryBoxes, timeSince }) => {
   const [position, setPosition] = useState({ x: 50, y: 80 });
   const [activeMemory, setActiveMemory] = useState(null);
   const canvasRef = useRef(null);
   
-  // Handle canvas click for movement
+  // Memoize star positions and sizes
+  const stars = useMemo(() => 
+    [...Array(50)].map(() => ({
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      size: `${Math.random() * 2 + 1}px`
+    })), []
+  );
+
   const handleCanvasClick = (e) => {
-    if (activeMemory) return; // Don't move when viewing a memory
+    if (activeMemory) return;
     
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -119,48 +218,31 @@ const MemoryIsland = ({ memoryBoxes, timeSince }) => {
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     
-    // Check if clicked near a memory box
-    const clickedMemory = memoryBoxes.find(box => {
-      return Math.abs(box.x - x) < 5 && Math.abs(box.y - y) < 5;
-    });
+    const clickedMemory = memoryBoxes.find(box => 
+      Math.abs(box.x - x) < 5 && Math.abs(box.y - y) < 5
+    );
     
     if (clickedMemory) {
-      // First move to the memory location
       setPosition({ x: clickedMemory.x, y: clickedMemory.y });
-      
-      // Then open the memory after a short delay
-      setTimeout(() => {
-        setActiveMemory(clickedMemory);
-      }, 500);
+      setTimeout(() => setActiveMemory(clickedMemory), 500);
     } else {
-      // Just move to the clicked position
       setPosition({ x, y });
     }
   };
 
-  // Handle memory box click (for direct clicking on roses)
   const handleMemoryBoxClick = (memory, e) => {
-    e.stopPropagation(); // Prevent triggering canvas click
+    e.stopPropagation();
     setPosition({ x: memory.x, y: memory.y });
-    
-    // Open memory after a short delay
-    setTimeout(() => {
-      setActiveMemory(memory);
-    }, 500);
+    setTimeout(() => setActiveMemory(memory), 500);
   };
 
-  // Handle clicks on "TAP HERE" text too
   const handleTapHereClick = (memory, e) => {
-    e.stopPropagation(); // Prevent triggering canvas click
+    e.stopPropagation();
     handleMemoryBoxClick(memory, e);
   };
 
-  // Close memory view
-  const closeMemory = () => {
-    setActiveMemory(null);
-  };
+  const closeMemory = () => setActiveMemory(null);
 
-  // Navigate to next memory
   const nextMemory = () => {
     const currentIndex = memoryBoxes.findIndex(m => m.id === activeMemory.id);
     const nextIndex = (currentIndex + 1) % memoryBoxes.length;
@@ -183,53 +265,12 @@ const MemoryIsland = ({ memoryBoxes, timeSince }) => {
       background: 'linear-gradient(180deg, #000000 0%, #0a0a0a 50%, #000000 100%)',
       perspective: '1000px'
     }}>
-      {/* Space background effects */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        background: `
-          radial-gradient(circle at 20% 20%, rgba(147, 51, 234, 0.08), transparent 40%),
-          radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.08), transparent 40%),
-          radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.05), transparent 60%)
-        `,
-        filter: 'blur(50px)',
-        opacity: 0.3,
-        zIndex: 1
-      }} />
+      <Background />
       
-      {/* Stars */}
-      {[...Array(100)].map((_, i) => (
-        <motion.div
-          key={i}
-          style={{
-            position: 'absolute',
-            width: `${Math.random() * 2 + 1}px`,
-            height: `${Math.random() * 2 + 1}px`,
-            backgroundColor: '#ffffff',
-            borderRadius: '50%',
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-            filter: 'blur(0.5px)',
-            boxShadow: '0 0 10px rgba(255, 255, 255, 0.8)',
-            willChange: 'transform, opacity'
-          }}
-          animate={{
-            opacity: [0.2, 1, 0.2],
-            scale: [1, 1.5, 1]
-          }}
-          transition={{
-            duration: Math.random() * 3 + 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: Math.random() * 2
-          }}
-        />
+      {stars.map((star, i) => (
+        <Star key={i} {...star} />
       ))}
 
-      {/* Content container */}
       <div style={{
         position: 'relative',
         zIndex: 2,
@@ -237,10 +278,8 @@ const MemoryIsland = ({ memoryBoxes, timeSince }) => {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center'
+        alignItems: 'center'
       }}>
-        {/* Reset Button */}
         <motion.button
           onClick={handleReset}
           style={{
@@ -255,29 +294,26 @@ const MemoryIsland = ({ memoryBoxes, timeSince }) => {
             cursor: 'pointer',
             zIndex: 1000,
             opacity: 0.3,
-            transition: 'all 0.3s ease',
-            padding: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
+            padding: 0
           }}
           whileHover={{ 
             opacity: 1,
-            scale: 1.1,
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-            boxShadow: '0 0 15px rgba(255, 255, 255, 0.1)'
+            scale: 1.1
           }}
-          whileTap={{ scale: 0.95 }}
         />
 
-        {/* "Time Since We First Met" Flipcard Timer */}
         <FlipCardTimer timeSince={timeSince} />
         
         <div 
           ref={canvasRef}
           className={styles.canvas}
           onClick={handleCanvasClick}
-          style={{ height: '100vh', maxHeight: '100vh' }}
+          style={{ 
+            flex: 1,
+            position: 'relative',
+            width: '100%',
+            minHeight: 0
+          }}
         >
           <div style={{
             position: 'absolute',
@@ -287,151 +323,19 @@ const MemoryIsland = ({ memoryBoxes, timeSince }) => {
             height: '100%',
             zIndex: 1
           }}>
-            {/* Memory boxes (roses) */}
             {memoryBoxes.map((box) => (
-              <motion.div
+              <MemoryBox
                 key={box.id}
-                className={styles.memoryBox}
-                style={{
-                  left: `${box.x}%`,
-                  top: `${box.y}%`,
-                  cursor: 'pointer',
-                  zIndex: 2
-                }}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ 
-                  scale: 1, 
-                  opacity: 1,
-                  y: [0, -8, 0],
-                  rotateY: [0, 8, 0, -8, 0]
-                }}
-                transition={{
-                  scale: { delay: box.id * 0.2, duration: 0.5 },
-                  opacity: { delay: box.id * 0.2, duration: 0.5 },
-                  y: { repeat: Infinity, duration: 4, ease: "easeInOut" },
-                  rotateY: { repeat: Infinity, duration: 8, ease: "easeInOut" }
-                }}
-                whileHover={{
-                  scale: 1.2,
-                  transition: { duration: 0.3 }
-                }}
-                onClick={(e) => handleMemoryBoxClick(box, e)}
-              >
-                {/* "Tap Here" text - no flip on hover */}
-                <motion.div 
-                  className={styles.tapHere}
-                  style={{
-                    color: '#ffffff',
-                    textShadow: '0 0 20px rgba(255, 255, 255, 0.5)',
-                    fontWeight: '600',
-                    fontSize: '14px',
-                    letterSpacing: '1px'
-                  }}
-                  whileHover={{ 
-                    y: -5, 
-                    scale: 1.1,
-                    textShadow: '0 0 20px rgba(255, 255, 255, 0.6)'
-                  }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  onClick={(e) => handleTapHereClick(box, e)}
-                >
-                  TAP HERE
-                </motion.div>
-                
-                {/* Rose emoji with flip animation */}
-                <motion.div 
-                  className={styles.rose}
-                  whileHover={{
-                    scale: 1.2,
-                    rotateY: 180,
-                    filter: 'brightness(1.2)'
-                  }}
-                  transition={{ duration: 0.5 }}
-                >
-                  🌹
-                  <div className={styles.roseGlow}></div>
-                </motion.div>
-              </motion.div>
+                box={box}
+                onMemoryBoxClick={handleMemoryBoxClick}
+                onTapHereClick={handleTapHereClick}
+              />
             ))}
 
-            {/* Player with "Gabi" text and white heart */}
-            <motion.div
-              className={styles.player}
-              style={{
-                left: `${position.x}%`,
-                top: `${position.y}%`,
-                zIndex: 2
-              }}
-              animate={{
-                left: `${position.x}%`, 
-                top: `${position.y}%` 
-              }}
-              transition={{
-                type: "spring", 
-                stiffness: 100, 
-                damping: 15 
-              }}
-            >
-              {/* "Gabi" text */}
-              <motion.div
-                className={styles.playerName}
-                style={{
-                  color: '#ffffff',
-                  textShadow: '0 0 20px rgba(255, 255, 255, 0.5)',
-                  fontWeight: '700',
-                  fontSize: '18px',
-                  letterSpacing: '1px'
-                }}
-                animate={{ y: [0, -3, 0] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              >
-                GABI
-              </motion.div>
-              
-              {/* White Heart */}
-              <motion.div 
-                className={styles.playerHeart}
-                animate={{ 
-                  boxShadow: [
-                    '0 0 10px 2px rgba(255, 255, 255, 0.3)',
-                    '0 0 15px 4px rgba(255, 255, 255, 0.5)',
-                    '0 0 10px 2px rgba(255, 255, 255, 0.3)'
-                  ]
-                }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              >
-                ❤️
-                <div className={styles.heartGlow}></div>
-              </motion.div>
-            </motion.div>
-
-            {/* Instructions */}
-            <motion.div
-              className={styles.instructionsContainer}
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              style={{ zIndex: 2 }}
-            >
-              <motion.p 
-                className={styles.instructions}
-                style={{
-                  color: '#ffffff',
-                  textShadow: '0 0 20px rgba(255, 255, 255, 0.5)',
-                  fontWeight: '600',
-                  fontSize: '16px',
-                  letterSpacing: '0.5px'
-                }}
-                animate={{ y: [0, -5, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              >
-                Click anywhere to move Gabi. Click on roses 🌹
-              </motion.p>
-            </motion.div>
+            <Player position={position} />
           </div>
         </div>
         
-        {/* Memory viewer */}
         <AnimatePresence>
           {activeMemory && (
             <MemoryViewer 
@@ -441,40 +345,11 @@ const MemoryIsland = ({ memoryBoxes, timeSince }) => {
             />
           )}
         </AnimatePresence>
-      </div>
 
-      {/* Cosmic particles */}
-      {[...Array(20)].map((_, i) => (
-        <motion.div
-          key={i}
-          style={{
-            position: 'absolute',
-            width: '3px',
-            height: '3px',
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-            borderRadius: '50%',
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-            filter: 'blur(1px)',
-            willChange: 'transform',
-            transform: 'translateZ(0)',
-            boxShadow: '0 0 15px rgba(255, 255, 255, 0.5)'
-          }}
-          animate={{
-            y: [0, -100, 0],
-            opacity: [0.1, 0.8, 0.1],
-            scale: [1, 1.5, 1]
-          }}
-          transition={{
-            duration: 5 + Math.random() * 3,
-            repeat: Infinity,
-            ease: "linear",
-            delay: Math.random() * 5
-          }}
-        />
-      ))}
+        <Instructions />
+      </div>
     </div>
   );
 };
 
-export default MemoryIsland;
+export default memo(MemoryIsland);

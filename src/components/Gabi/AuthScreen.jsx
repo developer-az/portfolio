@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Memoized star component
-const Star = memo(({ index }) => {
+// Memoized star component with stable random values
+const Star = memo(({ id }) => {
   const randomValues = useMemo(() => ({
     top: `${Math.random() * 100}%`,
     left: `${Math.random() * 100}%`,
     size: Math.random() * 2 + 1,
     duration: Math.random() * 3 + 2,
     delay: Math.random() * 2
-  }), []);
+  }), []); // Empty dependency array since we want these values to be stable
 
   return (
     <motion.div
@@ -49,12 +49,12 @@ const Nebula = memo(() => {
       width: '100%',
       height: '100%',
       background: `
-        radial-gradient(circle at 20% 20%, rgba(147, 51, 234, 0.15), transparent 40%),
-        radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.15), transparent 40%),
-        radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.1), transparent 60%)
+        radial-gradient(circle at 20% 20%, rgba(147, 51, 234, 0.08), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.08), transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.05), transparent 60%)
       `,
       filter: 'blur(50px)',
-      opacity: 0.5,
+      opacity: 0.3,
       zIndex: 1
     }} />
   );
@@ -80,51 +80,8 @@ const AuthScreen = ({ setIsAuthorized }) => {
     }
   }, [setIsAuthorized]);
 
-  const handleFocus = useCallback(() => setIsFocused(true), []);
-  const handleBlur = useCallback(() => setIsFocused(false), []);
-
-  // Memoized styles
-  const containerStyle = useMemo(() => ({
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: '100vh',
-    backgroundColor: '#1a1a24',
-    color: 'white',
-    fontFamily: 'Avant Garde Book BT, sans-serif',
-    overflow: 'hidden',
-    perspective: '1000px'
-  }), []);
-
-  const cardStyle = useMemo(() => ({
-    position: 'relative',
-    zIndex: 1,
-    textAlign: 'center',
-    padding: '50px',
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    backdropFilter: 'blur(15px)',
-    borderRadius: '30px',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    boxShadow: '0 25px 60px rgba(0, 0, 0, 0.4)',
-    maxWidth: '450px',
-    width: '90%',
-    willChange: 'transform'
-  }), []);
-
-  const inputStyle = useMemo(() => ({
-    width: '100%',
-    padding: '18px',
-    fontSize: '16px',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    border: '2px solid rgba(255, 255, 255, 0.15)',
-    borderRadius: '15px',
-    color: 'white',
-    outline: 'none',
-    transition: 'all 0.3s ease',
-    boxShadow: isFocused ? '0 0 25px rgba(255, 255, 255, 0.2)' : 'none',
-    backdropFilter: 'blur(5px)',
-    willChange: 'transform, box-shadow'
-  }), [isFocused]);
+  // Memoize star IDs to prevent re-rendering
+  const starIds = useMemo(() => Array.from({ length: 100 }, (_, i) => i), []);
 
   return (
     <div style={{
@@ -136,49 +93,11 @@ const AuthScreen = ({ setIsAuthorized }) => {
       perspective: '1000px'
     }}>
       {/* Space background effects */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        background: `
-          radial-gradient(circle at 20% 20%, rgba(147, 51, 234, 0.08), transparent 40%),
-          radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.08), transparent 40%),
-          radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.05), transparent 60%)
-        `,
-        filter: 'blur(50px)',
-        opacity: 0.3,
-        zIndex: 1
-      }} />
+      <Nebula />
       
-      {/* Stars */}
-      {[...Array(100)].map((_, i) => (
-        <motion.div
-          key={i}
-          style={{
-            position: 'absolute',
-            width: `${Math.random() * 2 + 1}px`,
-            height: `${Math.random() * 2 + 1}px`,
-            backgroundColor: '#ffffff',
-            borderRadius: '50%',
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-            filter: 'blur(0.5px)',
-            boxShadow: '0 0 10px rgba(255, 255, 255, 0.8)',
-            willChange: 'transform, opacity'
-          }}
-          animate={{
-            opacity: [0.2, 1, 0.2],
-            scale: [1, 1.5, 1]
-          }}
-          transition={{
-            duration: Math.random() * 3 + 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: Math.random() * 2
-          }}
-        />
+      {/* Stars with stable IDs */}
+      {starIds.map(id => (
+        <Star key={id} id={id} />
       ))}
 
       {/* Content container */}
