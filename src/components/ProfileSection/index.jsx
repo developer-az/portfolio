@@ -87,12 +87,16 @@ const ProfileSection = () => {
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
                   >
-                    <img 
+                    <Image 
                       src={isHovered ? '/images/ghibli.png' : '/images/1.png'} 
-                      alt="Profile"
+                      alt="Profile Picture"
+                      fill
                       style={{
+                        objectFit: 'cover',
+                        objectPosition: 'center 20%',
                         transition: 'opacity 0.3s ease-in-out',
                       }}
+                      priority
                     />
                   </div>
                   <div className={styles.imageOverlay}></div>
