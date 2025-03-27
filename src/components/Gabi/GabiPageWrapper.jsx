@@ -35,8 +35,8 @@ const GabiPageWrapper = () => {
       y: 30,
       title: "conflict",
       date: "January 4, 2025",
-      image: "/memories/image1.jpg", // First mirror selfie
-      description: "Sometimes i cant get out of bed, heart is aching every second of the day I can't even explain why. I distract myself but I dont want to forget. I cant forget your smile, your presence, I dont want to."
+      image: "/memories/image1.jpg",
+      description: "The weight of your absence lingers heavily. Each moment without you feels profound, and while I find ways to move forward, your smile and presence remain beautifully etched in my memory."
     },
     {
       id: 2,
@@ -44,8 +44,8 @@ const GabiPageWrapper = () => {
       y: 40,
       title: "cold",
       date: "January 4, 2025",
-      image: "/memories/image2.jpg", // Second hallway selfie
-      description: "you made me feel warm even when i was freezing, you gave heat to my heart. now even if its better outside i wish i could go back to winter to be with you again"
+      image: "/memories/image2.jpg",
+      description: "Your presence brought warmth to the coldest days. Now, even as spring approaches, I find myself reminiscing about those winter moments we shared together."
     },
     {
       id: 3,
@@ -53,8 +53,8 @@ const GabiPageWrapper = () => {
       y: 65,
       title: "Pretty girl",
       date: "January 9, 2025",
-      image: "/memories/image3.jpg", // Third shopping image
-      description: "It feels empty without you for some reason. You made life brighter for me. You don't understand the light that you provided"
+      image: "/memories/image3.jpg",
+      description: "You brought a unique radiance to every moment. Your presence illuminated life in ways words can't fully capture - a light that made everything more vibrant."
     },
     {
       id: 4,
@@ -62,8 +62,8 @@ const GabiPageWrapper = () => {
       y: 75,
       title: "poolesville",
       date: "December 23, 2024",
-      image: "/memories/image5.jpg", // Using first image again as placeholder
-      description: "I'd be there no matter the distance, the time. You meant everything to me."
+      image: "/memories/image5.jpg",
+      description: "Distance and time held no meaning when it came to you. Every moment we shared was precious beyond measure."
     },
     {
       id: 5,
@@ -71,8 +71,8 @@ const GabiPageWrapper = () => {
       y: 50,
       title: "Christmas",
       date: "December 27, 2024",
-      image: "/memories/image4.jpg", // Using second image again as placeholder
-      description: "You were a gift to me. Being able to receive gifts from you made my heart happy."
+      image: "/memories/image4.jpg",
+      description: "Your thoughtfulness was a gift in itself. Each exchange we shared brought genuine joy and warmth to my heart."
     }
   ];
 
