@@ -36,7 +36,7 @@ const GabiPageWrapper = () => {
       title: "conflict",
       date: "January 4, 2025",
       image: "/memories/image1.jpg",
-      description: "The weight of your absence lingers heavily. Each moment without you feels profound, and while I find ways to move forward, your smile and presence remain beautifully etched in my memory."
+      description: "The weight of your absence lingers heavily. Each moment without you feels dull, and while I find ways to distract myself, your smile and presence remain constantly in my memory."
     },
     {
       id: 2,
@@ -45,16 +45,16 @@ const GabiPageWrapper = () => {
       title: "cold",
       date: "January 4, 2025",
       image: "/memories/image2.jpg",
-      description: "Your presence brought warmth to the coldest days. Now, even as spring approaches, I find myself reminiscing about those winter moments we shared together."
+      description: "Your presence brought warmth to the coldest days. Now, even as spring approaches, I find myself reminiscing about the winter we spend together."
     },
     {
       id: 3,
       x: 30,
       y: 65,
-      title: "Pretty girl",
+      title: "pretty",
       date: "January 9, 2025",
       image: "/memories/image3.jpg",
-      description: "You brought a unique radiance to every moment. Your presence illuminated life in ways words can't fully capture - a light that made everything more vibrant."
+      description: "You brought a unique radiance to every moment we shared. Your presence illuminated my life in ways words can't fully capture, you made everything more vibrant."
     },
     {
       id: 4,
@@ -63,13 +63,13 @@ const GabiPageWrapper = () => {
       title: "poolesville",
       date: "December 23, 2024",
       image: "/memories/image5.jpg",
-      description: "Distance and time held no meaning when it came to you. Every moment we shared was precious beyond measure."
+      description: "Distance and time held no meaning when it came to you. Every moment we shared was precious."
     },
     {
       id: 5,
       x: 50,
       y: 50,
-      title: "Christmas",
+      title: "christmas",
       date: "December 27, 2024",
       image: "/memories/image4.jpg",
       description: "Your thoughtfulness was a gift in itself. Each exchange we shared brought genuine joy and warmth to my heart."
