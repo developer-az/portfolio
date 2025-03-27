@@ -88,7 +88,7 @@ const ProfileSection = () => {
                     onMouseLeave={() => setIsHovered(false)}
                   >
                     <img 
-                      src={isHovered ? './ghibli.png' : './1.png'} 
+                      src={isHovered ? '/images/ghibli.png' : '/images/1.png'} 
                       alt="Profile"
                       style={{
                         transition: 'opacity 0.3s ease-in-out',
