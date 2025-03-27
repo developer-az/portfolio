@@ -102,21 +102,25 @@ const AuthScreen = ({ setIsAuthorized }) => {
 
       {/* Content container */}
       <div style={{
-        position: 'relative',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
         zIndex: 2,
-        width: '100%',
-        height: '100%',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'flex-end',
-        textAlign: 'center'
+        justifyContent: 'center',
+        padding: '20px'
       }}>
         {/* Title */}
         <motion.div
           style={{
+            width: '100%',
+            maxWidth: '800px',
             textAlign: 'center',
-            marginBottom: '20px',
+            marginBottom: '40px',
             color: '#ffffff',
             textShadow: '0 0 20px rgba(255, 255, 255, 0.5)'
           }}
@@ -126,7 +130,7 @@ const AuthScreen = ({ setIsAuthorized }) => {
         >
           <motion.h1
             style={{
-              fontSize: '2.5rem',
+              fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
               fontWeight: '700',
               marginBottom: '10px',
               letterSpacing: '2px',
@@ -138,7 +142,7 @@ const AuthScreen = ({ setIsAuthorized }) => {
           </motion.h1>
           <motion.h2
             style={{
-              fontSize: '3.5rem',
+              fontSize: 'clamp(2rem, 5vw, 3.5rem)',
               fontWeight: '800',
               letterSpacing: '3px',
               background: 'linear-gradient(45deg, #fff, #c4b5fd)',
@@ -154,7 +158,9 @@ const AuthScreen = ({ setIsAuthorized }) => {
         <motion.div
           style={{
             position: 'relative',
-            width: '300px'
+            width: '100%',
+            maxWidth: '300px',
+            margin: '0 auto'
           }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -168,7 +174,7 @@ const AuthScreen = ({ setIsAuthorized }) => {
             style={{
               width: '100%',
               padding: '15px 20px',
-              fontSize: '16px',
+              fontSize: 'clamp(14px, 3vw, 16px)',
               backgroundColor: 'rgba(255, 255, 255, 0.05)',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               borderRadius: '25px',

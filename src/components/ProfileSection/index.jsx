@@ -1,10 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import styles from './ProfileSection.module.scss';
 
 const ProfileSection = () => {
   const sectionRef = useRef(null);
+  const [isHovered, setIsHovered] = useState(false);
   
   // Parallax scroll effect
   const { scrollYProgress } = useScroll({
@@ -82,14 +83,18 @@ const ProfileSection = () => {
                   <div className={`${styles.decorativeCross} ${styles.cross3}`}></div>
                   <div className={`${styles.decorativeCross} ${styles.cross4}`}></div>
                   
-                  <Image
-                    src="/images/1.png"
-                    alt="Anthony Zhou"
-                    width={400}
-                    height={480}
-                    className={styles.profileImage}
-                    priority
-                  />
+                  <div 
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                  >
+                    <img 
+                      src={isHovered ? './ghibli.png' : './1.png'} 
+                      alt="Profile"
+                      style={{
+                        transition: 'opacity 0.3s ease-in-out',
+                      }}
+                    />
+                  </div>
                   <div className={styles.imageOverlay}></div>
                   <div className={styles.imageBorder}></div>
                 </motion.div>
